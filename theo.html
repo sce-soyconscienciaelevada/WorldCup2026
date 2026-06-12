@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- updated: 2026-06-12 01:07 -->
+<!-- updated: 2026-06-12 01:12 -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Theo's Portal 🔴</title>
@@ -438,6 +438,25 @@ nav {
 }
 .wc-quote-mark { font-size: 2.2rem; color: var(--gold); opacity: 0.5; line-height: 0.8; margin-bottom: 6px; font-family: Georgia, serif; }
 .wc-quote-text { font-size: 0.82rem; line-height: 1.6; color: rgba(255,255,255,0.82); font-style: italic; }
+/* Permanent pinned quotes */
+.pinned-quotes { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+.pinned-quote {
+  background: linear-gradient(135deg, rgba(12,24,16,0.9), rgba(8,16,10,0.95));
+  border: 1px solid rgba(246,235,97,0.18);
+  border-top: 2px solid rgba(246,235,97,0.35);
+  border-radius: 12px; padding: 18px 14px 14px;
+  position: relative; text-align: center;
+}
+.pinned-quote::before {
+  content: '📌'; position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+  font-size: 1rem;
+}
+.pinned-quote-text {
+  font-family: 'Great Vibes', cursive;
+  font-size: 1.35rem; color: rgba(246,235,97,0.85);
+  line-height: 1.5; display: block;
+}
+@media (max-width: 480px) { .pinned-quotes { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -589,6 +608,14 @@ nav {
     <div class="wall-hdr">
       <h3>🎨 Theo's Wall</h3>
       <p>Your space — write, draw, add photos, anything goes!</p>
+    </div>
+    <div class="pinned-quotes">
+      <div class="pinned-quote">
+        <span class="pinned-quote-text">Creativity is the echo of the divine within. To build, to imagine, to make — this is to be whole.</span>
+      </div>
+      <div class="pinned-quote">
+        <span class="pinned-quote-text">You carry the spark of the One who spoke light into darkness. Your hands were made for this.</span>
+      </div>
     </div>
     <div class="wall-add-row">
       <button class="wall-add-btn" onclick="wallMode('note')">📝 Note</button>
