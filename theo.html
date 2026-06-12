@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- updated: 2026-06-12 10:37 -->
+<!-- updated: 2026-06-12 10:53 -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Theo's Portal 🔴</title>
@@ -657,13 +657,19 @@ nav {
 <script>
 // ─── AUTH ────────────────────────────────────────────────────────────────────
 const PORTAL_PW = localStorage.getItem('wc2026_theo_pw') || 'liverpool';
+const THEO_SESSION_KEY = 'wc2026_theo_session';
+
+function doLogin() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('main-app').style.display = 'block';
+  localStorage.setItem(THEO_SESSION_KEY, JSON.stringify({ expires: Date.now() + 90 * 24 * 60 * 60 * 1000 }));
+  initApp();
+}
 
 function tryLogin() {
   const pw = document.getElementById('pw-input').value.toLowerCase().trim();
   if (pw === PORTAL_PW) {
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('main-app').style.display = 'block';
-    initApp();
+    doLogin();
   } else {
     const err = document.getElementById('pw-error');
     err.textContent = pw ? '❌ Wrong password. Try again!' : 'Enter your password';
@@ -672,11 +678,21 @@ function tryLogin() {
   }
 }
 document.getElementById('pw-input').addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
+
 function logout() {
+  localStorage.removeItem(THEO_SESSION_KEY);
   document.getElementById('main-app').style.display = 'none';
   document.getElementById('login-screen').style.display = 'flex';
   document.getElementById('pw-input').value = '';
 }
+
+// Auto-login if session is valid
+(function checkTheoSession() {
+  try {
+    const s = JSON.parse(localStorage.getItem(THEO_SESSION_KEY));
+    if (s && s.expires > Date.now()) { doLogin(); }
+  } catch {}
+})();
 
 // ─── TABS ─────────────────────────────────────────────────────────────────────
 function showTab(name) {
