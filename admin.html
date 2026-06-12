@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- updated: 2026-06-12 10:37 -->
+<!-- updated: 2026-06-12 12:33 -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin — World Cup 2026</title>
@@ -504,38 +504,40 @@ async function adminCloudWrite(data) {
   } catch {}
 }
 
-function getPW() { return localStorage.getItem(PW_KEY) || DEFAULT_PW; }
-
 function doLogin() {
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('main-app').style.display = 'block';
   initApp();
 }
 
-function tryLogin() {
+async function tryLogin() {
   const pw = document.getElementById('pw-input').value;
-  if (pw === getPW()) {
-    if (document.getElementById('remember-me').checked) {
-      localStorage.setItem(SESSION_KEY, JSON.stringify({ expires: Date.now() + 30 * 24 * 60 * 60 * 1000 }));
+  const errEl = document.getElementById('pw-error');
+  errEl.textContent = '';
+  try {
+    const r = await fetch('/api/check-pw', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: pw, who: 'admin' })
+    });
+    const { ok } = await r.json();
+    if (ok) {
+      if (document.getElementById('remember-me').checked) {
+        localStorage.setItem(SESSION_KEY, JSON.stringify({ expires: Date.now() + 30 * 24 * 60 * 60 * 1000 }));
+      }
+      doLogin();
+    } else {
+      errEl.textContent = 'Incorrect password';
     }
-    doLogin();
-  } else {
-    document.getElementById('pw-error').textContent = 'Incorrect password';
+  } catch {
+    errEl.textContent = 'Connection error — try again';
   }
 }
 
 document.getElementById('pw-input').addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
 
-// Pre-seed password from state.json so it survives cache clears
-(async function earlyInit() {
-  try {
-    const res = await fetch('./data/state.json?t=' + Date.now());
-    if (res.ok) {
-      const s = await res.json();
-      if (s.adminPw) localStorage.setItem(PW_KEY, s.adminPw);
-    }
-  } catch {}
-  // Check session after password is seeded
+// Auto-login if valid session exists
+(function checkSession() {
   try {
     const s = JSON.parse(localStorage.getItem(SESSION_KEY));
     if (s && s.expires > Date.now()) { doLogin(); }
@@ -550,12 +552,7 @@ function logout() {
 }
 
 function changePassword() {
-  const np = document.getElementById('new-pw').value.trim();
-  if (!np) return toast('Enter a password', true);
-  localStorage.setItem(PW_KEY, np);
-  if (state) { state.adminPw = np; Store.save(state); }
-  document.getElementById('new-pw').value = '';
-  toast('Password changed ✓ — export state.json + push to persist after cache clear');
+  toast('To change password: Vercel dashboard → Settings → Environment Variables → ADMIN_PASSWORD → update → Redeploy', false);
 }
 
 // ─── THEO PASSWORD ──────────────────────────────────────────────────────────
