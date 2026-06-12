@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- updated: 2026-06-12 12:33 -->
+<!-- updated: 2026-06-12 13:26 -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Theo's Portal 🔴</title>
@@ -739,6 +739,13 @@ let state;
 
 async function initApp() {
   state = await Store.loadRemote();
+  // Merge live results from cloud (written by admin ESPN sync)
+  try {
+    const cloud = await cloudRead();
+    if (cloud && cloud.results && Object.keys(cloud.results).length) {
+      state.results = { ...(state.results || {}), ...cloud.results };
+    }
+  } catch {}
   renderScores();
   renderLiverpool();
   initTrivia();
