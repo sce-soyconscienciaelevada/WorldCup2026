@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- updated: 2026-06-12 12:51 -->
+<!-- updated: 2026-06-12 13:19 -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin — World Cup 2026</title>
@@ -232,8 +232,15 @@ nav {
 
   <!-- RESULTS -->
   <div class="panel" id="panel-results">
+    <div style="background:rgba(200,16,46,0.08);border:1px solid rgba(200,16,46,0.25);border-radius:12px;padding:16px 18px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+      <div>
+        <div style="font-family:'Oswald',sans-serif;font-size:1rem;font-weight:700;color:#fff;margin-bottom:2px">📡 Live Score Sync</div>
+        <div id="live-sync-status" style="font-size:0.8rem;color:var(--muted)">Fetches finished matches from football-data.org → updates all results automatically</div>
+      </div>
+      <button class="btn btn-red" onclick="syncLiveScores()">⚡ Sync Now</button>
+    </div>
     <p style="color:var(--muted);margin-bottom:20px;font-size:0.875rem">
-      Enter actual results for each match. Points are calculated automatically.
+      Or enter results manually below. Points calculated automatically.
     </p>
     <div id="result-groups"></div>
   </div>
@@ -377,6 +384,16 @@ nav {
   </div>
 
   <div class="panel" id="panel-sync">
+    <div class="export-panel">
+      <h3>📡 Live Scores API (football-data.org)</h3>
+      <p>Free API that provides real World Cup 2026 match scores. <a href="https://www.football-data.org/client/register" target="_blank" style="color:var(--red2)">Register free →</a> then paste your token below.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;align-items:center">
+        <input type="password" class="score-input" id="football-api-key" placeholder="Paste API token here" style="width:260px">
+        <button class="btn btn-green" onclick="saveFootballApiKey()">💾 Save</button>
+        <button class="btn btn-outline" onclick="syncLiveScores()">⚡ Test Sync</button>
+      </div>
+      <div id="football-api-status" style="font-size:0.8rem;color:var(--muted);margin-top:8px"></div>
+    </div>
     <div class="export-panel">
       <h3>📥 Export data</h3>
       <p>Download the JSON file with all your data. To sync with GitHub Pages, replace <code>data/state.json</code> in the repo and push.</p>
@@ -1096,6 +1113,103 @@ async function adminWipeChat() {
   await adminCloudWrite(cloud);
   toast('Chat wiped ✓');
   initAdminChat();
+  initFootballApiKey();
+}
+
+// ─── LIVE SCORES (football-data.org) ─────────────────────────────────────────
+const TEAM_NAME_MAP = {
+  'Mexico':'MEX','South Korea':'KOR','Korea Republic':'KOR','Korea DPR':'KOR',
+  'Czech Republic':'CZE','Czechia':'CZE',
+  'South Africa':'RSA','Canada':'CAN',
+  'Bosnia and Herzegovina':'BOS','Bosnia & Herzegovina':'BOS',
+  'Qatar':'QAT','Switzerland':'SUI','Brazil':'BRA','Morocco':'MAR','Haiti':'HAI',
+  'Scotland':'SCO','United States':'USA','USA':'USA','Paraguay':'PAR',
+  'Australia':'AUS','Turkey':'TUR','Türkiye':'TUR',
+  'Germany':'GER','Curaçao':'CUW','Curacao':'CUW',
+  "Côte d'Ivoire":'CIV','Ivory Coast':'CIV','Cote d\'Ivoire':'CIV',
+  'Ecuador':'ECU','Netherlands':'NED','Japan':'JAP','Sweden':'SWE',
+  'Tunisia':'TUN','Belgium':'BEL','Egypt':'EGY','Iran':'IRN','IR Iran':'IRN',
+  'New Zealand':'NZL','Spain':'ESP','Cape Verde':'CPV','Saudi Arabia':'KSA',
+  'Uruguay':'URU','France':'FRA','Senegal':'SEN','Iraq':'IRA','Norway':'NOR',
+  'Argentina':'ARG','Algeria':'ALG','Austria':'AUT','Jordan':'JOR',
+  'Portugal':'POR','DR Congo':'COD','Congo DR':'COD','Congo, DR':'COD',
+  'Democratic Republic of Congo':'COD','Uzbekistan':'UZB','Colombia':'COL',
+  'England':'ENG','Croatia':'CRO','Ghana':'GHA','Panama':'PAN',
+};
+
+async function saveFootballApiKey() {
+  const key = document.getElementById('football-api-key').value.trim();
+  if (!key) return toast('Paste your API token first', true);
+  const cloud = await adminCloudRead() || { wall:[], chat:[] };
+  cloud.footballApiKey = key;
+  await adminCloudWrite(cloud);
+  document.getElementById('football-api-status').textContent = '✓ API key saved to cloud';
+  toast('API key saved ✓');
+}
+
+async function initFootballApiKey() {
+  const cloud = await adminCloudRead();
+  const el = document.getElementById('football-api-status');
+  if (cloud && cloud.footballApiKey) {
+    document.getElementById('football-api-key').value = cloud.footballApiKey;
+    if (el) el.textContent = '✓ API key loaded from cloud';
+  } else {
+    if (el) el.textContent = '⚠ No API key saved yet';
+  }
+}
+
+async function syncLiveScores() {
+  const statusEl = document.getElementById('live-sync-status');
+  const cloud = await adminCloudRead();
+  const apiKey = cloud && cloud.footballApiKey;
+  if (!apiKey) {
+    toast('No API key — add it in Sync tab first', true);
+    if (statusEl) statusEl.textContent = '⚠ No API key configured (Sync tab)';
+    return;
+  }
+  if (statusEl) statusEl.textContent = '⏳ Fetching from football-data.org...';
+
+  try {
+    const r = await fetch('https://api.football-data.org/v4/competitions/WC/matches?status=FINISHED', {
+      headers: { 'X-Auth-Token': apiKey }
+    });
+    if (!r.ok) {
+      const msg = r.status === 403 ? 'Invalid API key or WC not yet available' : 'API error ' + r.status;
+      toast(msg, true);
+      if (statusEl) statusEl.textContent = '✗ ' + msg;
+      return;
+    }
+    const data = await r.json();
+    const matches = data.matches || [];
+
+    // Build lookup: "HOME-AWAY" -> fixtureId
+    const fixtureLookup = {};
+    WC2026.allMatches.forEach(m => { fixtureLookup[m.home + '-' + m.away] = m.id; });
+
+    let updated = 0;
+    matches.forEach(m => {
+      if (m.status !== 'FINISHED') return;
+      const homeCode = TEAM_NAME_MAP[m.homeTeam.name] || TEAM_NAME_MAP[m.homeTeam.shortName];
+      const awayCode = TEAM_NAME_MAP[m.awayTeam.name] || TEAM_NAME_MAP[m.awayTeam.shortName];
+      if (!homeCode || !awayCode) return;
+      const fixtureId = fixtureLookup[homeCode + '-' + awayCode];
+      if (!fixtureId) return;
+      const ft = m.score && m.score.fullTime;
+      if (ft && ft.home != null && ft.away != null) {
+        state.results[fixtureId] = { home: ft.home, away: ft.away };
+        updated++;
+      }
+    });
+
+    Store.save(state);
+    renderAll();
+    const lastSync = new Date().toLocaleTimeString();
+    if (statusEl) statusEl.textContent = `✓ ${updated} result(s) synced — last sync: ${lastSync}`;
+    toast(updated ? `${updated} result(s) synced ✓` : 'No new finished matches');
+  } catch (e) {
+    toast('Network error — check connection', true);
+    if (statusEl) statusEl.textContent = '✗ Network error: ' + e.message;
+  }
 }
 </script>
 </body>
