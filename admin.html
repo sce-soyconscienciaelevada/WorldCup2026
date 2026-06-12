@@ -43,6 +43,8 @@ h1,h2,h3 { font-family: 'Oswald', sans-serif; }
 }
 .login-btn:hover { background: var(--gold2); }
 .login-error { color: var(--red); font-size: 0.85rem; margin-top: 8px; }
+.remember-row { display: flex; align-items: center; gap: 8px; margin-top: 12px; font-size: 0.82rem; color: var(--muted); cursor: pointer; }
+.remember-row input[type=checkbox] { width: 16px; height: 16px; accent-color: var(--gold); cursor: pointer; }
 
 /* NAV */
 nav {
@@ -167,6 +169,9 @@ nav {
     <p>Exclusive access for the tournament administrator</p>
     <input type="password" class="login-input" id="pw-input" placeholder="Password" autocomplete="current-password">
     <button class="login-btn" onclick="tryLogin()">Login</button>
+    <label class="remember-row">
+      <input type="checkbox" id="remember-me"> Remember me for 30 days
+    </label>
     <div class="login-error" id="pw-error"></div>
   </div>
 </div>
@@ -291,6 +296,19 @@ nav {
         <button class="btn btn-outline" onclick="changePassword()">Change</button>
       </div>
     </div>
+    <div class="export-panel">
+      <h3>🔴 Theo's Portal Password</h3>
+      <p>Current password Theo uses to access his portal. Stored locally — change it any time.</p>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px">
+        <span style="font-size:0.8rem;color:var(--muted)">Current:</span>
+        <code id="theo-pw-display" style="background:rgba(255,255,255,0.07);padding:4px 12px;border-radius:6px;font-size:0.95rem;letter-spacing:1px">—</code>
+        <button class="btn btn-outline" style="padding:4px 12px;font-size:0.8rem" onclick="toggleTheoPwVisibility()" id="theo-pw-toggle">👁 Show</button>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <input type="text" class="score-input" id="theo-new-pw" placeholder="New password for Theo" style="width:220px">
+        <button class="btn btn-red" onclick="changeTheoPw()">Update Theo's Password</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -303,15 +321,23 @@ nav {
 // ─── AUTH ───────────────────────────────────────────────────────────────────
 const PW_KEY = 'wc2026_admin_pw';
 const DEFAULT_PW = 'admin2026';
+const SESSION_KEY = 'wc2026_admin_session';
 
 function getPW() { return localStorage.getItem(PW_KEY) || DEFAULT_PW; }
+
+function doLogin() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('main-app').style.display = 'block';
+  initApp();
+}
 
 function tryLogin() {
   const pw = document.getElementById('pw-input').value;
   if (pw === getPW()) {
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('main-app').style.display = 'block';
-    initApp();
+    if (document.getElementById('remember-me').checked) {
+      localStorage.setItem(SESSION_KEY, JSON.stringify({ expires: Date.now() + 30 * 24 * 60 * 60 * 1000 }));
+    }
+    doLogin();
   } else {
     document.getElementById('pw-error').textContent = 'Incorrect password';
   }
@@ -319,7 +345,16 @@ function tryLogin() {
 
 document.getElementById('pw-input').addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
 
+// Auto-login if valid session exists
+(function checkSession() {
+  try {
+    const s = JSON.parse(localStorage.getItem(SESSION_KEY));
+    if (s && s.expires > Date.now()) { doLogin(); }
+  } catch {}
+})();
+
 function logout() {
+  localStorage.removeItem(SESSION_KEY);
   document.getElementById('main-app').style.display = 'none';
   document.getElementById('login-screen').style.display = 'flex';
   document.getElementById('pw-input').value = '';
@@ -330,7 +365,34 @@ function changePassword() {
   if (!np) return toast('Enter a password', true);
   localStorage.setItem(PW_KEY, np);
   document.getElementById('new-pw').value = '';
-  toast('Password changed ✓');
+  toast('Admin password changed ✓');
+}
+
+// ─── THEO PASSWORD ──────────────────────────────────────────────────────────
+const THEO_PW_KEY = 'wc2026_theo_pw';
+const THEO_DEFAULT_PW = 'liverpool';
+let theoPwVisible = false;
+
+function getTheoPw() { return localStorage.getItem(THEO_PW_KEY) || THEO_DEFAULT_PW; }
+
+function renderTheoPw() {
+  const display = document.getElementById('theo-pw-display');
+  if (display) display.textContent = theoPwVisible ? getTheoPw() : '••••••••';
+}
+
+function toggleTheoPwVisibility() {
+  theoPwVisible = !theoPwVisible;
+  document.getElementById('theo-pw-toggle').textContent = theoPwVisible ? '🙈 Hide' : '👁 Show';
+  renderTheoPw();
+}
+
+function changeTheoPw() {
+  const np = document.getElementById('theo-new-pw').value.trim();
+  if (!np) return toast('Enter a password for Theo', true);
+  localStorage.setItem(THEO_PW_KEY, np);
+  document.getElementById('theo-new-pw').value = '';
+  renderTheoPw();
+  toast("Theo's password updated ✓");
 }
 
 // ─── STATE ──────────────────────────────────────────────────────────────────
@@ -339,6 +401,7 @@ let state;
 function initApp() {
   state = Store.load();
   renderAll();
+  renderTheoPw();
 }
 
 function renderAll() {

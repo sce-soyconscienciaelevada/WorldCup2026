@@ -413,7 +413,7 @@ nav {
 <script src="js/store.js"></script>
 <script>
 // ─── AUTH ────────────────────────────────────────────────────────────────────
-const PORTAL_PW = 'liverpool';
+const PORTAL_PW = localStorage.getItem('wc2026_theo_pw') || 'liverpool';
 
 function tryLogin() {
   const pw = document.getElementById('pw-input').value.toLowerCase().trim();
