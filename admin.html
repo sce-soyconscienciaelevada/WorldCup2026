@@ -297,6 +297,22 @@ nav {
       </div>
     </div>
     <div class="export-panel">
+      <h3>📱 Phone Notifications (ntfy.sh)</h3>
+      <p>Get instant push notifications on your phone when Theo sends you a chat message.</p>
+      <ol style="color:var(--muted);font-size:0.82rem;margin:10px 0 16px;padding-left:18px;line-height:2">
+        <li>Install the free <strong>ntfy</strong> app on your phone (Android / iOS)</li>
+        <li>Choose a private topic name — e.g. <code>theo-wc2026-abc</code></li>
+        <li>Subscribe to that topic in the ntfy app</li>
+        <li>Paste the same topic below → Save → done</li>
+      </ol>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+        <input type="text" class="score-input" id="ntfy-topic" placeholder="your-private-topic" style="width:220px">
+        <button class="btn btn-green" onclick="saveNtfyTopic()">💾 Save</button>
+        <button class="btn btn-outline" onclick="testNtfy()">🔔 Test</button>
+      </div>
+      <div id="ntfy-status" style="font-size:0.8rem;color:var(--muted);margin-top:10px"></div>
+    </div>
+    <div class="export-panel">
       <h3>🔴 Theo's Portal Password</h3>
       <p>Current password Theo uses to access his portal. Stored locally — change it any time.</p>
       <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px">
@@ -375,6 +391,34 @@ let theoPwVisible = false;
 
 function getTheoPw() { return localStorage.getItem(THEO_PW_KEY) || THEO_DEFAULT_PW; }
 
+function renderNtfyTopic() {
+  const t = localStorage.getItem('wc2026_ntfy_topic') || '';
+  const inp = document.getElementById('ntfy-topic');
+  if (inp) inp.value = t;
+  const s = document.getElementById('ntfy-status');
+  if (s) s.textContent = t ? '✓ Notifications active — topic: ' + t : '⚠ Not set — you won\'t receive chat notifications from Theo';
+}
+
+function saveNtfyTopic() {
+  const t = document.getElementById('ntfy-topic').value.trim();
+  localStorage.setItem('wc2026_ntfy_topic', t);
+  renderNtfyTopic();
+  toast(t ? 'Notifications enabled ✓' : 'Notifications disabled');
+}
+
+async function testNtfy() {
+  const t = document.getElementById('ntfy-topic').value.trim();
+  if (!t) return toast('Enter a topic name first', true);
+  try {
+    await fetch('https://ntfy.sh/' + encodeURIComponent(t), {
+      method: 'POST',
+      headers: { 'Title': 'Test from Admin Panel ✓', 'Tags': 'white_check_mark' },
+      body: 'Notifications are working! Theo\'s messages will now reach you. 🎉⚽'
+    });
+    toast('Test notification sent ✓');
+  } catch { toast('Failed to send — check your connection', true); }
+}
+
 function renderTheoPw() {
   const display = document.getElementById('theo-pw-display');
   if (display) display.textContent = theoPwVisible ? getTheoPw() : '••••••••';
@@ -402,6 +446,7 @@ function initApp() {
   state = Store.load();
   renderAll();
   renderTheoPw();
+  renderNtfyTopic();
 }
 
 function renderAll() {

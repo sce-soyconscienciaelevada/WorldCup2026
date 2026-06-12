@@ -227,6 +227,78 @@ nav {
 .react-btn:hover { background: rgba(200,16,46,0.2); border-color: var(--red2); transform: scale(1.1); }
 .react-btn.active { background: rgba(200,16,46,0.25); border-color: var(--red2); }
 
+/* ─── PROFILE (FICHA) ────────────────────────────────────────────────────── */
+.profile-wrap { max-width: 420px; margin: 0 auto; }
+.player-card-display { background: linear-gradient(145deg,#1a0810 0%,#2d0a17 40%,#0a0509 100%); border: 2px solid var(--gold); border-radius: 20px; overflow: hidden; box-shadow: 0 8px 32px rgba(200,16,46,0.3); }
+.pc-top { background: linear-gradient(135deg,var(--red3),var(--red)); padding: 16px 20px 10px; display: flex; justify-content: space-between; align-items: flex-start; }
+.pc-pos-badge { background: rgba(0,0,0,0.35); border-radius: 8px; padding: 4px 10px; font-family: 'Oswald',sans-serif; font-size: 0.9rem; font-weight: 700; letter-spacing: 1px; }
+.pc-rating { font-family: 'Oswald',sans-serif; font-size: 2.8rem; font-weight: 700; color: var(--gold); line-height: 1; text-align: right; }
+.pc-rating-lbl { font-size: 0.6rem; color: rgba(255,255,255,0.6); text-align: right; display: block; margin-top: -2px; }
+.pc-avatar-area { text-align: center; padding: 16px 0 8px; }
+.pc-avatar-emoji { font-size: 5rem; line-height: 1; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5)); }
+.pc-name-area { text-align: center; padding: 0 20px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+.pc-fullname { font-family: 'Oswald',sans-serif; font-size: 1.7rem; font-weight: 700; color: #fff; letter-spacing: 1px; line-height: 1; }
+.pc-nick { color: var(--gold); font-size: 0.9rem; margin-top: 4px; font-style: italic; }
+.pc-stats-grid { padding: 14px 20px; }
+.pc-stat-row { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; }
+.pc-stat-lbl { font-family: 'Oswald',sans-serif; font-size: 0.7rem; font-weight: 700; color: var(--gold); width: 28px; flex-shrink: 0; }
+.pc-stat-track { flex: 1; height: 8px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden; }
+.pc-stat-fill { height: 100%; border-radius: 4px; transition: width 0.6s ease; }
+.pc-stat-val { font-family: 'Oswald',sans-serif; font-size: 0.85rem; font-weight: 700; width: 26px; text-align: right; flex-shrink: 0; }
+.pc-info-bar { background: rgba(0,0,0,0.3); padding: 12px 20px; display: flex; gap: 16px; flex-wrap: wrap; font-size: 0.78rem; color: rgba(255,255,255,0.7); border-top: 1px solid rgba(255,255,255,0.08); }
+.pc-bio { padding: 12px 20px 16px; font-size: 0.85rem; color: rgba(255,255,255,0.7); line-height: 1.5; font-style: italic; }
+.profile-edit-btn { display: block; width: 100%; margin-top: 14px; }
+.profile-edit-card { background: var(--dark2); border: 1px solid var(--border); border-radius: 16px; padding: 20px; }
+.profile-edit-card h3 { margin-bottom: 16px; color: var(--red2); }
+.pf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.pf-field { display: flex; flex-direction: column; gap: 4px; }
+.pf-field.full { grid-column: 1 / -1; }
+.pf-field label { font-size: 0.72rem; text-transform: uppercase; color: var(--muted); font-weight: 600; letter-spacing: 0.5px; }
+.pf-field input,.pf-field select,.pf-field textarea { background: var(--dark3); border: 1px solid var(--border); border-radius: 8px; color: #fff; padding: 8px 10px; font-family: 'Inter',sans-serif; font-size: 0.875rem; width: 100%; }
+.pf-field textarea { resize: vertical; min-height: 64px; }
+.pf-field input:focus,.pf-field select:focus,.pf-field textarea:focus { outline: none; border-color: var(--red2); }
+.stats-edit-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 14px; }
+.se-stat { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.se-stat label { font-family: 'Oswald',sans-serif; font-size: 0.85rem; font-weight: 700; color: var(--gold); }
+.se-stat input { width: 64px; text-align: center; background: var(--dark3); border: 1px solid var(--border); border-radius: 8px; color: #fff; padding: 6px; font-family: 'Oswald',sans-serif; font-size: 1.1rem; }
+.avatar-pick-row { display: flex; gap: 8px; flex-wrap: wrap; margin: 6px 0 14px; }
+.av-opt { font-size: 2rem; cursor: pointer; padding: 6px; border-radius: 8px; border: 2px solid transparent; transition: all 0.15s; }
+.av-opt.selected,.av-opt:hover { border-color: var(--gold); background: rgba(246,235,97,0.1); }
+
+/* ─── WALL ──────────────────────────────────────────────────────────────── */
+.wall-hdr { margin-bottom: 16px; }
+.wall-hdr h3 { margin-bottom: 4px; }
+.wall-hdr p { color: var(--muted); font-size: 0.85rem; }
+.wall-add-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.wall-add-btn { background: rgba(255,255,255,0.06); border: 1.5px solid rgba(255,255,255,0.12); color: #fff; border-radius: 99px; padding: 8px 16px; font-size: 0.875rem; cursor: pointer; transition: all 0.15s; font-family: 'Inter',sans-serif; }
+.wall-add-btn:hover,.wall-add-btn.active { background: rgba(200,16,46,0.2); border-color: var(--red2); }
+.wall-creator { background: var(--dark2); border: 1px solid var(--border); border-radius: 16px; padding: 18px; margin-bottom: 16px; }
+.wall-creator h4 { margin-bottom: 12px; color: var(--red2); }
+.wc-color { width: 28px; height: 28px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: all 0.15s; }
+.wc-color.active { border-color: #fff; transform: scale(1.2); }
+.wall-note-input { width: 100%; background: var(--dark3); border: 1px solid var(--border); border-radius: 8px; color: #fff; padding: 10px; font-family: 'Inter',sans-serif; font-size: 0.9rem; resize: vertical; min-height: 80px; margin-bottom: 10px; }
+.wall-note-title { width: 100%; background: var(--dark3); border: 1px solid var(--border); border-radius: 8px; color: #fff; padding: 8px 10px; font-family: 'Inter',sans-serif; font-size: 0.9rem; margin-bottom: 8px; }
+.draw-toolbar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+.draw-color-dot { width: 26px; height: 26px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; flex-shrink: 0; }
+.draw-color-dot.active { border-color: #fff; transform: scale(1.15); }
+.draw-size-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; border-radius: 6px; padding: 4px 10px; cursor: pointer; font-size: 0.8rem; font-family: 'Inter',sans-serif; }
+.draw-size-btn.active { background: var(--red3); border-color: var(--red); }
+.draw-canvas-wrap { border-radius: 10px; overflow: hidden; border: 2px solid var(--border); cursor: crosshair; margin-bottom: 10px; background: #fff; }
+#draw-canvas { display: block; width: 100%; height: auto; touch-action: none; }
+.sticker-grid { display: grid; grid-template-columns: repeat(6,1fr); gap: 4px; }
+.sticker-opt { font-size: 1.8rem; cursor: pointer; text-align: center; padding: 6px; border-radius: 8px; border: 2px solid transparent; transition: all 0.1s; }
+.sticker-opt:hover,.sticker-opt.active { background: rgba(200,16,46,0.15); border-color: var(--red2); }
+.wall-grid { columns: 2; gap: 12px; }
+.wall-card { break-inside: avoid; border-radius: 14px; padding: 14px; margin-bottom: 12px; position: relative; }
+.wc-meta { font-size: 0.7rem; opacity: 0.55; margin-top: 8px; }
+.wc-del { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.3); border: none; color: rgba(255,255,255,0.6); border-radius: 50%; width: 22px; height: 22px; font-size: 0.65rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.wc-del:hover { background: rgba(200,16,46,0.6); color: #fff; }
+.wc-img { width: 100%; border-radius: 8px; display: block; }
+.wc-sticker-text { font-size: 3.5rem; text-align: center; padding: 6px 0; }
+.wall-empty { text-align: center; color: var(--muted); padding: 40px 20px; grid-column: 1/-1; }
+.wall-empty div { font-size: 3rem; margin-bottom: 12px; }
+@media (max-width: 380px) { .wall-grid { columns: 1; } .pf-grid { grid-template-columns: 1fr; } }
+
 /* LOVE CARD */
 .love-card { background: linear-gradient(135deg, rgba(200,16,46,0.18), rgba(200,16,46,0.06)); border: 1.5px solid rgba(200,16,46,0.4); border-radius: 20px; padding: 32px 24px; text-align: center; margin-top: 24px; }
 .love-heart { font-size: 2.8rem; margin-bottom: 10px; animation: heartbeat 1.4s ease-in-out infinite; }
@@ -283,8 +355,10 @@ nav {
     <div class="tab active" onclick="showTab('scores')">⚽ My Score</div>
     <div class="tab" onclick="showTab('liverpool')">🔴 Liverpool</div>
     <div class="tab" onclick="showTab('trivia')">🧠 Trivia</div>
-    <div class="tab" onclick="showTab('chat')">💬 Chat</div>
+    <div class="tab" onclick="showTab('chat')">💬 Chat with Dad</div>
     <div class="tab" onclick="showTab('youtube')">▶️ YouTube</div>
+    <div class="tab" onclick="showTab('profile')">🃏 My Card</div>
+    <div class="tab" onclick="showTab('wall')">🎨 My Wall</div>
   </div>
 
   <!-- SCORES -->
@@ -386,6 +460,27 @@ nav {
     </div>
   </div>
 
+  <!-- PROFILE -->
+  <div class="panel" id="panel-profile">
+    <div class="profile-wrap" id="profile-view"></div>
+  </div>
+
+  <!-- WALL -->
+  <div class="panel" id="panel-wall">
+    <div class="wall-hdr">
+      <h3>🎨 Theo's Wall</h3>
+      <p>Your space — write, draw, add photos, anything goes!</p>
+    </div>
+    <div class="wall-add-row">
+      <button class="wall-add-btn" onclick="wallMode('note')">📝 Note</button>
+      <button class="wall-add-btn" onclick="wallMode('draw')">🎨 Draw</button>
+      <button class="wall-add-btn" onclick="wallMode('photo')">📷 Photo</button>
+      <button class="wall-add-btn" onclick="wallMode('sticker')">⭐ Sticker</button>
+    </div>
+    <div class="wall-creator" id="wall-creator" style="display:none"></div>
+    <div class="wall-grid" id="wall-grid"></div>
+  </div>
+
   <!-- CHAT -->
   <div class="panel" id="panel-chat">
     <div style="margin-bottom:12px">
@@ -439,7 +534,7 @@ function logout() {
 function showTab(name) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  const tabs = ['scores','liverpool','trivia','chat','youtube'];
+  const tabs = ['scores','liverpool','trivia','chat','youtube','profile','wall'];
   document.querySelectorAll('.tab')[tabs.indexOf(name)].classList.add('active');
   document.getElementById('panel-' + name).classList.add('active');
 }
@@ -453,6 +548,8 @@ async function initApp() {
   renderLiverpool();
   initTrivia();
   initChat();
+  initProfile();
+  initWall();
 }
 
 // ─── SCORES ──────────────────────────────────────────────────────────────────
@@ -639,6 +736,18 @@ function getMessages() {
 
 function saveMessages(msgs) { localStorage.setItem(CHAT_KEY, JSON.stringify(msgs.slice(-100))); }
 
+async function notifyJoan(msg) {
+  const topic = localStorage.getItem('wc2026_ntfy_topic');
+  if (!topic) return;
+  try {
+    fetch('https://ntfy.sh/' + encodeURIComponent(topic), {
+      method: 'POST',
+      headers: { 'Title': 'Theo says hi! ⚽🔴', 'Priority': 'high', 'Tags': 'soccer,heart' },
+      body: msg
+    });
+  } catch {}
+}
+
 function sendMsg() {
   const input = document.getElementById('chat-input');
   const text = input.value.trim();
@@ -646,6 +755,7 @@ function sendMsg() {
   const msgs = getMessages();
   msgs.push({ from:'theo', text, time: new Date().toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'}) });
   saveMessages(msgs);
+  notifyJoan(text);
   input.value = '';
   renderChat();
 }
@@ -672,6 +782,268 @@ function renderChat() {
 
 // Fix chat enter key reference
 document.getElementById('chat-input').addEventListener('keydown', function(e) { if (e.key === 'Enter') sendMsg(); });
+
+// ─── PROFILE ─────────────────────────────────────────────────────────────
+const PROFILE_KEY = 'wc2026_theo_profile';
+const AVATARS = ['⚽','🦁','⚡','🔥','💪','👑','🦅','🌟','🐯','🦊','🎯','🏆'];
+const STAT_COLORS = { PAC:'#22c55e', SHO:'#ef4444', PAS:'#3b82f6', DRI:'#f59e0b', DEF:'#8b5cf6', PHY:'#06b6d4' };
+let selectedAvatar = '⚽';
+
+function getProfile() { try { return JSON.parse(localStorage.getItem(PROFILE_KEY)); } catch { return null; } }
+function initProfile() { renderProfile(); }
+
+function renderProfile() {
+  const p = getProfile();
+  const wrap = document.getElementById('profile-view');
+  p ? showProfileCard(wrap, p) : showProfileEdit(wrap);
+}
+
+function showProfileCard(wrap, p) {
+  const stats = ['PAC','SHO','PAS','DRI','DEF','PHY'].map(k => ({ lbl: k, val: p[k.toLowerCase()] || 80 }));
+  const avg = Math.round(stats.reduce((s,x) => s + x.val, 0) / stats.length);
+  const dob = p.dob ? new Date(p.dob + 'T12:00:00').toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric'}) : '—';
+  wrap.innerHTML = `
+    <div class="player-card-display">
+      <div class="pc-top">
+        <span class="pc-pos-badge">${p.pos||'FWD'}</span>
+        <div><div class="pc-rating">${avg}</div><span class="pc-rating-lbl">OVERALL</span></div>
+      </div>
+      <div class="pc-avatar-area"><div class="pc-avatar-emoji">${p.avatar||'⚽'}</div></div>
+      <div class="pc-name-area">
+        <div class="pc-fullname">${p.name||'Theo'}</div>
+        ${p.nick ? `<div class="pc-nick">"${p.nick}"</div>` : ''}
+      </div>
+      <div class="pc-stats-grid">
+        ${stats.map(s => `<div class="pc-stat-row">
+          <span class="pc-stat-lbl">${s.lbl}</span>
+          <div class="pc-stat-track"><div class="pc-stat-fill" style="width:${s.val}%;background:${STAT_COLORS[s.lbl]}"></div></div>
+          <span class="pc-stat-val" style="color:${STAT_COLORS[s.lbl]}">${s.val}</span>
+        </div>`).join('')}
+      </div>
+      <div class="pc-info-bar">
+        <span>#${p.num||'—'}</span>
+        <span>${p.foot||'Right'} foot</span>
+        ${p.nat ? `<span>🌍 ${p.nat}</span>` : ''}
+        <span>❤️ ${p.club||'Liverpool FC'}</span>
+        ${p.dob ? `<span>🎂 ${dob}</span>` : ''}
+      </div>
+      ${p.bio ? `<div class="pc-bio">"${p.bio}"</div>` : ''}
+    </div>
+    <button class="btn btn-outline profile-edit-btn" onclick="showProfileEdit(document.getElementById('profile-view'))">✏️ Edit My Card</button>`;
+}
+
+function showProfileEdit(wrap) {
+  const p = getProfile() || {};
+  selectedAvatar = p.avatar || '⚽';
+  const opts = (arr, cur) => arr.map(v => `<option value="${v}" ${v===cur?'selected':''}>${v}</option>`).join('');
+  wrap.innerHTML = `
+    <div class="profile-edit-card">
+      <h3>⚽ ${p.name ? 'Edit My Card' : 'Set Up Your Player Card!'}</h3>
+      <div class="pf-grid">
+        <div class="pf-field"><label>Full Name</label><input id="pf-name" value="${p.name||''}" placeholder="Theo ..."></div>
+        <div class="pf-field"><label>Nickname / Alias</label><input id="pf-nick" value="${p.nick||''}" placeholder="El Crack..."></div>
+        <div class="pf-field"><label>Position</label><select id="pf-pos">${opts(['FWD','MID','DEF','GK'], p.pos||'FWD')}</select></div>
+        <div class="pf-field"><label>Jersey #</label><input id="pf-num" type="number" min="1" max="99" value="${p.num||10}"></div>
+        <div class="pf-field"><label>Date of Birth</label><input id="pf-dob" type="date" value="${p.dob||''}"></div>
+        <div class="pf-field"><label>Nationality</label><input id="pf-nat" value="${p.nat||''}" placeholder="English..."></div>
+        <div class="pf-field"><label>Preferred Foot</label><select id="pf-foot">${opts(['Right','Left','Both'], p.foot||'Right')}</select></div>
+        <div class="pf-field"><label>Favourite Club</label><input id="pf-club" value="${p.club||'Liverpool FC'}"></div>
+        <div class="pf-field full"><label>About Me</label><textarea id="pf-bio" placeholder="I love football because...">${p.bio||''}</textarea></div>
+      </div>
+      <h4 style="margin-bottom:10px;color:var(--gold)">⭐ Your Stats (1–99)</h4>
+      <div class="stats-edit-grid">
+        ${['pac','sho','pas','dri','def','phy'].map(s => `<div class="se-stat"><label>${s.toUpperCase()}</label><input id="pf-${s}" type="number" min="1" max="99" value="${p[s]||80}"></div>`).join('')}
+      </div>
+      <h4 style="margin-bottom:8px;color:var(--gold)">Pick Your Avatar</h4>
+      <div class="avatar-pick-row">${AVATARS.map(a => `<span class="av-opt${a===selectedAvatar?' selected':''}" onclick="pickAvatar('${a}',this)">${a}</span>`).join('')}</div>
+      <button class="btn btn-red" style="width:100%;margin-top:4px" onclick="saveProfileData()">💾 Save My Card</button>
+      ${getProfile() ? `<button class="btn btn-outline" style="width:100%;margin-top:8px" onclick="renderProfile()">Cancel</button>` : ''}
+    </div>`;
+}
+
+function pickAvatar(a, el) {
+  selectedAvatar = a;
+  document.querySelectorAll('.av-opt').forEach(e => e.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function saveProfileData() {
+  const g = id => document.getElementById(id);
+  const clamp = v => Math.min(99, Math.max(1, +v || 80));
+  const profile = {
+    name: g('pf-name').value.trim() || 'Theo',
+    nick: g('pf-nick').value.trim(),
+    pos: g('pf-pos').value,
+    num: +g('pf-num').value || 10,
+    dob: g('pf-dob').value,
+    nat: g('pf-nat').value.trim(),
+    foot: g('pf-foot').value,
+    club: g('pf-club').value.trim() || 'Liverpool FC',
+    bio: g('pf-bio').value.trim(),
+    avatar: selectedAvatar,
+    pac: clamp(g('pf-pac').value), sho: clamp(g('pf-sho').value),
+    pas: clamp(g('pf-pas').value), dri: clamp(g('pf-dri').value),
+    def: clamp(g('pf-def').value), phy: clamp(g('pf-phy').value),
+  };
+  localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+  renderProfile();
+}
+
+// ─── WALL ─────────────────────────────────────────────────────────────────
+const WALL_KEY = 'wc2026_theo_wall';
+const DRAW_COLORS = ['#C8102E','#000000','#ffffff','#fbbf24','#22c55e','#3b82f6','#a78bfa','#f97316'];
+const TEXT_COLORS = ['#fbbf24','#4ade80','#60a5fa','#f87171','#c4b5fd','#ffffff'];
+const STICKERS = ['⭐','🔥','⚽','🏆','🥇','❤️','💪','👏','🎉','😄','🦁','👟','⚡','🎯','🏅','🌟','🤩','🎨'];
+
+let wallActiveMode = null, drawCtx = null, isDrawing = false;
+let drawColor = '#C8102E', drawSize = 6, noteColor = TEXT_COLORS[0], selectedSticker = '⭐';
+let pendingPhotoSrc = null;
+
+function getWall() { try { return JSON.parse(localStorage.getItem(WALL_KEY)) || []; } catch { return []; } }
+function saveWallData(items) { localStorage.setItem(WALL_KEY, JSON.stringify(items)); }
+function initWall() { renderWall(); }
+
+function renderWall() {
+  const items = getWall();
+  const grid = document.getElementById('wall-grid');
+  if (!items.length) {
+    grid.innerHTML = '<div class="wall-empty"><div>🎨</div><p>Your wall is empty!<br>Add a note, drawing or photo above.</p></div>';
+    return;
+  }
+  grid.innerHTML = items.slice().reverse().map((item, ri) => {
+    const idx = items.length - 1 - ri;
+    const date = new Date(item.ts).toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+    if (item.type === 'note') return `<div class="wall-card" style="background:#1a0810;border:1.5px solid rgba(255,255,255,0.08)"><button class="wc-del" onclick="wallDelete(${idx})">✕</button>${item.title?`<div style="font-family:'Oswald',sans-serif;font-size:1rem;font-weight:700;margin-bottom:6px;color:${item.color}">${item.title}</div>`:''}<div style="font-size:0.875rem;line-height:1.5;color:${item.color}">${item.text}</div><div class="wc-meta">${date}</div></div>`;
+    if (item.type === 'draw' || item.type === 'photo') return `<div class="wall-card" style="background:#0a0509;padding:8px;border:1.5px solid rgba(255,255,255,0.08)"><button class="wc-del" onclick="wallDelete(${idx})">✕</button><img class="wc-img" src="${item.src}"><div class="wc-meta">${item.type==='draw'?'🎨':'📷'} ${date}</div></div>`;
+    if (item.type === 'sticker') return `<div class="wall-card" style="background:#1a0810;border:1.5px solid rgba(255,255,255,0.08);text-align:center"><button class="wc-del" onclick="wallDelete(${idx})">✕</button><div class="wc-sticker-text">${item.emoji}</div>${item.text?`<div style="font-size:0.85rem;color:rgba(255,255,255,0.7)">${item.text}</div>`:''}<div class="wc-meta">${date}</div></div>`;
+    return '';
+  }).join('');
+}
+
+function wallDelete(idx) { const items = getWall(); items.splice(idx,1); saveWallData(items); renderWall(); }
+
+function wallMode(type) {
+  const creator = document.getElementById('wall-creator');
+  const btns = document.querySelectorAll('.wall-add-btn');
+  const map = ['note','draw','photo','sticker'];
+  if (wallActiveMode === type) {
+    creator.style.display = 'none'; wallActiveMode = null;
+    btns.forEach(b => b.classList.remove('active')); return;
+  }
+  wallActiveMode = type;
+  btns.forEach((b,i) => b.classList.toggle('active', map[i] === type));
+  creator.style.display = 'block';
+  if (type === 'note') renderNoteCreator();
+  else if (type === 'draw') renderDrawCreator();
+  else if (type === 'photo') renderPhotoCreator();
+  else renderStickerCreator();
+}
+
+function closeCreator() {
+  document.getElementById('wall-creator').style.display = 'none';
+  wallActiveMode = null;
+  document.querySelectorAll('.wall-add-btn').forEach(b => b.classList.remove('active'));
+}
+
+function pushWallItem(item) { const items = getWall(); items.push(item); saveWallData(items); closeCreator(); renderWall(); }
+
+/* NOTE */
+function renderNoteCreator() {
+  noteColor = TEXT_COLORS[0];
+  document.getElementById('wall-creator').innerHTML = `
+    <h4>📝 Write a Note</h4>
+    <input class="wall-note-title" id="wn-title" placeholder="Title (optional)">
+    <textarea class="wall-note-input" id="wn-text" placeholder="Write anything..."></textarea>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap">
+      <span style="font-size:0.78rem;color:var(--muted)">Color:</span>
+      <div style="display:flex;gap:6px">${TEXT_COLORS.map((c,i) => `<div class="wc-color${i===0?' active':''}" style="background:${c}" onclick="pickNoteColor('${c}',this)"></div>`).join('')}</div>
+    </div>
+    <button class="btn btn-red" onclick="saveNote()">Post to Wall ➜</button>`;
+}
+
+function pickNoteColor(c, el) { noteColor = c; document.querySelectorAll('.wc-color').forEach(e => e.classList.remove('active')); el.classList.add('active'); }
+
+function saveNote() {
+  const text = document.getElementById('wn-text').value.trim();
+  if (!text) return;
+  pushWallItem({ type:'note', title: document.getElementById('wn-title').value.trim(), text, color: noteColor, ts: Date.now() });
+}
+
+/* DRAW */
+function renderDrawCreator() {
+  document.getElementById('wall-creator').innerHTML = `
+    <h4>🎨 Draw Something</h4>
+    <div class="draw-toolbar">
+      ${DRAW_COLORS.map((c,i) => `<div class="draw-color-dot${i===0?' active':''}" style="background:${c};${c==='#ffffff'?'border-color:rgba(255,255,255,0.4)':''}" onclick="setDrawColor('${c}',this)"></div>`).join('')}
+      <span style="color:var(--muted);font-size:0.8rem">|</span>
+      ${[4,8,14].map((s,i) => `<button class="draw-size-btn${i===0?' active':''}" onclick="setDrawSize(${s},this)">${['S','M','L'][i]}</button>`).join('')}
+      <button class="draw-size-btn" onclick="clearCanvas()">🗑</button>
+    </div>
+    <div class="draw-canvas-wrap"><canvas id="draw-canvas" width="600" height="400"></canvas></div>
+    <button class="btn btn-red" onclick="saveDrawing()">Post Drawing ➜</button>`;
+  initDrawCanvas();
+}
+
+function setDrawColor(c, el) { drawColor = c; document.querySelectorAll('.draw-color-dot').forEach(e => e.classList.remove('active')); el.classList.add('active'); }
+function setDrawSize(s, el) { drawSize = s; document.querySelectorAll('.draw-size-btn').forEach(e => e.classList.remove('active')); el.classList.add('active'); }
+
+function initDrawCanvas() {
+  const canvas = document.getElementById('draw-canvas');
+  drawCtx = canvas.getContext('2d');
+  drawCtx.fillStyle = '#ffffff'; drawCtx.fillRect(0, 0, canvas.width, canvas.height);
+  const pos = e => { const r = canvas.getBoundingClientRect(), sc = e.touches ? e.touches[0] : e; return { x:(sc.clientX-r.left)*(canvas.width/r.width), y:(sc.clientY-r.top)*(canvas.height/r.height) }; };
+  const start = e => { e.preventDefault(); isDrawing=true; const p=pos(e); drawCtx.beginPath(); drawCtx.moveTo(p.x,p.y); };
+  const move = e => { e.preventDefault(); if(!isDrawing) return; const p=pos(e); drawCtx.lineWidth=drawSize; drawCtx.lineCap='round'; drawCtx.strokeStyle=drawColor; drawCtx.lineTo(p.x,p.y); drawCtx.stroke(); drawCtx.beginPath(); drawCtx.moveTo(p.x,p.y); };
+  const stop = () => isDrawing = false;
+  canvas.addEventListener('mousedown',start); canvas.addEventListener('mousemove',move); canvas.addEventListener('mouseup',stop); canvas.addEventListener('mouseleave',stop);
+  canvas.addEventListener('touchstart',start,{passive:false}); canvas.addEventListener('touchmove',move,{passive:false}); canvas.addEventListener('touchend',stop);
+}
+
+function clearCanvas() { const c=document.getElementById('draw-canvas'); drawCtx.fillStyle='#fff'; drawCtx.fillRect(0,0,c.width,c.height); }
+function saveDrawing() { pushWallItem({ type:'draw', src: document.getElementById('draw-canvas').toDataURL('image/jpeg',0.8), ts: Date.now() }); }
+
+/* PHOTO */
+function renderPhotoCreator() {
+  pendingPhotoSrc = null;
+  document.getElementById('wall-creator').innerHTML = `
+    <h4>📷 Add a Photo</h4>
+    <input type="file" accept="image/*" id="photo-input" style="display:none" onchange="handlePhotoUpload(event)">
+    <button class="btn btn-outline" onclick="document.getElementById('photo-input').click()">📂 Choose Photo</button>
+    <div id="photo-preview" style="margin-top:12px"></div>`;
+}
+
+function handlePhotoUpload(e) {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const img = new Image();
+    img.onload = () => {
+      let w=img.width, h=img.height, max=800;
+      if(w>max){h=Math.round(h*max/w);w=max;} if(h>max){w=Math.round(w*max/h);h=max;}
+      const c=document.createElement('canvas'); c.width=w; c.height=h;
+      c.getContext('2d').drawImage(img,0,0,w,h);
+      pendingPhotoSrc = c.toDataURL('image/jpeg',0.75);
+      document.getElementById('photo-preview').innerHTML = `<img src="${pendingPhotoSrc}" style="max-width:100%;border-radius:8px;margin-bottom:10px;display:block"><button class="btn btn-red" onclick="savePhoto()">Post Photo ➜</button>`;
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function savePhoto() { if(!pendingPhotoSrc) return; pushWallItem({ type:'photo', src:pendingPhotoSrc, ts:Date.now() }); pendingPhotoSrc=null; }
+
+/* STICKER */
+function renderStickerCreator() {
+  selectedSticker = '⭐';
+  document.getElementById('wall-creator').innerHTML = `
+    <h4>⭐ Pick a Sticker</h4>
+    <div class="sticker-grid">${STICKERS.map(s => `<div class="sticker-opt" onclick="selectSticker('${s}',this)">${s}</div>`).join('')}</div>
+    <input class="wall-note-title" id="sticker-caption" placeholder="Add a caption (optional)" style="margin-top:10px">
+    <button class="btn btn-red" style="margin-top:8px" onclick="saveSticker()">Post Sticker ➜</button>`;
+}
+
+function selectSticker(s, el) { selectedSticker=s; document.querySelectorAll('.sticker-opt').forEach(e=>e.classList.remove('active')); el.classList.add('active'); }
+function saveSticker() { pushWallItem({ type:'sticker', emoji:selectedSticker, text:document.getElementById('sticker-caption').value.trim(), ts:Date.now() }); }
 </script>
 </body>
 </html>
