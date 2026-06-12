@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- updated: 2026-06-12 01:19 -->
+<!-- updated: 2026-06-12 01:30 -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Theo's Portal 🔴</title>
@@ -692,6 +692,11 @@ let state;
 
 async function initApp() {
   state = await Store.loadRemote();
+  // Seed JSONBin credentials from state.json so Theo's device can reach the cloud
+  if (state.binId && !localStorage.getItem('wc2026_bin_id')) localStorage.setItem('wc2026_bin_id', state.binId);
+  if (state.binKey && !localStorage.getItem('wc2026_bin_key')) localStorage.setItem('wc2026_bin_key', state.binKey);
+  // Seed ntfy topic
+  if (state.ntfyTopic && !localStorage.getItem('wc2026_ntfy_topic')) localStorage.setItem('wc2026_ntfy_topic', state.ntfyTopic);
   renderScores();
   renderLiverpool();
   initTrivia();

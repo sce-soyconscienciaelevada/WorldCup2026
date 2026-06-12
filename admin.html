@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- updated: 2026-06-12 00:55 -->
+<!-- updated: 2026-06-12 01:30 -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin — World Cup 2026</title>
@@ -603,8 +603,9 @@ function saveBinConfig() {
   const key = document.getElementById('bin-key').value.trim();
   localStorage.setItem(BIN_ID_KEY, id);
   localStorage.setItem(BIN_KEY_KEY, key);
+  if (state) { state.binId = id; state.binKey = key; Store.save(state); }
   renderBinConfig();
-  toast(id ? 'Cloud sync configured ✓' : 'Cloud sync disabled');
+  toast(id ? 'Cloud sync saved — export state.json + push so Theo\'s device gets it' : 'Cloud sync disabled');
 }
 
 async function createNewBin() {

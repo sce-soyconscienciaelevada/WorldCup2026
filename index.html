@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!-- updated: 2026-06-12 01:29 -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>World Cup 2026 🏆</title>
@@ -118,7 +119,7 @@ table.standings { width: 100%; border-collapse: collapse; }
 .standings tr.qualified:nth-child(2) td:first-child { border-left: 3px solid var(--green); }
 .team-cell { display: flex; align-items: center; gap: 8px; }
 .team-flag { font-size: 1.1rem; }
-.team-code { font-weight: 600; font-size: 0.8rem; }
+.team-code { font-weight: 600; font-size: 0.8rem; white-space: nowrap; }
 
 /* MATCHES TODAY */
 .matches-today { display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; }
@@ -392,7 +393,7 @@ function renderGroups(state) {
       const t = WC2026.team(s.team);
       const gd = s.gf - s.gc;
       return `<tr class="${i < 2 ? 'qualified' : ''}">
-        <td><div class="team-cell">${WC2026.fi(s.team, 18)}<span class="team-code">${t.name}</span></div></td>
+        <td><div class="team-cell">${WC2026.fi(s.team, 18)}<span class="team-code">${s.team}</span></div></td>
         <td>${s.pj}</td><td>${s.g}</td><td>${s.e}</td><td>${s.p}</td>
         <td>${s.gf}</td><td>${s.gc}</td>
         <td style="color:${gd>0?'var(--green2)':gd<0?'var(--red)':'var(--muted)'}">${gd > 0 ? '+' : ''}${gd}</td>

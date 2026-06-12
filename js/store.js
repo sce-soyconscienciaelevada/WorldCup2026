@@ -25,6 +25,8 @@ const Store = {
       actualPodium: null,
       knockout: {},
       ntfyTopic: '',
+      binId: '',
+      binKey: '',
       profile: {
         name: 'Theo', nick: '', pos: 'FWD', num: 9, dob: '', nat: '', foot: 'Right',
         club: 'Liverpool FC', bio: '', avatar: '⚽',
