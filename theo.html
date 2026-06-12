@@ -783,25 +783,21 @@ function renderChat() {
 // Fix chat enter key reference
 document.getElementById('chat-input').addEventListener('keydown', function(e) { if (e.key === 'Enter') sendMsg(); });
 
-// ─── PROFILE ─────────────────────────────────────────────────────────────
-const PROFILE_KEY = 'wc2026_theo_profile';
-const AVATARS = ['⚽','🦁','⚡','🔥','💪','👑','🦅','🌟','🐯','🦊','🎯','🏆'];
+// ─── PROFILE (read-only — edited from admin panel) ────────────────────────
 const STAT_COLORS = { PAC:'#22c55e', SHO:'#ef4444', PAS:'#3b82f6', DRI:'#f59e0b', DEF:'#8b5cf6', PHY:'#06b6d4' };
-let selectedAvatar = '⚽';
 
-function getProfile() { try { return JSON.parse(localStorage.getItem(PROFILE_KEY)); } catch { return null; } }
 function initProfile() { renderProfile(); }
 
 function renderProfile() {
-  const p = getProfile();
+  const p = state && state.profile && state.profile.name ? state.profile : null;
   const wrap = document.getElementById('profile-view');
-  p ? showProfileCard(wrap, p) : showProfileEdit(wrap);
-}
-
-function showProfileCard(wrap, p) {
-  const stats = ['PAC','SHO','PAS','DRI','DEF','PHY'].map(k => ({ lbl: k, val: p[k.toLowerCase()] || 80 }));
+  if (!p) {
+    wrap.innerHTML = `<div style="text-align:center;padding:60px 20px;color:var(--muted)"><div style="font-size:3.5rem;margin-bottom:14px">⚽</div><p style="font-size:0.95rem;line-height:1.6">Your player card is being set up...<br>Check back soon!</p></div>`;
+    return;
+  }
+  const stats = ['PAC','SHO','PAS','DRI','DEF','PHY'].map(k => ({ lbl:k, val:p[k.toLowerCase()]||80 }));
   const avg = Math.round(stats.reduce((s,x) => s + x.val, 0) / stats.length);
-  const dob = p.dob ? new Date(p.dob + 'T12:00:00').toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric'}) : '—';
+  const dob = p.dob ? new Date(p.dob + 'T12:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) : null;
   wrap.innerHTML = `
     <div class="player-card-display">
       <div class="pc-top">
@@ -825,68 +821,10 @@ function showProfileCard(wrap, p) {
         <span>${p.foot||'Right'} foot</span>
         ${p.nat ? `<span>🌍 ${p.nat}</span>` : ''}
         <span>❤️ ${p.club||'Liverpool FC'}</span>
-        ${p.dob ? `<span>🎂 ${dob}</span>` : ''}
+        ${dob ? `<span>🎂 ${dob}</span>` : ''}
       </div>
       ${p.bio ? `<div class="pc-bio">"${p.bio}"</div>` : ''}
-    </div>
-    <button class="btn btn-outline profile-edit-btn" onclick="showProfileEdit(document.getElementById('profile-view'))">✏️ Edit My Card</button>`;
-}
-
-function showProfileEdit(wrap) {
-  const p = getProfile() || {};
-  selectedAvatar = p.avatar || '⚽';
-  const opts = (arr, cur) => arr.map(v => `<option value="${v}" ${v===cur?'selected':''}>${v}</option>`).join('');
-  wrap.innerHTML = `
-    <div class="profile-edit-card">
-      <h3>⚽ ${p.name ? 'Edit My Card' : 'Set Up Your Player Card!'}</h3>
-      <div class="pf-grid">
-        <div class="pf-field"><label>Full Name</label><input id="pf-name" value="${p.name||''}" placeholder="Theo ..."></div>
-        <div class="pf-field"><label>Nickname / Alias</label><input id="pf-nick" value="${p.nick||''}" placeholder="El Crack..."></div>
-        <div class="pf-field"><label>Position</label><select id="pf-pos">${opts(['FWD','MID','DEF','GK'], p.pos||'FWD')}</select></div>
-        <div class="pf-field"><label>Jersey #</label><input id="pf-num" type="number" min="1" max="99" value="${p.num||10}"></div>
-        <div class="pf-field"><label>Date of Birth</label><input id="pf-dob" type="date" value="${p.dob||''}"></div>
-        <div class="pf-field"><label>Nationality</label><input id="pf-nat" value="${p.nat||''}" placeholder="English..."></div>
-        <div class="pf-field"><label>Preferred Foot</label><select id="pf-foot">${opts(['Right','Left','Both'], p.foot||'Right')}</select></div>
-        <div class="pf-field"><label>Favourite Club</label><input id="pf-club" value="${p.club||'Liverpool FC'}"></div>
-        <div class="pf-field full"><label>About Me</label><textarea id="pf-bio" placeholder="I love football because...">${p.bio||''}</textarea></div>
-      </div>
-      <h4 style="margin-bottom:10px;color:var(--gold)">⭐ Your Stats (1–99)</h4>
-      <div class="stats-edit-grid">
-        ${['pac','sho','pas','dri','def','phy'].map(s => `<div class="se-stat"><label>${s.toUpperCase()}</label><input id="pf-${s}" type="number" min="1" max="99" value="${p[s]||80}"></div>`).join('')}
-      </div>
-      <h4 style="margin-bottom:8px;color:var(--gold)">Pick Your Avatar</h4>
-      <div class="avatar-pick-row">${AVATARS.map(a => `<span class="av-opt${a===selectedAvatar?' selected':''}" onclick="pickAvatar('${a}',this)">${a}</span>`).join('')}</div>
-      <button class="btn btn-red" style="width:100%;margin-top:4px" onclick="saveProfileData()">💾 Save My Card</button>
-      ${getProfile() ? `<button class="btn btn-outline" style="width:100%;margin-top:8px" onclick="renderProfile()">Cancel</button>` : ''}
     </div>`;
-}
-
-function pickAvatar(a, el) {
-  selectedAvatar = a;
-  document.querySelectorAll('.av-opt').forEach(e => e.classList.remove('selected'));
-  el.classList.add('selected');
-}
-
-function saveProfileData() {
-  const g = id => document.getElementById(id);
-  const clamp = v => Math.min(99, Math.max(1, +v || 80));
-  const profile = {
-    name: g('pf-name').value.trim() || 'Theo',
-    nick: g('pf-nick').value.trim(),
-    pos: g('pf-pos').value,
-    num: +g('pf-num').value || 10,
-    dob: g('pf-dob').value,
-    nat: g('pf-nat').value.trim(),
-    foot: g('pf-foot').value,
-    club: g('pf-club').value.trim() || 'Liverpool FC',
-    bio: g('pf-bio').value.trim(),
-    avatar: selectedAvatar,
-    pac: clamp(g('pf-pac').value), sho: clamp(g('pf-sho').value),
-    pas: clamp(g('pf-pas').value), dri: clamp(g('pf-dri').value),
-    def: clamp(g('pf-def').value), phy: clamp(g('pf-phy').value),
-  };
-  localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
-  renderProfile();
 }
 
 // ─── WALL ─────────────────────────────────────────────────────────────────

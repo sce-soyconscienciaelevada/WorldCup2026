@@ -35,5 +35,23 @@
   },
   "actualPodium": null,
   "knockout": {},
+  "profile": {
+    "name": "Theo",
+    "nick": "",
+    "pos": "FWD",
+    "num": 9,
+    "dob": "",
+    "nat": "English",
+    "foot": "Right",
+    "club": "Liverpool FC",
+    "bio": "",
+    "avatar": "⚽",
+    "pac": 80,
+    "sho": 85,
+    "pas": 75,
+    "dri": 88,
+    "def": 50,
+    "phy": 72
+  },
   "lastUpdated": "2026-06-11T12:00:00.000Z"
 }

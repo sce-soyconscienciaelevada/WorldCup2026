@@ -24,6 +24,11 @@ const Store = {
       podium: { first:'ARG', second:'ENG', third:'POR' },
       actualPodium: null,
       knockout: {},
+      profile: {
+        name: 'Theo', nick: '', pos: 'FWD', num: 9, dob: '', nat: '', foot: 'Right',
+        club: 'Liverpool FC', bio: '', avatar: '⚽',
+        pac: 80, sho: 85, pas: 75, dri: 88, def: 50, phy: 72,
+      },
       lastUpdated: new Date().toISOString(),
     };
   },
@@ -41,6 +46,7 @@ const Store = {
           predictions: { ...def.predictions, ...saved.predictions },
           results: { ...def.results, ...saved.results },
           podium: { ...def.podium, ...(saved.podium || {}) },
+          profile: { ...def.profile, ...(saved.profile || {}) },
         };
       }
     } catch (e) { console.error('Store load error:', e); }

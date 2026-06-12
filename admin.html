@@ -46,6 +46,22 @@ h1,h2,h3 { font-family: 'Oswald', sans-serif; }
 .remember-row { display: flex; align-items: center; gap: 8px; margin-top: 12px; font-size: 0.82rem; color: var(--muted); cursor: pointer; }
 .remember-row input[type=checkbox] { width: 16px; height: 16px; accent-color: var(--gold); cursor: pointer; }
 
+/* THEO PROFILE EDITOR */
+.pf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.pf-group { display: flex; flex-direction: column; gap: 5px; }
+.pf-group label { font-size: 0.72rem; text-transform: uppercase; color: var(--muted); font-weight: 600; letter-spacing: 0.5px; }
+.pf-group select.score-input { cursor: pointer; }
+.prof-stats-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin: 14px 0; }
+.prof-stat { background: var(--card2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 8px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center; }
+.ps-code { font-family: 'Oswald',sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--gold); }
+.ps-name { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+.ps-desc { font-size: 0.68rem; color: rgba(255,255,255,0.35); line-height: 1.3; }
+.prof-stat input { width: 70px; text-align: center; background: var(--navy); border: 1px solid var(--border); border-radius: 8px; color: #fff; padding: 7px 4px; font-family: 'Oswald',sans-serif; font-size: 1.4rem; font-weight: 700; margin: 2px 0; }
+.prof-stat input:focus { outline: none; border-color: var(--gold); }
+.av-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.av-btn { font-size: 1.8rem; padding: 6px 8px; border-radius: 8px; border: 2px solid transparent; cursor: pointer; background: transparent; transition: all 0.15s; }
+.av-btn:hover, .av-btn.active { border-color: var(--gold); background: rgba(245,197,24,0.08); }
+
 /* NAV */
 nav {
   position: sticky; top: 0; z-index: 99;
@@ -194,6 +210,7 @@ nav {
     <div class="tab" onclick="showTab('predictions')">🎯 Predictions</div>
     <div class="tab" onclick="showTab('results')">⚽ Results</div>
     <div class="tab" onclick="showTab('podium')">🏆 Podium</div>
+    <div class="tab" onclick="showTab('theo')">🃏 Theo's Card</div>
     <div class="tab" onclick="showTab('sync')">🔄 Sync / Export</div>
   </div>
 
@@ -271,6 +288,92 @@ nav {
   </div>
 
   <!-- SYNC -->
+  <div class="panel" id="panel-theo">
+    <div class="export-panel">
+      <h3>👤 Personal Info</h3>
+      <div class="pf-row">
+        <div class="pf-group"><label>Full Name</label><input class="score-input" id="tp-name" placeholder="Theo ..."></div>
+        <div class="pf-group"><label>Nickname / Alias</label><input class="score-input" id="tp-nick" placeholder="El Crack..."></div>
+      </div>
+      <div class="pf-row">
+        <div class="pf-group"><label>Position</label>
+          <select class="score-input" id="tp-pos">
+            <option value="FWD">⚡ Forward (FWD)</option>
+            <option value="MID">🔄 Midfielder (MID)</option>
+            <option value="DEF">🛡 Defender (DEF)</option>
+            <option value="GK">🧤 Goalkeeper (GK)</option>
+          </select>
+        </div>
+        <div class="pf-group"><label>Jersey #</label><input class="score-input" id="tp-num" type="number" min="1" max="99" value="9"></div>
+      </div>
+      <div class="pf-row">
+        <div class="pf-group"><label>Date of Birth</label><input class="score-input" id="tp-dob" type="date"></div>
+        <div class="pf-group"><label>Nationality</label><input class="score-input" id="tp-nat" placeholder="English..."></div>
+      </div>
+      <div class="pf-row">
+        <div class="pf-group"><label>Preferred Foot</label>
+          <select class="score-input" id="tp-foot">
+            <option>Right</option><option>Left</option><option>Both</option>
+          </select>
+        </div>
+        <div class="pf-group"><label>Favourite Club</label><input class="score-input" id="tp-club" value="Liverpool FC"></div>
+      </div>
+      <div class="pf-group" style="margin-top:4px"><label>About Theo</label><input class="score-input" id="tp-bio" placeholder="Loves football because..."></div>
+    </div>
+
+    <div class="export-panel">
+      <h3>⭐ Player Stats</h3>
+      <p>Set each from 1–99. Overall is calculated automatically.</p>
+      <div class="prof-stats-grid">
+        <div class="prof-stat">
+          <span class="ps-code">PAC</span><span class="ps-name">Pace</span>
+          <input id="tp-pac" type="number" min="1" max="99">
+          <span class="ps-desc">How fast he runs</span>
+        </div>
+        <div class="prof-stat">
+          <span class="ps-code">SHO</span><span class="ps-name">Shooting</span>
+          <input id="tp-sho" type="number" min="1" max="99">
+          <span class="ps-desc">How well he shoots</span>
+        </div>
+        <div class="prof-stat">
+          <span class="ps-code">PAS</span><span class="ps-name">Passing</span>
+          <input id="tp-pas" type="number" min="1" max="99">
+          <span class="ps-desc">How well he passes</span>
+        </div>
+        <div class="prof-stat">
+          <span class="ps-code">DRI</span><span class="ps-name">Dribbling</span>
+          <input id="tp-dri" type="number" min="1" max="99">
+          <span class="ps-desc">Ball control & skill</span>
+        </div>
+        <div class="prof-stat">
+          <span class="ps-code">DEF</span><span class="ps-name">Defending</span>
+          <input id="tp-def" type="number" min="1" max="99">
+          <span class="ps-desc">How well he defends</span>
+        </div>
+        <div class="prof-stat">
+          <span class="ps-code">PHY</span><span class="ps-name">Physical</span>
+          <input id="tp-phy" type="number" min="1" max="99">
+          <span class="ps-desc">Strength & stamina</span>
+        </div>
+      </div>
+      <div style="background:var(--card2);border-radius:10px;padding:14px 18px;display:flex;align-items:center;gap:14px;margin-top:4px">
+        <span style="color:var(--muted);font-size:0.875rem">Overall Rating:</span>
+        <span id="tp-overall" style="font-family:'Oswald',sans-serif;font-size:2.2rem;font-weight:700;color:var(--gold)">—</span>
+        <span style="color:var(--muted);font-size:0.75rem">(auto-calculated)</span>
+      </div>
+    </div>
+
+    <div class="export-panel">
+      <h3>🖼 Avatar</h3>
+      <div class="av-row" id="tp-avatar-row"></div>
+    </div>
+
+    <div style="padding:0 0 8px">
+      <button class="btn btn-green" onclick="saveProfileAdmin()" style="width:100%;padding:14px;font-size:1rem">💾 Save Theo's Card</button>
+      <p style="color:var(--muted);font-size:0.78rem;margin-top:10px;text-align:center">After saving → Sync tab → Download state.json → commit + push → Theo sees updated card on refresh.</p>
+    </div>
+  </div>
+
   <div class="panel" id="panel-sync">
     <div class="export-panel">
       <h3>📥 Export data</h3>
@@ -391,6 +494,74 @@ let theoPwVisible = false;
 
 function getTheoPw() { return localStorage.getItem(THEO_PW_KEY) || THEO_DEFAULT_PW; }
 
+// ─── THEO PROFILE ────────────────────────────────────────────────────────
+const TP_AVATARS = ['⚽','🦁','⚡','🔥','💪','👑','🦅','🌟','🐯','🦊','🎯','🏆'];
+let tpAvatar = '⚽';
+
+function renderProfileAdmin() {
+  const p = state.profile || {};
+  const g = id => document.getElementById(id);
+  if (!g('tp-name')) return;
+  g('tp-name').value = p.name || '';
+  g('tp-nick').value = p.nick || '';
+  g('tp-pos').value = p.pos || 'FWD';
+  g('tp-num').value = p.num || 9;
+  g('tp-dob').value = p.dob || '';
+  g('tp-nat').value = p.nat || '';
+  g('tp-foot').value = p.foot || 'Right';
+  g('tp-club').value = p.club || 'Liverpool FC';
+  g('tp-bio').value = p.bio || '';
+  ['pac','sho','pas','dri','def','phy'].forEach(s => {
+    const el = g('tp-' + s);
+    el.value = p[s] || 80;
+    el.addEventListener('input', updateOverall);
+  });
+  tpAvatar = p.avatar || '⚽';
+  renderAvatarPicker();
+  updateOverall();
+}
+
+function updateOverall() {
+  const vals = ['pac','sho','pas','dri','def','phy'].map(s => Math.min(99, Math.max(1, +document.getElementById('tp-'+s).value || 80)));
+  const avg = Math.round(vals.reduce((a,b) => a+b, 0) / vals.length);
+  const el = document.getElementById('tp-overall');
+  if (el) el.textContent = avg;
+}
+
+function renderAvatarPicker() {
+  const row = document.getElementById('tp-avatar-row');
+  if (!row) return;
+  row.innerHTML = TP_AVATARS.map(a => `<button class="av-btn${a===tpAvatar?' active':''}" onclick="pickAvatarAdmin('${a}',this)">${a}</button>`).join('');
+}
+
+function pickAvatarAdmin(a, el) {
+  tpAvatar = a;
+  document.querySelectorAll('.av-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function saveProfileAdmin() {
+  const g = id => document.getElementById(id);
+  const clamp = v => Math.min(99, Math.max(1, +v || 80));
+  state.profile = {
+    name: g('tp-name').value.trim() || 'Theo',
+    nick: g('tp-nick').value.trim(),
+    pos: g('tp-pos').value,
+    num: +g('tp-num').value || 9,
+    dob: g('tp-dob').value,
+    nat: g('tp-nat').value.trim(),
+    foot: g('tp-foot').value,
+    club: g('tp-club').value.trim() || 'Liverpool FC',
+    bio: g('tp-bio').value.trim(),
+    avatar: tpAvatar,
+    pac: clamp(g('tp-pac').value), sho: clamp(g('tp-sho').value),
+    pas: clamp(g('tp-pas').value), dri: clamp(g('tp-dri').value),
+    def: clamp(g('tp-def').value), phy: clamp(g('tp-phy').value),
+  };
+  Store.save(state);
+  toast("Theo's card saved ✓ — export JSON + push to sync");
+}
+
 function renderNtfyTopic() {
   const t = localStorage.getItem('wc2026_ntfy_topic') || '';
   const inp = document.getElementById('ntfy-topic');
@@ -447,6 +618,7 @@ function initApp() {
   renderAll();
   renderTheoPw();
   renderNtfyTopic();
+  renderProfileAdmin();
 }
 
 function renderAll() {
@@ -460,7 +632,7 @@ function renderAll() {
 function showTab(name) {
   document.querySelectorAll('.tab').forEach((t, i) => t.classList.remove('active'));
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  const tabs = ['overview','predictions','results','podium','sync'];
+  const tabs = ['overview','predictions','results','podium','theo','sync'];
   const idx = tabs.indexOf(name);
   document.querySelectorAll('.tab')[idx].classList.add('active');
   document.getElementById('panel-' + name).classList.add('active');
