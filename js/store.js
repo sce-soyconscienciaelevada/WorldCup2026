@@ -27,6 +27,7 @@ const Store = {
       ntfyTopic: '',
       binId: '',
       binKey: '',
+      adminPw: '',
       profile: {
         name: 'Theo', nick: '', pos: 'FWD', num: 9, dob: '', nat: '', foot: 'Right',
         club: 'Liverpool FC', bio: '', avatar: '⚽',

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- updated: 2026-06-12 10:26 -->
+<!-- updated: 2026-06-12 10:37 -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Theo's Portal 🔴</title>
@@ -919,13 +919,11 @@ function getMessages() {
 function saveMessages(msgs) { localStorage.setItem(CHAT_KEY, JSON.stringify(msgs.slice(-100))); }
 
 async function notifyJoan(msg) {
-  const topic = 'Theo-wc';
-  if (!topic) return;
   try {
-    fetch('https://ntfy.sh/' + encodeURIComponent(topic), {
+    fetch('https://ntfy.sh/', {
       method: 'POST',
-      headers: { 'Title': 'Theo says hi! ⚽🔴', 'Priority': 'high', 'Tags': 'soccer,heart' },
-      body: msg
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ topic: 'Theo-wc', title: 'Theo says hi! ⚽🔴', message: msg, priority: 4, tags: ['soccer', 'heart'] })
     });
   } catch {}
 }

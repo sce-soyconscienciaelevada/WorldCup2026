@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- updated: 2026-06-12 01:30 -->
+<!-- updated: 2026-06-12 10:37 -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin — World Cup 2026</title>
@@ -213,6 +213,7 @@ nav {
     <div class="tab" onclick="showTab('podium')">🏆 Podium</div>
     <div class="tab" onclick="showTab('theo')">🃏 Theo's Card</div>
     <div class="tab" onclick="showTab('sync')">🔄 Sync / Export</div>
+    <div class="tab" onclick="showTab('chat')">💬 Chat</div>
   </div>
 
   <!-- OVERVIEW -->
@@ -450,6 +451,24 @@ nav {
       </div>
     </div>
   </div>
+
+  <!-- CHAT PANEL -->
+  <div class="panel" id="panel-chat">
+    <div class="export-panel">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px">
+        <h3 style="margin:0">💬 Theo's Chat</h3>
+        <button class="btn btn-outline" style="color:var(--red);font-size:0.8rem" onclick="adminWipeChat()">🗑 Wipe Chat</button>
+      </div>
+      <div id="admin-chat-messages" style="background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:10px;padding:16px;min-height:200px;max-height:420px;overflow-y:auto;margin-bottom:14px;font-size:0.875rem;line-height:1.6">
+        <p style="color:var(--muted)">Loading...</p>
+      </div>
+      <div style="display:flex;gap:10px">
+        <input type="text" class="score-input" id="admin-chat-input" placeholder="Reply to Theo..." style="flex:1" onkeydown="if(event.key==='Enter')adminSendMsg()">
+        <button class="btn btn-red" onclick="adminSendMsg()">Send ➜</button>
+        <button class="btn btn-outline" onclick="initAdminChat()">🔄 Refresh</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -462,6 +481,28 @@ nav {
 const PW_KEY = 'wc2026_admin_pw';
 const DEFAULT_PW = 'admin2026';
 const SESSION_KEY = 'wc2026_admin_session';
+
+// ─── CLOUD (hardcoded — no localStorage dependency) ──────────────────────────
+const CLOUD_BIN_ID  = '6a2b8ed1f5f4af5e29e42bc2';
+const CLOUD_BIN_KEY = '$2a$10$dzKZtO2M/PRjlWVS4Dm/ruIgV1EMuAvKqWUCyQ3NyVBA21o7e5FXK';
+
+async function adminCloudRead() {
+  try {
+    const r = await fetch('https://api.jsonbin.io/v3/b/' + CLOUD_BIN_ID + '/latest', { headers: { 'X-Master-Key': CLOUD_BIN_KEY } });
+    if (!r.ok) return null;
+    return (await r.json()).record;
+  } catch { return null; }
+}
+
+async function adminCloudWrite(data) {
+  try {
+    await fetch('https://api.jsonbin.io/v3/b/' + CLOUD_BIN_ID, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'X-Master-Key': CLOUD_BIN_KEY },
+      body: JSON.stringify(data)
+    });
+  } catch {}
+}
 
 function getPW() { return localStorage.getItem(PW_KEY) || DEFAULT_PW; }
 
@@ -485,8 +526,16 @@ function tryLogin() {
 
 document.getElementById('pw-input').addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
 
-// Auto-login if valid session exists
-(function checkSession() {
+// Pre-seed password from state.json so it survives cache clears
+(async function earlyInit() {
+  try {
+    const res = await fetch('./data/state.json?t=' + Date.now());
+    if (res.ok) {
+      const s = await res.json();
+      if (s.adminPw) localStorage.setItem(PW_KEY, s.adminPw);
+    }
+  } catch {}
+  // Check session after password is seeded
   try {
     const s = JSON.parse(localStorage.getItem(SESSION_KEY));
     if (s && s.expires > Date.now()) { doLogin(); }
@@ -504,8 +553,9 @@ function changePassword() {
   const np = document.getElementById('new-pw').value.trim();
   if (!np) return toast('Enter a password', true);
   localStorage.setItem(PW_KEY, np);
+  if (state) { state.adminPw = np; Store.save(state); }
   document.getElementById('new-pw').value = '';
-  toast('Admin password changed ✓');
+  toast('Password changed ✓ — export state.json + push to persist after cache clear');
 }
 
 // ─── THEO PASSWORD ──────────────────────────────────────────────────────────
@@ -691,13 +741,14 @@ async function testNtfy() {
   const t = document.getElementById('ntfy-topic').value.trim();
   if (!t) return toast('Enter a topic name first', true);
   try {
-    await fetch('https://ntfy.sh/' + encodeURIComponent(t), {
+    const r = await fetch('https://ntfy.sh/', {
       method: 'POST',
-      headers: { 'Title': 'Test from Admin Panel ✓', 'Tags': 'white_check_mark' },
-      body: 'Notifications are working! Theo\'s messages will now reach you. 🎉⚽'
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ topic: t, title: 'Test from Admin Panel ✓', message: 'Notifications are working! Theo\'s messages will now reach you. 🎉⚽', tags: ['white_check_mark'] })
     });
-    toast('Test notification sent ✓');
-  } catch { toast('Failed to send — check your connection', true); }
+    if (r.ok) toast('Test notification sent ✓');
+    else toast('ntfy returned error ' + r.status, true);
+  } catch (e) { toast('Failed — network error: ' + e.message, true); }
 }
 
 function renderTheoPw() {
@@ -743,10 +794,11 @@ function renderAll() {
 function showTab(name) {
   document.querySelectorAll('.tab').forEach((t, i) => t.classList.remove('active'));
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  const tabs = ['overview','predictions','results','podium','theo','sync'];
+  const tabs = ['overview','predictions','results','podium','theo','sync','chat'];
   const idx = tabs.indexOf(name);
   document.querySelectorAll('.tab')[idx].classList.add('active');
   document.getElementById('panel-' + name).classList.add('active');
+  if (name === 'chat') initAdminChat();
 }
 
 // ─── OVERVIEW ───────────────────────────────────────────────────────────────
@@ -1008,6 +1060,49 @@ function toast(msg, isError = false) {
   el.className = 'toast show' + (isError ? ' error' : '');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+// ─── ADMIN CHAT ──────────────────────────────────────────────────────────────
+async function initAdminChat() {
+  const box = document.getElementById('admin-chat-messages');
+  box.innerHTML = '<p style="color:var(--muted);font-size:0.85rem">Loading from cloud...</p>';
+  const cloud = await adminCloudRead();
+  if (!cloud) { box.innerHTML = '<p style="color:var(--red);font-size:0.85rem">Could not reach cloud. Check connection.</p>'; return; }
+  const msgs = cloud.chat || [];
+  if (!msgs.length) { box.innerHTML = '<p style="color:var(--muted);font-size:0.85rem">No messages yet.</p>'; return; }
+  box.innerHTML = msgs.map(m => {
+    const isTheo = m.from === 'theo';
+    const align = isTheo ? 'left' : 'right';
+    const bg = isTheo ? 'rgba(200,16,46,0.15)' : 'rgba(255,255,255,0.07)';
+    const name = isTheo ? 'Theo' : 'You';
+    return `<div style="text-align:${align};margin-bottom:10px">
+      <span style="font-size:0.72rem;color:var(--muted)">${name} · ${m.time || ''}</span><br>
+      <span style="display:inline-block;background:${bg};border-radius:8px;padding:6px 12px;font-size:0.875rem;max-width:80%">${m.text}</span>
+    </div>`;
+  }).join('');
+  box.scrollTop = box.scrollHeight;
+}
+
+async function adminSendMsg() {
+  const input = document.getElementById('admin-chat-input');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  const msg = { from: 'joan', text, time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }), ts: Date.now() };
+  const cloud = await adminCloudRead() || { wall: [], chat: [] };
+  cloud.chat = (cloud.chat || []).concat([msg]).slice(-100);
+  await adminCloudWrite(cloud);
+  toast('Sent ✓');
+  initAdminChat();
+}
+
+async function adminWipeChat() {
+  if (!confirm('Wipe all chat messages? This cannot be undone.')) return;
+  const cloud = await adminCloudRead() || { wall: [], chat: [] };
+  cloud.chat = [];
+  await adminCloudWrite(cloud);
+  toast('Chat wiped ✓');
+  initAdminChat();
 }
 </script>
 </body>
