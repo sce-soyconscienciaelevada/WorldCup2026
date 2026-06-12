@@ -24,6 +24,7 @@ const Store = {
       podium: { first:'ARG', second:'ENG', third:'POR' },
       actualPodium: null,
       knockout: {},
+      ntfyTopic: '',
       profile: {
         name: 'Theo', nick: '', pos: 'FWD', num: 9, dob: '', nat: '', foot: 'Right',
         club: 'Liverpool FC', bio: '', avatar: '⚽',

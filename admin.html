@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!-- updated: 2026-06-12 00:55 -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin — World Cup 2026</title>
@@ -680,8 +681,9 @@ function renderNtfyTopic() {
 function saveNtfyTopic() {
   const t = document.getElementById('ntfy-topic').value.trim();
   localStorage.setItem('wc2026_ntfy_topic', t);
+  if (state) { state.ntfyTopic = t; Store.save(state); }
   renderNtfyTopic();
-  toast(t ? 'Notifications enabled ✓' : 'Notifications disabled');
+  toast(t ? 'Notifications enabled ✓ — export state.json + push so Theo\'s device gets it' : 'Notifications disabled');
 }
 
 async function testNtfy() {
