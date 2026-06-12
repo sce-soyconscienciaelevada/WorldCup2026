@@ -111,7 +111,7 @@
   "actualPodium": null,
   "knockout": {},
   "ntfyTopic": "Theo-wc",
-  "binId": "6a2b8c04da38895dfeb299ef",
+  "binId": "6a2b8ed1f5f4af5e29e42bc2",
   "binKey": "$2a$10$dzKZtO2M/PRjlWVS4Dm/ruIgV1EMuAvKqWUCyQ3NyVBA21o7e5FXK",
   "profile": {
     "name": "Theo",
@@ -131,5 +131,5 @@
     "def": 50,
     "phy": 72
   },
-  "lastUpdated": "2026-06-12T04:42:27.164Z"
+  "lastUpdated": "2026-06-12T04:45:13.219Z"
 }
