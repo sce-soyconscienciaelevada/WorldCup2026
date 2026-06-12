@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — World Cup 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #0a0e1a; --navy2: #111827; --navy3: #1e2a3a;
+  --gold: #f5c518; --gold2: #d4a812;
+  --green: #16a34a; --green2: #22c55e;
+  --red: #dc2626; --red2: #b91c1c;
+  --text: #f1f5f9; --muted: #94a3b8; --border: #1e293b;
+  --card: #111827; --card2: #1e2a3a;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--navy); color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; }
+h1,h2,h3 { font-family: 'Oswald', sans-serif; }
+
+/* LOGIN */
+#login-screen {
+  position: fixed; inset: 0; background: var(--navy);
+  display: flex; align-items: center; justify-content: center; z-index: 1000;
+}
+.login-box {
+  background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+  padding: 40px 36px; width: 100%; max-width: 380px; text-align: center;
+}
+.login-box h2 { font-size: 1.8rem; margin-bottom: 8px; }
+.login-box p { color: var(--muted); font-size: 0.9rem; margin-bottom: 28px; }
+.login-input {
+  width: 100%; background: var(--navy3); border: 1px solid var(--border); color: var(--text);
+  border-radius: 8px; padding: 12px 16px; font-size: 1rem; outline: none;
+  transition: border 0.2s; margin-bottom: 12px;
+}
+.login-input:focus { border-color: var(--gold); }
+.login-btn {
+  width: 100%; background: var(--gold); color: var(--navy); border: none; cursor: pointer;
+  border-radius: 8px; padding: 12px; font-size: 1rem; font-weight: 700;
+  font-family: 'Oswald', sans-serif; transition: background 0.2s;
+}
+.login-btn:hover { background: var(--gold2); }
+.login-error { color: var(--red); font-size: 0.85rem; margin-top: 8px; }
+
+/* NAV */
+nav {
+  position: sticky; top: 0; z-index: 99;
+  background: rgba(10,14,26,0.96); backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 8px; padding: 0 24px; height: 56px;
+}
+.nav-logo { font-family: 'Oswald', sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--gold); margin-right: 24px; text-decoration: none; }
+.admin-badge { background: var(--red); color: #fff; font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 4px; font-family: 'Oswald', sans-serif; }
+.nav-right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+.btn { border: none; cursor: pointer; border-radius: 6px; padding: 6px 14px; font-size: 0.85rem; font-weight: 600; font-family: 'Inter', sans-serif; transition: all 0.2s; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+.btn-gold { background: var(--gold); color: var(--navy); }
+.btn-gold:hover { background: var(--gold2); }
+.btn-green { background: var(--green); color: #fff; }
+.btn-green:hover { background: var(--green2); color: var(--navy); }
+.btn-outline { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+.btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+.btn-red { background: var(--red); color: #fff; }
+.btn-red:hover { background: var(--red2); }
+
+/* TABS */
+.tab-bar { display: flex; gap: 4px; padding: 16px 24px 0; border-bottom: 1px solid var(--border); background: var(--navy2); }
+.tab { padding: 10px 18px; cursor: pointer; font-size: 0.875rem; font-weight: 600; color: var(--muted); border-radius: 8px 8px 0 0; transition: all 0.2s; border-bottom: 2px solid transparent; }
+.tab:hover { color: var(--text); }
+.tab.active { color: var(--gold); border-bottom-color: var(--gold); background: rgba(245,197,24,0.05); }
+
+/* PANELS */
+.panel { display: none; padding: 28px 24px; max-width: 1100px; margin: 0 auto; }
+.panel.active { display: block; }
+
+/* STATS ROW */
+.stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 28px; }
+.stat-box { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px 16px; text-align: center; }
+.stat-box .sv { font-family: 'Oswald', sans-serif; font-size: 2rem; font-weight: 700; line-height: 1; }
+.stat-box .sl { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
+.sv.gold { color: var(--gold); }
+.sv.green { color: var(--green2); }
+.sv.red { color: var(--red); }
+
+/* MATCH TABLE */
+.group-section { margin-bottom: 32px; }
+.group-section h3 { font-size: 1.1rem; margin-bottom: 12px; color: var(--gold); display: flex; align-items: center; gap: 8px; }
+.match-table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+.match-table thead tr { background: var(--card2); }
+.match-table th { padding: 8px 12px; font-size: 0.7rem; text-transform: uppercase; color: var(--muted); text-align: left; font-weight: 600; letter-spacing: 0.5px; }
+.match-table td { padding: 10px 12px; border-top: 1px solid rgba(255,255,255,0.04); font-size: 0.875rem; vertical-align: middle; }
+.match-table tr:hover td { background: rgba(255,255,255,0.02); }
+.team-cell { display: flex; align-items: center; gap: 6px; font-weight: 500; }
+.score-inputs { display: flex; align-items: center; gap: 6px; }
+.score-input {
+  width: 44px; background: var(--navy3); border: 1px solid var(--border);
+  color: var(--text); border-radius: 6px; padding: 6px 8px; font-size: 1rem;
+  text-align: center; outline: none; transition: border 0.2s;
+}
+.score-input:focus { border-color: var(--gold); }
+.score-sep { color: var(--muted); font-size: 1.2rem; }
+.pts-badge { display: inline-block; background: var(--navy3); border-radius: 6px; padding: 3px 10px; font-size: 0.8rem; font-weight: 700; min-width: 36px; text-align: center; }
+.pts-badge.earned { background: rgba(34,197,94,0.15); color: var(--green2); border: 1px solid rgba(34,197,94,0.3); }
+.pts-badge.zero { color: var(--muted); }
+.pts-badge.pending { color: var(--muted); font-style: italic; }
+.status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.status-dot.played { background: var(--green2); }
+.status-dot.upcoming { background: var(--muted); }
+.match-date-cell { color: var(--muted); font-size: 0.8rem; }
+.save-row-btn { background: var(--green); border: none; color: #fff; border-radius: 6px; padding: 5px 10px; font-size: 0.78rem; cursor: pointer; transition: background 0.2s; }
+.save-row-btn:hover { background: var(--green2); color: var(--navy); }
+.clear-btn { background: transparent; border: none; color: var(--muted); font-size: 0.75rem; cursor: pointer; padding: 4px 6px; border-radius: 4px; }
+.clear-btn:hover { color: var(--red); }
+.row-saved { animation: rowFlash 1s ease; }
+@keyframes rowFlash { 0%,100% { background: transparent; } 50% { background: rgba(34,197,94,0.1); } }
+
+/* PODIUM EDITOR */
+.podium-editor { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+.podium-editor h3 { margin-bottom: 16px; color: var(--gold); }
+.podium-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.podium-field label { display: block; font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+.podium-select {
+  width: 100%; background: var(--navy3); border: 1px solid var(--border);
+  color: var(--text); border-radius: 8px; padding: 10px 12px; font-size: 0.875rem; outline: none;
+}
+.podium-select:focus { border-color: var(--gold); }
+
+/* EXPORT */
+.export-panel { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+.export-panel h3 { margin-bottom: 8px; }
+.export-panel p { color: var(--muted); font-size: 0.875rem; margin-bottom: 16px; }
+.export-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+.import-area { width: 100%; background: var(--navy3); border: 1px solid var(--border); color: var(--text); border-radius: 8px; padding: 12px; font-size: 0.8rem; font-family: monospace; min-height: 100px; outline: none; resize: vertical; }
+.import-area:focus { border-color: var(--gold); }
+
+/* TOAST */
+.toast {
+  position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+  background: var(--green); color: #fff; padding: 12px 20px; border-radius: 8px;
+  font-weight: 600; font-size: 0.875rem; opacity: 0; transform: translateY(8px);
+  transition: all 0.3s; pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+.toast.error { background: var(--red); }
+
+/* OVERVIEW */
+.overview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; margin-bottom: 24px; }
+.overview-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+.overview-card h4 { font-family: 'Oswald', sans-serif; font-size: 0.95rem; margin-bottom: 12px; color: var(--muted); }
+.overview-match { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 0.82rem; }
+.overview-match:last-child { border-bottom: none; }
+.ov-teams { flex: 1; }
+.ov-pred { color: var(--muted); min-width: 40px; text-align: center; }
+.ov-result { color: var(--gold); font-weight: 700; min-width: 40px; text-align: center; }
+.ov-pts { min-width: 30px; text-align: right; font-weight: 700; }
+.ov-pts.positive { color: var(--green2); }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div style="font-size:2.5rem;margin-bottom:12px">⚙️</div>
+    <h2>Admin Panel</h2>
+    <p>Exclusive access for the tournament administrator</p>
+    <input type="password" class="login-input" id="pw-input" placeholder="Password" autocomplete="current-password">
+    <button class="login-btn" onclick="tryLogin()">Login</button>
+    <div class="login-error" id="pw-error"></div>
+  </div>
+</div>
+
+<!-- MAIN (hidden until login) -->
+<div id="main-app" style="display:none">
+  <nav>
+    <a class="nav-logo" href="index.html">⚽ World Cup 2026</a>
+    <span class="admin-badge">ADMIN</span>
+    <div class="nav-right">
+      <button class="btn btn-green" onclick="saveAll()">💾 Save all</button>
+      <button class="btn btn-outline" onclick="downloadData()">⬇️ Export JSON</button>
+      <a href="index.html" class="btn btn-outline">← View site</a>
+      <button class="btn btn-outline" onclick="logout()" style="color:var(--red)">Logout</button>
+    </div>
+  </nav>
+
+  <div class="tab-bar">
+    <div class="tab active" onclick="showTab('overview')">📊 Overview</div>
+    <div class="tab" onclick="showTab('predictions')">🎯 Predictions</div>
+    <div class="tab" onclick="showTab('results')">⚽ Results</div>
+    <div class="tab" onclick="showTab('podium')">🏆 Podium</div>
+    <div class="tab" onclick="showTab('sync')">🔄 Sync / Export</div>
+  </div>
+
+  <!-- OVERVIEW -->
+  <div class="panel active" id="panel-overview">
+    <div class="stats-row" id="stats-row"></div>
+    <div class="overview-grid" id="overview-grid"></div>
+  </div>
+
+  <!-- PREDICTIONS -->
+  <div class="panel" id="panel-predictions">
+    <p style="color:var(--muted);margin-bottom:20px;font-size:0.875rem">
+      Enter your predictions here. You can edit them up to 1 minute before each match.
+    </p>
+    <div id="pred-groups"></div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="panel" id="panel-results">
+    <p style="color:var(--muted);margin-bottom:20px;font-size:0.875rem">
+      Enter actual results for each match. Points are calculated automatically.
+    </p>
+    <div id="result-groups"></div>
+  </div>
+
+  <!-- PODIUM -->
+  <div class="panel" id="panel-podium">
+    <div class="podium-editor">
+      <h3>🏆 Final Podium Prediction</h3>
+      <p style="color:var(--muted);font-size:0.875rem;margin-bottom:16px">
+        Podium cannot be changed after the first match. Champion +30, Runner-up +20, Third +10 points.
+      </p>
+      <div class="podium-grid">
+        <div class="podium-field">
+          <label>🥇 Champion (+30 pts)</label>
+          <select class="podium-select" id="pod-first"></select>
+        </div>
+        <div class="podium-field">
+          <label>🥈 Runner-up (+20 pts)</label>
+          <select class="podium-select" id="pod-second"></select>
+        </div>
+        <div class="podium-field">
+          <label>🥉 Third Place (+10 pts)</label>
+          <select class="podium-select" id="pod-third"></select>
+        </div>
+      </div>
+      <div style="margin-top:16px;display:flex;gap:10px">
+        <button class="btn btn-gold" onclick="savePodium()">Save Podium</button>
+      </div>
+    </div>
+
+    <div class="podium-editor">
+      <h3 style="color:var(--green2)">✅ Actual Tournament Podium</h3>
+      <p style="color:var(--muted);font-size:0.875rem;margin-bottom:16px">
+        Enter the real podium when the tournament ends to calculate bonus points.
+      </p>
+      <div class="podium-grid">
+        <div class="podium-field">
+          <label>🥇 Actual Champion</label>
+          <select class="podium-select" id="actual-first"></select>
+        </div>
+        <div class="podium-field">
+          <label>🥈 Actual Runner-up</label>
+          <select class="podium-select" id="actual-second"></select>
+        </div>
+        <div class="podium-field">
+          <label>🥉 Actual Third</label>
+          <select class="podium-select" id="actual-third"></select>
+        </div>
+      </div>
+      <div style="margin-top:16px">
+        <button class="btn btn-green" onclick="saveActualPodium()">Save Actual Result</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SYNC -->
+  <div class="panel" id="panel-sync">
+    <div class="export-panel">
+      <h3>📥 Export data</h3>
+      <p>Download the JSON file with all your data. To sync with GitHub Pages, replace <code>data/state.json</code> in the repo and push.</p>
+      <div class="export-btns">
+        <button class="btn btn-gold" onclick="downloadData()">⬇️ Download state.json</button>
+        <button class="btn btn-outline" onclick="copyJSON()">📋 Copy JSON</button>
+      </div>
+    </div>
+    <div class="export-panel">
+      <h3>📤 Import data</h3>
+      <p>Paste a previously exported JSON to restore or sync data.</p>
+      <textarea class="import-area" id="import-area" placeholder='Paste JSON here...'></textarea>
+      <div style="margin-top:10px">
+        <button class="btn btn-red" onclick="importData()">⚠️ Import (overwrites everything)</button>
+      </div>
+    </div>
+    <div class="export-panel">
+      <h3>🔑 Change admin password</h3>
+      <p>Password is stored locally on this device.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <input type="password" class="score-input" id="new-pw" placeholder="New password" style="width:200px">
+        <button class="btn btn-outline" onclick="changePassword()">Change</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="js/data.js"></script>
+<script src="js/scoring.js"></script>
+<script src="js/store.js"></script>
+<script>
+// ─── AUTH ───────────────────────────────────────────────────────────────────
+const PW_KEY = 'wc2026_admin_pw';
+const DEFAULT_PW = 'admin2026';
+
+function getPW() { return localStorage.getItem(PW_KEY) || DEFAULT_PW; }
+
+function tryLogin() {
+  const pw = document.getElementById('pw-input').value;
+  if (pw === getPW()) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('main-app').style.display = 'block';
+    initApp();
+  } else {
+    document.getElementById('pw-error').textContent = 'Incorrect password';
+  }
+}
+
+document.getElementById('pw-input').addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
+
+function logout() {
+  document.getElementById('main-app').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('pw-input').value = '';
+}
+
+function changePassword() {
+  const np = document.getElementById('new-pw').value.trim();
+  if (!np) return toast('Enter a password', true);
+  localStorage.setItem(PW_KEY, np);
+  document.getElementById('new-pw').value = '';
+  toast('Password changed ✓');
+}
+
+// ─── STATE ──────────────────────────────────────────────────────────────────
+let state;
+
+function initApp() {
+  state = Store.load();
+  renderAll();
+}
+
+function renderAll() {
+  renderOverview();
+  renderGroups('pred-groups', 'prediction');
+  renderGroups('result-groups', 'result');
+  renderPodiumEditor();
+}
+
+// ─── TABS ────────────────────────────────────────────────────────────────────
+function showTab(name) {
+  document.querySelectorAll('.tab').forEach((t, i) => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  const tabs = ['overview','predictions','results','podium','sync'];
+  const idx = tabs.indexOf(name);
+  document.querySelectorAll('.tab')[idx].classList.add('active');
+  document.getElementById('panel-' + name).classList.add('active');
+}
+
+// ─── OVERVIEW ───────────────────────────────────────────────────────────────
+function renderOverview() {
+  const bd = Scoring.breakdown(state);
+  const played = bd.filter(b => b.result);
+  const withPred = played.filter(b => b.prediction);
+  const correct = withPred.filter(b => b.points > 0);
+  const exact = withPred.filter(b => {
+    const p = b.prediction, r = b.result;
+    return p && r && p.home === r.home && p.away === r.away;
+  });
+  const total = Scoring.totalPoints(state);
+
+  document.getElementById('stats-row').innerHTML = [
+    { sv: total, sl: 'Total points', cls: 'gold' },
+    { sv: played.length, sl: 'Matches played', cls: '' },
+    { sv: Object.values(state.predictions).filter(Boolean).length, sl: 'Predicted', cls: '' },
+    { sv: correct.length, sl: 'Correct outcome', cls: 'green' },
+    { sv: exact.length, sl: 'Exact score', cls: 'green' },
+    { sv: withPred.length - correct.length, sl: 'Wrong result', cls: 'red' },
+  ].map(s => `<div class="stat-box"><div class="sv ${s.cls}">${s.sv}</div><div class="sl">${s.sl}</div></div>`).join('');
+
+  // Per-group mini tables
+  const grid = document.getElementById('overview-grid');
+  grid.innerHTML = Object.entries(WC2026.groups).map(([key, group]) => {
+    const rows = group.matches.map(m => {
+      const pred = state.predictions[m.id];
+      const res  = state.results[m.id];
+      const pts  = Scoring.matchPoints(pred, res);
+      const ht = WC2026.team(m.home), at = WC2026.team(m.away);
+      return `<div class="overview-match">
+        <span class="ov-teams">${WC2026.fi(m.home,14)} ${ht.name.split(' ')[0]} vs ${at.name.split(' ')[0]} ${WC2026.fi(m.away,14)}</span>
+        <span class="ov-pred">${pred ? pred.home + '–' + pred.away : '—'}</span>
+        <span class="ov-result">${res ? res.home + '–' + res.away : '—'}</span>
+        <span class="ov-pts ${pts > 0 ? 'positive' : ''}">${pts != null ? '+' + pts : ''}</span>
+      </div>`;
+    }).join('');
+    return `<div class="overview-card"><h4>Group ${key}</h4>${rows}</div>`;
+  }).join('');
+}
+
+// ─── MATCH GROUPS ────────────────────────────────────────────────────────────
+function renderGroups(containerId, mode) {
+  const container = document.getElementById(containerId);
+  const isPred = mode === 'prediction';
+
+  container.innerHTML = Object.entries(WC2026.groups).map(([key, group]) => {
+    const rows = group.matches.map(m => {
+      const val  = isPred ? state.predictions[m.id] : state.results[m.id];
+      const pred = state.predictions[m.id];
+      const res  = state.results[m.id];
+      const pts  = Scoring.matchPoints(pred, res);
+      const ht = WC2026.team(m.home), at = WC2026.team(m.away);
+      const homeVal = val ? val.home : '';
+      const awayVal = val ? val.away : '';
+      const dataId = `${mode}-${m.id}`;
+
+      const ptsHtml = pts != null
+        ? `<span class="pts-badge earned">+${pts}</span>`
+        : (res && pred ? `<span class="pts-badge zero">0</span>` : `<span class="pts-badge pending">—</span>`);
+
+      return `<tr id="row-${dataId}">
+        <td><span class="status-dot ${res ? 'played' : 'upcoming'}"></span></td>
+        <td class="match-date-cell">${m.date.slice(5)} ${m.time}</td>
+        <td><div class="team-cell">${WC2026.fi(m.home,18)} ${ht.name}</div></td>
+        <td>
+          <div class="score-inputs">
+            <input type="number" min="0" max="30" class="score-input" id="${dataId}-h" value="${homeVal}" placeholder="—" onchange="onInputChange('${m.id}','${mode}')">
+            <span class="score-sep">–</span>
+            <input type="number" min="0" max="30" class="score-input" id="${dataId}-a" value="${awayVal}" placeholder="—" onchange="onInputChange('${m.id}','${mode}')">
+          </div>
+        </td>
+        <td><div class="team-cell">${WC2026.fi(m.away,18)} ${at.name}</div></td>
+        ${isPred ? `<td id="pts-${m.id}">${ptsHtml}</td>` : `<td id="pts-${m.id}">${ptsHtml}</td>`}
+        <td>
+          <button class="save-row-btn" onclick="saveRow('${m.id}','${mode}')">Save</button>
+          <button class="clear-btn" onclick="clearRow('${m.id}','${mode}')">✕</button>
+        </td>
+      </tr>`;
+    }).join('');
+
+    return `<div class="group-section">
+      <h3>Group ${key} <span style="display:inline-flex;gap:4px;vertical-align:middle">${group.teams.map(t => WC2026.fi(t,16)).join('')}</span></h3>
+      <table class="match-table">
+        <thead><tr>
+          <th></th><th>Date / Time</th><th>Home</th>
+          <th>${isPred ? 'Our prediction' : 'Real result'}</th>
+          <th>Away</th><th>Pts</th><th></th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
+  }).join('');
+}
+
+function onInputChange(matchId, mode) {
+  // Live pts preview for prediction inputs when result exists
+  if (mode === 'prediction') {
+    const hEl = document.getElementById(`prediction-${matchId}-h`);
+    const aEl = document.getElementById(`prediction-${matchId}-a`);
+    const h = parseInt(hEl.value), a = parseInt(aEl.value);
+    if (!isNaN(h) && !isNaN(a)) {
+      const pred = { home: h, away: a };
+      const res = state.results[matchId];
+      const pts = Scoring.matchPoints(pred, res);
+      const el = document.getElementById(`pts-${matchId}`);
+      if (el && pts != null) el.innerHTML = `<span class="pts-badge earned">+${pts}</span>`;
+    }
+  }
+}
+
+function saveRow(matchId, mode) {
+  const hEl = document.getElementById(`${mode}-${matchId}-h`);
+  const aEl = document.getElementById(`${mode}-${matchId}-a`);
+  const h = parseInt(hEl.value), a = parseInt(aEl.value);
+
+  if (isNaN(h) || isNaN(a)) {
+    if (mode === 'result') {
+      delete state.results[matchId];
+    } else {
+      delete state.predictions[matchId];
+    }
+    Store.save(state);
+    renderOverview();
+    toast('Cleared ✓');
+    return;
+  }
+
+  const val = { home: h, away: a };
+  if (mode === 'prediction') {
+    state.predictions[matchId] = val;
+  } else {
+    state.results[matchId] = val;
+  }
+
+  Store.save(state);
+  renderOverview();
+
+  // Update pts badge
+  const pred = state.predictions[matchId];
+  const res  = state.results[matchId];
+  const pts  = Scoring.matchPoints(pred, res);
+  const ptEl = document.getElementById(`pts-${matchId}`);
+  if (ptEl) ptEl.innerHTML = pts != null ? `<span class="pts-badge earned">+${pts}</span>` : '<span class="pts-badge pending">—</span>';
+
+  // Flash row
+  const row = document.getElementById(`row-${mode}-${matchId}`);
+  if (row) { row.classList.remove('row-saved'); void row.offsetWidth; row.classList.add('row-saved'); }
+
+  toast(`Saved: ${matchId} ✓`);
+}
+
+function clearRow(matchId, mode) {
+  document.getElementById(`${mode}-${matchId}-h`).value = '';
+  document.getElementById(`${mode}-${matchId}-a`).value = '';
+  if (mode === 'prediction') delete state.predictions[matchId];
+  else delete state.results[matchId];
+  Store.save(state);
+  renderOverview();
+  toast('Cleared ✓');
+}
+
+// ─── SAVE ALL ────────────────────────────────────────────────────────────────
+function saveAll() {
+  // Sweep all visible inputs
+  ['prediction','result'].forEach(mode => {
+    WC2026.allMatches.forEach(m => {
+      const hEl = document.getElementById(`${mode}-${m.id}-h`);
+      const aEl = document.getElementById(`${mode}-${m.id}-a`);
+      if (!hEl || !aEl) return;
+      const h = parseInt(hEl.value), a = parseInt(aEl.value);
+      if (!isNaN(h) && !isNaN(a)) {
+        if (mode === 'prediction') state.predictions[m.id] = { home: h, away: a };
+        else state.results[m.id] = { home: h, away: a };
+      }
+    });
+  });
+  Store.save(state);
+  renderAll();
+  toast('✅ All saved');
+}
+
+// ─── PODIUM EDITOR ───────────────────────────────────────────────────────────
+function renderPodiumEditor() {
+  const teamOptions = `<option value="">— select —</option>` +
+    Object.entries(WC2026.teams).map(([code, t]) =>
+      `<option value="${code}">${t.flag} ${t.name}</option>`).join('');
+
+  ['pod-first','pod-second','pod-third','actual-first','actual-second','actual-third'].forEach(id => {
+    document.getElementById(id).innerHTML = teamOptions;
+  });
+
+  const p = state.podium || {};
+  if (p.first)  document.getElementById('pod-first').value = p.first;
+  if (p.second) document.getElementById('pod-second').value = p.second;
+  if (p.third)  document.getElementById('pod-third').value = p.third;
+
+  const ap = state.actualPodium || {};
+  if (ap.first)  document.getElementById('actual-first').value = ap.first;
+  if (ap.second) document.getElementById('actual-second').value = ap.second;
+  if (ap.third)  document.getElementById('actual-third').value = ap.third;
+}
+
+function savePodium() {
+  state.podium = {
+    first:  document.getElementById('pod-first').value  || null,
+    second: document.getElementById('pod-second').value || null,
+    third:  document.getElementById('pod-third').value  || null,
+  };
+  Store.save(state);
+  renderOverview();
+  toast('Podium saved ✓');
+}
+
+function saveActualPodium() {
+  const f = document.getElementById('actual-first').value;
+  const s = document.getElementById('actual-second').value;
+  const t = document.getElementById('actual-third').value;
+  state.actualPodium = (f || s || t) ? { first: f||null, second: s||null, third: t||null } : null;
+  Store.save(state);
+  renderOverview();
+  toast('Actual podium saved ✓');
+}
+
+// ─── SYNC / EXPORT ───────────────────────────────────────────────────────────
+function downloadData() {
+  Store.downloadJSON(state);
+  toast('JSON downloaded ✓');
+}
+
+function copyJSON() {
+  navigator.clipboard.writeText(Store.export(state))
+    .then(() => toast('Copied to clipboard ✓'))
+    .catch(() => {
+      document.getElementById('import-area').value = Store.export(state);
+      showTab('sync');
+      toast('JSON in text area ✓');
+    });
+}
+
+function importData() {
+  const raw = document.getElementById('import-area').value.trim();
+  if (!raw) return toast('Empty area', true);
+  try {
+    state = Store.import(raw);
+    renderAll();
+    toast('✅ Data imported successfully');
+  } catch (e) {
+    toast('Invalid JSON: ' + e.message, true);
+  }
+}
+
+// ─── TOAST ───────────────────────────────────────────────────────────────────
+let toastTimer;
+function toast(msg, isError = false) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show' + (isError ? ' error' : '');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
+}
+</script>
+</body>
+</html>
