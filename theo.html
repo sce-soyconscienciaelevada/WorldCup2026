@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- updated: 2026-06-12 01:30 -->
+<!-- updated: 2026-06-12 10:26 -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Theo's Portal 🔴</title>
@@ -692,11 +692,6 @@ let state;
 
 async function initApp() {
   state = await Store.loadRemote();
-  // Seed JSONBin credentials from state.json so Theo's device can reach the cloud
-  if (state.binId && !localStorage.getItem('wc2026_bin_id')) localStorage.setItem('wc2026_bin_id', state.binId);
-  if (state.binKey && !localStorage.getItem('wc2026_bin_key')) localStorage.setItem('wc2026_bin_key', state.binKey);
-  // Seed ntfy topic
-  if (state.ntfyTopic && !localStorage.getItem('wc2026_ntfy_topic')) localStorage.setItem('wc2026_ntfy_topic', state.ntfyTopic);
   renderScores();
   renderLiverpool();
   initTrivia();
@@ -873,27 +868,26 @@ function nextQuestion() {
 }
 
 // ─── CLOUD SYNC (JSONBin) ─────────────────────────────────────────────────────
+const CLOUD_BIN_ID  = '6a2b8ed1f5f4af5e29e42bc2';
+const CLOUD_BIN_KEY = '$2a$10$dzKZtO2M/PRjlWVS4Dm/ruIgV1EMuAvKqWUCyQ3NyVBA21o7e5FXK';
+
 function genId() { return Math.random().toString(36).slice(2,9) + Date.now().toString(36); }
 
 async function cloudRead() {
-  const id = localStorage.getItem('wc2026_bin_id');
-  const key = localStorage.getItem('wc2026_bin_key');
-  if (!id || !key) return null;
   try {
-    const r = await fetch('https://api.jsonbin.io/v3/b/' + id + '/latest', { headers: { 'X-Master-Key': key } });
+    const r = await fetch('https://api.jsonbin.io/v3/b/' + CLOUD_BIN_ID + '/latest', {
+      headers: { 'X-Master-Key': CLOUD_BIN_KEY }
+    });
     if (!r.ok) return null;
     return (await r.json()).record;
   } catch { return null; }
 }
 
 async function cloudWrite(data) {
-  const id = localStorage.getItem('wc2026_bin_id');
-  const key = localStorage.getItem('wc2026_bin_key');
-  if (!id || !key) return;
   try {
-    await fetch('https://api.jsonbin.io/v3/b/' + id, {
+    await fetch('https://api.jsonbin.io/v3/b/' + CLOUD_BIN_ID, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json', 'X-Master-Key': key },
+      headers: { 'Content-Type': 'application/json', 'X-Master-Key': CLOUD_BIN_KEY },
       body: JSON.stringify(data)
     });
   } catch {}
@@ -925,7 +919,7 @@ function getMessages() {
 function saveMessages(msgs) { localStorage.setItem(CHAT_KEY, JSON.stringify(msgs.slice(-100))); }
 
 async function notifyJoan(msg) {
-  const topic = localStorage.getItem('wc2026_ntfy_topic') || (state && state.ntfyTopic) || '';
+  const topic = 'Theo-wc';
   if (!topic) return;
   try {
     fetch('https://ntfy.sh/' + encodeURIComponent(topic), {
