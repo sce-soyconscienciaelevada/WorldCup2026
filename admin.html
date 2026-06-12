@@ -1,1002 +1,1225 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
-<!-- updated: 2026-06-12 18:18 -->
+<!-- updated: 2026-06-12 13:26 -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin — Mundial Familiar WC 2026</title>
+<title>Admin — World Cup 2026</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <style>
 :root {
-  --navy:#0a0e1a; --navy2:#111827; --navy3:#1e2a3a;
-  --gold:#f5c518; --gold2:#d4a812;
-  --green:#16a34a; --green2:#22c55e;
-  --red:#dc2626; --red2:#ef4444;
-  --text:#f1f5f9; --muted:#94a3b8; --border:#1e293b;
-  --card:#111827; --card2:#1e2a3a;
+  --navy: #0a0e1a; --navy2: #111827; --navy3: #1e2a3a;
+  --gold: #f5c518; --gold2: #d4a812;
+  --green: #16a34a; --green2: #22c55e;
+  --red: #dc2626; --red2: #b91c1c;
+  --text: #f1f5f9; --muted: #94a3b8; --border: #1e293b;
+  --card: #111827; --card2: #1e2a3a;
 }
-* { box-sizing:border-box; margin:0; padding:0; }
-body { background:var(--navy); color:var(--text); font-family:'Inter',sans-serif; min-height:100vh; }
-h1,h2,h3 { font-family:'Oswald',sans-serif; letter-spacing:.5px; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--navy); color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; }
+h1,h2,h3 { font-family: 'Oswald', sans-serif; }
+
+/* LOGIN */
+#login-screen {
+  position: fixed; inset: 0; background: var(--navy);
+  display: flex; align-items: center; justify-content: center; z-index: 1000;
+}
+.login-box {
+  background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+  padding: 40px 36px; width: 100%; max-width: 380px; text-align: center;
+}
+.login-box h2 { font-size: 1.8rem; margin-bottom: 8px; }
+.login-box p { color: var(--muted); font-size: 0.9rem; margin-bottom: 28px; }
+.login-input {
+  width: 100%; background: var(--navy3); border: 1px solid var(--border); color: var(--text);
+  border-radius: 8px; padding: 12px 16px; font-size: 1rem; outline: none;
+  transition: border 0.2s; margin-bottom: 12px;
+}
+.login-input:focus { border-color: var(--gold); }
+.login-btn {
+  width: 100%; background: var(--gold); color: var(--navy); border: none; cursor: pointer;
+  border-radius: 8px; padding: 12px; font-size: 1rem; font-weight: 700;
+  font-family: 'Oswald', sans-serif; transition: background 0.2s;
+}
+.login-btn:hover { background: var(--gold2); }
+.login-error { color: var(--red); font-size: 0.85rem; margin-top: 8px; }
+.remember-row { display: flex; align-items: center; gap: 8px; margin-top: 12px; font-size: 0.82rem; color: var(--muted); cursor: pointer; }
+.remember-row input[type=checkbox] { width: 16px; height: 16px; accent-color: var(--gold); cursor: pointer; }
+
+/* THEO PROFILE EDITOR */
+.pf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.pf-group { display: flex; flex-direction: column; gap: 5px; }
+.pf-group label { font-size: 0.72rem; text-transform: uppercase; color: var(--muted); font-weight: 600; letter-spacing: 0.5px; }
+.pf-group select.score-input { cursor: pointer; }
+.prof-stats-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin: 14px 0; }
+.prof-stat { background: var(--card2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 8px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center; }
+.ps-code { font-family: 'Oswald',sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--gold); }
+.ps-name { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+.ps-desc { font-size: 0.68rem; color: rgba(255,255,255,0.35); line-height: 1.3; }
+.prof-stat input { width: 70px; text-align: center; background: var(--navy); border: 1px solid var(--border); border-radius: 8px; color: #fff; padding: 7px 4px; font-family: 'Oswald',sans-serif; font-size: 1.4rem; font-weight: 700; margin: 2px 0; }
+.prof-stat input:focus { outline: none; border-color: var(--gold); }
+.av-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.av-btn { font-size: 1.8rem; padding: 6px 8px; border-radius: 8px; border: 2px solid transparent; cursor: pointer; background: transparent; transition: all 0.15s; }
+.av-btn:hover, .av-btn.active { border-color: var(--gold); background: rgba(245,197,24,0.08); }
 
 /* NAV */
 nav {
-  background:rgba(10,14,26,.97); backdrop-filter:blur(12px);
-  border-bottom:1px solid var(--border);
-  display:flex; align-items:center; padding:0 24px; height:56px; gap:10px;
+  position: sticky; top: 0; z-index: 99;
+  background: rgba(10,14,26,0.96); backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 8px; padding: 0 24px; height: 56px;
 }
-.nav-logo { font-family:'Oswald',sans-serif; font-size:1.1rem; font-weight:700; color:var(--gold); text-decoration:none; margin-right:auto; }
-.nav-link { color:var(--muted); text-decoration:none; font-size:.85rem; padding:6px 10px; border-radius:6px; transition:all .2s; }
-.nav-link:hover { color:var(--text); background:var(--navy3); }
-
-/* AUTH SCREEN */
-.auth-screen {
-  max-width:420px; margin:80px auto; padding:0 20px; text-align:center;
-}
-.auth-screen h2 { font-size:1.8rem; margin-bottom:8px; }
-.auth-screen p { color:var(--muted); font-size:.875rem; margin-bottom:28px; }
-.auth-card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:32px; }
-
-/* LAYOUT */
-.wrap { max-width:900px; margin:0 auto; padding:32px 20px 80px; }
+.nav-logo { font-family: 'Oswald', sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--gold); margin-right: 24px; text-decoration: none; }
+.admin-badge { background: var(--red); color: #fff; font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 4px; font-family: 'Oswald', sans-serif; }
+.nav-right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+.btn { border: none; cursor: pointer; border-radius: 6px; padding: 6px 14px; font-size: 0.85rem; font-weight: 600; font-family: 'Inter', sans-serif; transition: all 0.2s; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+.btn-gold { background: var(--gold); color: var(--navy); }
+.btn-gold:hover { background: var(--gold2); }
+.btn-green { background: var(--green); color: #fff; }
+.btn-green:hover { background: var(--green2); color: var(--navy); }
+.btn-outline { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+.btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+.btn-red { background: var(--red); color: #fff; }
+.btn-red:hover { background: var(--red2); }
 
 /* TABS */
-.tabs-bar { display:flex; gap:4px; margin-bottom:28px; flex-wrap:wrap; }
-.tab-btn {
-  padding:9px 18px; background:var(--navy3); border:1px solid var(--border);
-  border-radius:8px; color:var(--muted); font-family:'Inter',sans-serif; font-size:.875rem;
-  cursor:pointer; transition:all .2s;
+.tab-bar { display: flex; gap: 4px; padding: 16px 24px 0; border-bottom: 1px solid var(--border); background: var(--navy2); }
+.tab { padding: 10px 18px; cursor: pointer; font-size: 0.875rem; font-weight: 600; color: var(--muted); border-radius: 8px 8px 0 0; transition: all 0.2s; border-bottom: 2px solid transparent; }
+.tab:hover { color: var(--text); }
+.tab.active { color: var(--gold); border-bottom-color: var(--gold); background: rgba(245,197,24,0.05); }
+
+/* PANELS */
+.panel { display: none; padding: 28px 24px; max-width: 1100px; margin: 0 auto; }
+.panel.active { display: block; }
+
+/* STATS ROW */
+.stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 28px; }
+.stat-box { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px 16px; text-align: center; }
+.stat-box .sv { font-family: 'Oswald', sans-serif; font-size: 2rem; font-weight: 700; line-height: 1; }
+.stat-box .sl { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
+.sv.gold { color: var(--gold); }
+.sv.green { color: var(--green2); }
+.sv.red { color: var(--red); }
+
+/* MATCH TABLE */
+.group-section { margin-bottom: 32px; }
+.group-section h3 { font-size: 1.1rem; margin-bottom: 12px; color: var(--gold); display: flex; align-items: center; gap: 8px; }
+.match-table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+.match-table thead tr { background: var(--card2); }
+.match-table th { padding: 8px 12px; font-size: 0.7rem; text-transform: uppercase; color: var(--muted); text-align: left; font-weight: 600; letter-spacing: 0.5px; }
+.match-table td { padding: 10px 12px; border-top: 1px solid rgba(255,255,255,0.04); font-size: 0.875rem; vertical-align: middle; }
+.match-table tr:hover td { background: rgba(255,255,255,0.02); }
+.team-cell { display: flex; align-items: center; gap: 6px; font-weight: 500; }
+.score-inputs { display: flex; align-items: center; gap: 6px; }
+.score-input {
+  width: 44px; background: var(--navy3); border: 1px solid var(--border);
+  color: var(--text); border-radius: 6px; padding: 6px 8px; font-size: 1rem;
+  text-align: center; outline: none; transition: border 0.2s;
 }
-.tab-btn:hover { color:var(--text); }
-.tab-btn.active { background:var(--gold); border-color:var(--gold); color:var(--navy); font-weight:600; }
-.tab-panel { display:none; }
-.tab-panel.active { display:block; }
+.score-input:focus { border-color: var(--gold); }
+.score-sep { color: var(--muted); font-size: 1.2rem; }
+.pts-badge { display: inline-block; background: var(--navy3); border-radius: 6px; padding: 3px 10px; font-size: 0.8rem; font-weight: 700; min-width: 36px; text-align: center; }
+.pts-badge.earned { background: rgba(34,197,94,0.15); color: var(--green2); border: 1px solid rgba(34,197,94,0.3); }
+.pts-badge.zero { color: var(--muted); }
+.pts-badge.pending { color: var(--muted); font-style: italic; }
+.status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.status-dot.played { background: var(--green2); }
+.status-dot.upcoming { background: var(--muted); }
+.match-date-cell { color: var(--muted); font-size: 0.8rem; }
+.save-row-btn { background: var(--green); border: none; color: #fff; border-radius: 6px; padding: 5px 10px; font-size: 0.78rem; cursor: pointer; transition: background 0.2s; }
+.save-row-btn:hover { background: var(--green2); color: var(--navy); }
+.clear-btn { background: transparent; border: none; color: var(--muted); font-size: 0.75rem; cursor: pointer; padding: 4px 6px; border-radius: 4px; }
+.clear-btn:hover { color: var(--red); }
+.row-saved { animation: rowFlash 1s ease; }
+@keyframes rowFlash { 0%,100% { background: transparent; } 50% { background: rgba(34,197,94,0.1); } }
 
-/* CARDS */
-.card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:24px; margin-bottom:20px; }
-.card h3 { font-size:1.1rem; margin-bottom:16px; color:var(--gold); border-bottom:1px solid var(--border); padding-bottom:10px; }
-
-/* FIELDS */
-.field { margin-bottom:16px; }
-.field label { display:block; font-size:.8rem; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px; }
-.field input, .field select, .field textarea {
-  width:100%; background:var(--navy3); border:1px solid var(--border);
-  border-radius:8px; padding:10px 12px; color:var(--text); font-family:'Inter',sans-serif;
-  font-size:.875rem; outline:none; transition:border .2s;
+/* PODIUM EDITOR */
+.podium-editor { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+.podium-editor h3 { margin-bottom: 16px; color: var(--gold); }
+.podium-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.podium-field label { display: block; font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+.podium-select {
+  width: 100%; background: var(--navy3); border: 1px solid var(--border);
+  color: var(--text); border-radius: 8px; padding: 10px 12px; font-size: 0.875rem; outline: none;
 }
-.field input:focus, .field select:focus, .field textarea:focus { border-color:var(--gold); }
-.field input[type="password"] { letter-spacing:2px; }
-.field .hint { font-size:.75rem; color:var(--muted); margin-top:5px; }
-.field-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.podium-select:focus { border-color: var(--gold); }
 
-/* BUTTONS */
-.btn { padding:10px 20px; border-radius:8px; border:none; font-family:'Inter',sans-serif; font-size:.875rem; font-weight:600; cursor:pointer; transition:all .2s; }
-.btn-primary { background:var(--gold); color:var(--navy); }
-.btn-primary:hover { background:var(--gold2); }
-.btn-primary:disabled { opacity:.5; cursor:not-allowed; }
-.btn-secondary { background:var(--navy3); border:1px solid var(--border); color:var(--text); }
-.btn-secondary:hover { border-color:var(--gold); color:var(--gold); }
-.btn-danger { background:rgba(220,38,38,.15); border:1px solid rgba(220,38,38,.3); color:var(--red2); }
-.btn-danger:hover { background:rgba(220,38,38,.25); }
-.btn-green { background:var(--green); color:#fff; }
-.btn-green:hover { background:var(--green2); }
-.btn-sm { padding:6px 12px; font-size:.78rem; }
-.btn-row { display:flex; gap:10px; flex-wrap:wrap; margin-top:18px; }
+/* EXPORT */
+.export-panel { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+.export-panel h3 { margin-bottom: 8px; }
+.export-panel p { color: var(--muted); font-size: 0.875rem; margin-bottom: 16px; }
+.export-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+.import-area { width: 100%; background: var(--navy3); border: 1px solid var(--border); color: var(--text); border-radius: 8px; padding: 12px; font-size: 0.8rem; font-family: monospace; min-height: 100px; outline: none; resize: vertical; }
+.import-area:focus { border-color: var(--gold); }
 
-/* STATUS TAGS */
-.status-tag { display:inline-flex; align-items:center; gap:6px; font-size:.78rem; padding:4px 10px; border-radius:6px; font-weight:600; }
-.status-tag.ok      { background:rgba(34,197,94,.12); color:var(--green2); border:1px solid rgba(34,197,94,.2); }
-.status-tag.err     { background:rgba(220,38,38,.1);  color:var(--red2);   border:1px solid rgba(220,38,38,.2); }
-.status-tag.warn    { background:rgba(245,197,24,.1); color:var(--gold);   border:1px solid rgba(245,197,24,.2); }
-.status-tag.neutral { background:var(--navy3);        color:var(--muted);  border:1px solid var(--border); }
-
-/* INLINE STATUS */
-.inline-status { font-size:.8rem; margin-top:8px; min-height:20px; }
-
-/* TOGGLE */
-.toggle-row { display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid rgba(255,255,255,.04); }
-.toggle-row:last-child { border-bottom:none; }
-.toggle-label strong { display:block; font-size:.9rem; }
-.toggle-label span { font-size:.78rem; color:var(--muted); }
-.toggle { position:relative; width:44px; height:24px; cursor:pointer; }
-.toggle input { opacity:0; width:0; height:0; }
-.toggle-slider {
-  position:absolute; inset:0; background:var(--navy3); border-radius:12px;
-  border:1px solid var(--border); transition:.2s;
+/* TOAST */
+.toast {
+  position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+  background: var(--green); color: #fff; padding: 12px 20px; border-radius: 8px;
+  font-weight: 600; font-size: 0.875rem; opacity: 0; transform: translateY(8px);
+  transition: all 0.3s; pointer-events: none;
 }
-.toggle-slider::before {
-  content:''; position:absolute; top:3px; left:3px;
-  width:16px; height:16px; background:var(--muted);
-  border-radius:50%; transition:.2s;
-}
-.toggle input:checked + .toggle-slider { background:var(--green); border-color:var(--green); }
-.toggle input:checked + .toggle-slider::before { transform:translateX(20px); background:#fff; }
+.toast.show { opacity: 1; transform: translateY(0); }
+.toast.error { background: var(--red); }
 
-/* PARTICIPANTS TABLE */
-.participants-table { width:100%; border-collapse:collapse; font-size:.85rem; }
-.participants-table th { font-size:.7rem; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; padding:8px 10px; border-bottom:1px solid var(--border); text-align:left; }
-.participants-table td { padding:10px 10px; border-bottom:1px solid rgba(255,255,255,.04); vertical-align:middle; }
-.participants-table tr:last-child td { border-bottom:none; }
-.participants-table tr:hover td { background:rgba(255,255,255,.02); }
-.p-token { font-family:monospace; font-size:.7rem; color:var(--muted); background:var(--navy3); padding:2px 6px; border-radius:4px; }
-.p-link { font-family:monospace; font-size:.68rem; color:var(--gold); cursor:pointer; opacity:.7; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:220px; display:inline-block; vertical-align:bottom; }
-.p-link:hover { opacity:1; text-decoration:underline; }
-
-/* PODIUM SELECTOR */
-.podium-selector { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
-.pod-item label { display:block; font-size:.8rem; color:var(--muted); margin-bottom:6px; }
-.pod-item select { background:var(--navy3); border:1px solid var(--border); border-radius:8px; padding:9px 10px; color:var(--text); font-size:.875rem; width:100%; outline:none; cursor:pointer; }
-.pod-item select:focus { border-color:var(--gold); }
-
-/* STAT CHIPS */
-.stat-chips { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px; }
-.stat-chip { background:var(--navy3); border:1px solid var(--border); border-radius:10px; padding:12px 16px; text-align:center; }
-.stat-chip .sc-val { font-family:'Oswald',sans-serif; font-size:1.6rem; font-weight:700; color:var(--gold); }
-.stat-chip .sc-lbl { font-size:.7rem; color:var(--muted); margin-top:2px; }
-
-/* CHANGE PW */
-.change-pw { margin-top:20px; padding-top:20px; border-top:1px solid var(--border); }
-
-/* RESULTS TAB */
-.date-group { margin-bottom:20px; }
-.date-header { font-family:'Oswald',sans-serif; font-size:.95rem; color:var(--gold); padding:8px 0 6px; border-bottom:1px solid var(--border); margin-bottom:8px; }
-.result-row { display:flex; align-items:center; gap:8px; padding:7px 0; border-bottom:1px solid rgba(255,255,255,.03); flex-wrap:wrap; }
-.result-row:last-child { border-bottom:none; }
-.rr-team { flex:1; min-width:120px; font-size:.82rem; display:flex; align-items:center; gap:6px; }
-.rr-team.right { justify-content:flex-end; text-align:right; }
-.rr-vs { font-weight:700; color:var(--muted); font-size:1rem; }
-.score-input { width:46px; background:var(--navy3); border:1px solid var(--border); border-radius:6px; padding:6px 8px; color:var(--text); font-family:'Oswald',sans-serif; font-size:1rem; font-weight:700; text-align:center; outline:none; -moz-appearance:textfield; }
-.score-input::-webkit-outer-spin-button, .score-input::-webkit-inner-spin-button { -webkit-appearance:none; }
-.score-input:focus { border-color:var(--gold); }
-.rr-time { font-size:.72rem; color:var(--muted); min-width:48px; text-align:right; }
-.future-match .rr-team, .future-match .rr-vs { opacity:.45; }
-.future-match .score-input { opacity:.45; }
-
-@media (max-width:560px) {
-  .field-row { grid-template-columns:1fr; }
-  .podium-selector { grid-template-columns:1fr; }
-}
+/* OVERVIEW */
+.overview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; margin-bottom: 24px; }
+.overview-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+.overview-card h4 { font-family: 'Oswald', sans-serif; font-size: 0.95rem; margin-bottom: 12px; color: var(--muted); }
+.overview-match { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 0.82rem; }
+.overview-match:last-child { border-bottom: none; }
+.ov-teams { flex: 1; }
+.ov-pred { color: var(--muted); min-width: 40px; text-align: center; }
+.ov-result { color: var(--gold); font-weight: 700; min-width: 40px; text-align: center; }
+.ov-pts { min-width: 30px; text-align: right; font-weight: 700; }
+.ov-pts.positive { color: var(--green2); }
 </style>
 </head>
 <body>
 
-<nav>
-  <a class="nav-logo" href="#">⚙️ Admin · Mundial Familiar</a>
-  <a href="dashboard.html" class="nav-link">🏆 Dashboard</a>
-  <a href="registro.html" class="nav-link">📝 Registro</a>
-</nav>
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div style="font-size:2.5rem;margin-bottom:12px">⚙️</div>
+    <h2>Admin Panel</h2>
+    <p>Exclusive access for the tournament administrator</p>
+    <input type="password" class="login-input" id="pw-input" placeholder="Password" autocomplete="current-password">
+    <button class="login-btn" onclick="tryLogin()">Login</button>
+    <label class="remember-row">
+      <input type="checkbox" id="remember-me"> Remember me for 30 days
+    </label>
+    <div class="login-error" id="pw-error"></div>
+  </div>
+</div>
 
-<!-- AUTH -->
-<div id="auth-screen" class="auth-screen">
-  <div style="font-size:3rem;margin-bottom:16px">🔐</div>
-  <h2>Panel de Administración</h2>
-  <p>Acceso restringido al organizador</p>
-  <div class="auth-card">
-    <div class="field">
-      <label>Contraseña</label>
-      <input type="password" id="auth-pw" placeholder="••••••••" onkeydown="if(event.key==='Enter')login()">
+<!-- MAIN (hidden until login) -->
+<div id="main-app" style="display:none">
+  <nav>
+    <a class="nav-logo" href="index.html">⚽ World Cup 2026</a>
+    <span class="admin-badge">ADMIN</span>
+    <div class="nav-right">
+      <button class="btn btn-green" onclick="saveAll()">💾 Save all</button>
+      <button class="btn btn-outline" onclick="downloadData()">⬇️ Export JSON</button>
+      <a href="index.html" class="btn btn-outline">← View site</a>
+      <button class="btn btn-outline" onclick="logout()" style="color:var(--red)">Logout</button>
     </div>
-    <div class="inline-status" id="auth-err"></div>
-    <div class="btn-row" style="margin-top:16px">
-      <button class="btn btn-primary" style="flex:1" onclick="login()">Entrar</button>
+  </nav>
+
+  <div class="tab-bar">
+    <div class="tab active" onclick="showTab('overview')">📊 Overview</div>
+    <div class="tab" onclick="showTab('predictions')">🎯 Predictions</div>
+    <div class="tab" onclick="showTab('results')">⚽ Results</div>
+    <div class="tab" onclick="showTab('podium')">🏆 Podium</div>
+    <div class="tab" onclick="showTab('theo')">🃏 Theo's Card</div>
+    <div class="tab" onclick="showTab('sync')">🔄 Sync / Export</div>
+    <div class="tab" onclick="showTab('chat')">💬 Chat</div>
+  </div>
+
+  <!-- OVERVIEW -->
+  <div class="panel active" id="panel-overview">
+    <div class="stats-row" id="stats-row"></div>
+    <div class="overview-grid" id="overview-grid"></div>
+  </div>
+
+  <!-- PREDICTIONS -->
+  <div class="panel" id="panel-predictions">
+    <p style="color:var(--muted);margin-bottom:20px;font-size:0.875rem">
+      Enter your predictions here. You can edit them up to 1 minute before each match.
+    </p>
+    <div id="pred-groups"></div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="panel" id="panel-results">
+    <div style="background:rgba(200,16,46,0.08);border:1px solid rgba(200,16,46,0.25);border-radius:12px;padding:16px 18px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+      <div>
+        <div style="font-family:'Oswald',sans-serif;font-size:1rem;font-weight:700;color:#fff;margin-bottom:2px">📡 Live Score Sync</div>
+        <div id="live-sync-status" style="font-size:0.8rem;color:var(--muted)">Fetches finished matches from ESPN → updates all results automatically</div>
+      </div>
+      <button class="btn btn-red" onclick="syncLiveScores()">⚡ Sync Now</button>
+    </div>
+    <p style="color:var(--muted);margin-bottom:20px;font-size:0.875rem">
+      Or enter results manually below. Points calculated automatically.
+    </p>
+    <div id="result-groups"></div>
+  </div>
+
+  <!-- PODIUM -->
+  <div class="panel" id="panel-podium">
+    <div class="podium-editor">
+      <h3>🏆 Final Podium Prediction</h3>
+      <p style="color:var(--muted);font-size:0.875rem;margin-bottom:16px">
+        Podium cannot be changed after the first match. Champion +30, Runner-up +20, Third +10 points.
+      </p>
+      <div class="podium-grid">
+        <div class="podium-field">
+          <label>🥇 Champion (+30 pts)</label>
+          <select class="podium-select" id="pod-first"></select>
+        </div>
+        <div class="podium-field">
+          <label>🥈 Runner-up (+20 pts)</label>
+          <select class="podium-select" id="pod-second"></select>
+        </div>
+        <div class="podium-field">
+          <label>🥉 Third Place (+10 pts)</label>
+          <select class="podium-select" id="pod-third"></select>
+        </div>
+      </div>
+      <div style="margin-top:16px;display:flex;gap:10px">
+        <button class="btn btn-gold" onclick="savePodium()">Save Podium</button>
+      </div>
+    </div>
+
+    <div class="podium-editor">
+      <h3 style="color:var(--green2)">✅ Actual Tournament Podium</h3>
+      <p style="color:var(--muted);font-size:0.875rem;margin-bottom:16px">
+        Enter the real podium when the tournament ends to calculate bonus points.
+      </p>
+      <div class="podium-grid">
+        <div class="podium-field">
+          <label>🥇 Actual Champion</label>
+          <select class="podium-select" id="actual-first"></select>
+        </div>
+        <div class="podium-field">
+          <label>🥈 Actual Runner-up</label>
+          <select class="podium-select" id="actual-second"></select>
+        </div>
+        <div class="podium-field">
+          <label>🥉 Actual Third</label>
+          <select class="podium-select" id="actual-third"></select>
+        </div>
+      </div>
+      <div style="margin-top:16px">
+        <button class="btn btn-green" onclick="saveActualPodium()">Save Actual Result</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SYNC -->
+  <div class="panel" id="panel-theo">
+    <div class="export-panel">
+      <h3>👤 Personal Info</h3>
+      <div class="pf-row">
+        <div class="pf-group"><label>Full Name</label><input class="score-input" id="tp-name" placeholder="Theo ..."></div>
+        <div class="pf-group"><label>Nickname / Alias</label><input class="score-input" id="tp-nick" placeholder="El Crack..."></div>
+      </div>
+      <div class="pf-row">
+        <div class="pf-group"><label>Position</label>
+          <select class="score-input" id="tp-pos">
+            <option value="FWD">⚡ Forward (FWD)</option>
+            <option value="MID">🔄 Midfielder (MID)</option>
+            <option value="DEF">🛡 Defender (DEF)</option>
+            <option value="GK">🧤 Goalkeeper (GK)</option>
+          </select>
+        </div>
+        <div class="pf-group"><label>Jersey #</label><input class="score-input" id="tp-num" type="number" min="1" max="99" value="9"></div>
+      </div>
+      <div class="pf-row">
+        <div class="pf-group"><label>Date of Birth</label><input class="score-input" id="tp-dob" type="date"></div>
+        <div class="pf-group"><label>Nationality</label><input class="score-input" id="tp-nat" placeholder="English..."></div>
+      </div>
+      <div class="pf-row">
+        <div class="pf-group"><label>Preferred Foot</label>
+          <select class="score-input" id="tp-foot">
+            <option>Right</option><option>Left</option><option>Both</option>
+          </select>
+        </div>
+        <div class="pf-group"><label>Favourite Club</label><input class="score-input" id="tp-club" value="Liverpool FC"></div>
+      </div>
+      <div class="pf-group" style="margin-top:4px"><label>About Theo</label><input class="score-input" id="tp-bio" placeholder="Loves football because..."></div>
+    </div>
+
+    <div class="export-panel">
+      <h3>⭐ Player Stats</h3>
+      <p>Set each from 1–99. Overall is calculated automatically.</p>
+      <div class="prof-stats-grid">
+        <div class="prof-stat">
+          <span class="ps-code">PAC</span><span class="ps-name">Pace</span>
+          <input id="tp-pac" type="number" min="1" max="99">
+          <span class="ps-desc">How fast he runs</span>
+        </div>
+        <div class="prof-stat">
+          <span class="ps-code">SHO</span><span class="ps-name">Shooting</span>
+          <input id="tp-sho" type="number" min="1" max="99">
+          <span class="ps-desc">How well he shoots</span>
+        </div>
+        <div class="prof-stat">
+          <span class="ps-code">PAS</span><span class="ps-name">Passing</span>
+          <input id="tp-pas" type="number" min="1" max="99">
+          <span class="ps-desc">How well he passes</span>
+        </div>
+        <div class="prof-stat">
+          <span class="ps-code">DRI</span><span class="ps-name">Dribbling</span>
+          <input id="tp-dri" type="number" min="1" max="99">
+          <span class="ps-desc">Ball control & skill</span>
+        </div>
+        <div class="prof-stat">
+          <span class="ps-code">DEF</span><span class="ps-name">Defending</span>
+          <input id="tp-def" type="number" min="1" max="99">
+          <span class="ps-desc">How well he defends</span>
+        </div>
+        <div class="prof-stat">
+          <span class="ps-code">PHY</span><span class="ps-name">Physical</span>
+          <input id="tp-phy" type="number" min="1" max="99">
+          <span class="ps-desc">Strength & stamina</span>
+        </div>
+      </div>
+      <div style="background:var(--card2);border-radius:10px;padding:14px 18px;display:flex;align-items:center;gap:14px;margin-top:4px">
+        <span style="color:var(--muted);font-size:0.875rem">Overall Rating:</span>
+        <span id="tp-overall" style="font-family:'Oswald',sans-serif;font-size:2.2rem;font-weight:700;color:var(--gold)">—</span>
+        <span style="color:var(--muted);font-size:0.75rem">(auto-calculated)</span>
+      </div>
+    </div>
+
+    <div class="export-panel">
+      <h3>🖼 Avatar</h3>
+      <div class="av-row" id="tp-avatar-row"></div>
+    </div>
+
+    <div style="padding:0 0 8px">
+      <button class="btn btn-green" onclick="saveProfileAdmin()" style="width:100%;padding:14px;font-size:1rem">💾 Save Theo's Card</button>
+      <p style="color:var(--muted);font-size:0.78rem;margin-top:10px;text-align:center">After saving → Sync tab → Download state.json → commit + push → Theo sees updated card on refresh.</p>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-sync">
+    <div class="export-panel">
+      <h3>📡 ESPN Live Scores</h3>
+      <p>Automatically fetches finished match results from ESPN's public API. No API key needed. Results saved to cloud — Theo sees them immediately.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;align-items:center">
+        <button class="btn btn-green" onclick="syncLiveScores()">⚡ Sync Now</button>
+      </div>
+      <div id="espn-api-status" style="font-size:0.8rem;color:var(--muted);margin-top:8px"></div>
+    </div>
+    <div class="export-panel">
+      <h3>📥 Export data</h3>
+      <p>Download the JSON file with all your data. To sync with GitHub Pages, replace <code>data/state.json</code> in the repo and push.</p>
+      <div class="export-btns">
+        <button class="btn btn-gold" onclick="downloadData()">⬇️ Download state.json</button>
+        <button class="btn btn-outline" onclick="copyJSON()">📋 Copy JSON</button>
+      </div>
+    </div>
+    <div class="export-panel">
+      <h3>📤 Import data</h3>
+      <p>Paste a previously exported JSON to restore or sync data.</p>
+      <textarea class="import-area" id="import-area" placeholder='Paste JSON here...'></textarea>
+      <div style="margin-top:10px">
+        <button class="btn btn-red" onclick="importData()">⚠️ Import (overwrites everything)</button>
+      </div>
+    </div>
+    <div class="export-panel">
+      <h3>☁️ Theo's Cloud Sync (JSONBin)</h3>
+      <p>Store Theo's wall notes and chat messages in the cloud — syncs across all devices automatically.</p>
+      <ol style="color:var(--muted);font-size:0.82rem;margin:10px 0 16px;padding-left:18px;line-height:2">
+        <li>Create free account at <strong>jsonbin.io</strong></li>
+        <li>Go to <strong>API Keys</strong> → copy your <strong>Master Key</strong></li>
+        <li>Paste it below, then click <strong>+ Create New Bin</strong> — done</li>
+      </ol>
+      <div class="pf-row">
+        <div class="pf-group"><label>Bin ID</label><input class="score-input" id="bin-id" placeholder="Auto-filled after Create"></div>
+        <div class="pf-group"><label>Master Key</label><input class="score-input" id="bin-key" type="password" placeholder="$2a$10$..."></div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
+        <button class="btn btn-green" onclick="saveBinConfig()">💾 Save</button>
+        <button class="btn btn-outline" onclick="createNewBin()">+ Create New Bin</button>
+        <button class="btn btn-outline" onclick="viewTheoContent()">👁 View Theo's Content</button>
+      </div>
+      <div id="bin-status" style="font-size:0.8rem;color:var(--muted);margin-top:10px"></div>
+      <div id="theo-content-panel" style="display:none;margin-top:16px"></div>
+    </div>
+    <div class="export-panel">
+      <h3>🔑 Change admin password</h3>
+      <p>Password is stored locally on this device.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <input type="password" class="score-input" id="new-pw" placeholder="New password" style="width:200px">
+        <button class="btn btn-outline" onclick="changePassword()">Change</button>
+      </div>
+    </div>
+    <div class="export-panel">
+      <h3>📱 Phone Notifications (ntfy.sh)</h3>
+      <p>Get instant push notifications on your phone when Theo sends you a chat message.</p>
+      <ol style="color:var(--muted);font-size:0.82rem;margin:10px 0 16px;padding-left:18px;line-height:2">
+        <li>Install the free <strong>ntfy</strong> app on your phone (Android / iOS)</li>
+        <li>Choose a private topic name — e.g. <code>theo-wc2026-abc</code></li>
+        <li>Subscribe to that topic in the ntfy app</li>
+        <li>Paste the same topic below → Save → done</li>
+      </ol>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+        <input type="text" class="score-input" id="ntfy-topic" placeholder="your-private-topic" style="width:220px">
+        <button class="btn btn-green" onclick="saveNtfyTopic()">💾 Save</button>
+        <button class="btn btn-outline" onclick="testNtfy()">🔔 Test</button>
+      </div>
+      <div id="ntfy-status" style="font-size:0.8rem;color:var(--muted);margin-top:10px"></div>
+    </div>
+    <div class="export-panel">
+      <h3>🔴 Theo's Portal Password</h3>
+      <p>Current password Theo uses to access his portal. Stored locally — change it any time.</p>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px">
+        <span style="font-size:0.8rem;color:var(--muted)">Current:</span>
+        <code id="theo-pw-display" style="background:rgba(255,255,255,0.07);padding:4px 12px;border-radius:6px;font-size:0.95rem;letter-spacing:1px">—</code>
+        <button class="btn btn-outline" style="padding:4px 12px;font-size:0.8rem" onclick="toggleTheoPwVisibility()" id="theo-pw-toggle">👁 Show</button>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <input type="text" class="score-input" id="theo-new-pw" placeholder="New password for Theo" style="width:220px">
+        <button class="btn btn-red" onclick="changeTheoPw()">Update Theo's Password</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHAT PANEL -->
+  <div class="panel" id="panel-chat">
+    <div class="export-panel">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px">
+        <h3 style="margin:0">💬 Theo's Chat</h3>
+        <button class="btn btn-outline" style="color:var(--red);font-size:0.8rem" onclick="adminWipeChat()">🗑 Wipe Chat</button>
+      </div>
+      <div id="admin-chat-messages" style="background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:10px;padding:16px;min-height:200px;max-height:420px;overflow-y:auto;margin-bottom:14px;font-size:0.875rem;line-height:1.6">
+        <p style="color:var(--muted)">Loading...</p>
+      </div>
+      <div style="display:flex;gap:10px">
+        <input type="text" class="score-input" id="admin-chat-input" placeholder="Reply to Theo..." style="flex:1" onkeydown="if(event.key==='Enter')adminSendMsg()">
+        <button class="btn btn-red" onclick="adminSendMsg()">Send ➜</button>
+        <button class="btn btn-outline" onclick="initAdminChat()">🔄 Refresh</button>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- MAIN PANEL -->
-<div id="admin-panel" style="display:none">
-<div class="wrap">
-
-  <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px">
-    <h2 style="font-size:1.6rem">Panel de Administración</h2>
-    <span class="status-tag" id="config-status-badge">cargando…</span>
-    <button class="btn btn-secondary btn-sm" style="margin-left:auto" onclick="logout()">Salir</button>
-  </div>
-
-  <!-- TABS -->
-  <div class="tabs-bar">
-    <button class="tab-btn active" onclick="showTab('config')">⚙️ Configuración</button>
-    <button class="tab-btn" onclick="showTab('participantes')">👥 Participantes</button>
-    <button class="tab-btn" onclick="showTab('resultados')">⚽ Resultados</button>
-    <button class="tab-btn" onclick="showTab('competencia')">🏆 Competencia</button>
-    <button class="tab-btn" onclick="showTab('herramientas')">🔧 Herramientas</button>
-  </div>
-
-  <!-- TAB: CONFIG -->
-  <div id="tab-config" class="tab-panel active">
-
-    <div class="card">
-      <h3>🗄️ JSONBin — Base de datos</h3>
-      <p style="font-size:.8rem;color:var(--muted);margin-bottom:16px">
-        Crea un bin en <a href="https://jsonbin.io" target="_blank" style="color:var(--gold)">jsonbin.io</a> →
-        My Bins → Create New Bin → pega <code style="color:var(--gold);font-size:.75rem">{"participants":[],"predictions":{},"reglas":[],"settings":{"registrationOpen":true,"predictionsOpen":true,"actualPodium":null}}</code>
-        como contenido inicial.
-      </p>
-      <div class="field-row">
-        <div class="field">
-          <label>Bin ID</label>
-          <input type="text" id="cfg-bin-id" placeholder="ej: 6848abc123def...">
-        </div>
-        <div class="field">
-          <label>Master Key (API Key)</label>
-          <input type="password" id="cfg-bin-key" placeholder="$2a$10$...">
-        </div>
-      </div>
-      <div class="inline-status" id="jsonbin-status"></div>
-      <div class="btn-row">
-        <button class="btn btn-secondary" onclick="testJsonBin()">🔌 Probar conexión</button>
-        <button class="btn btn-primary" onclick="saveConfig()">💾 Guardar</button>
-      </div>
-    </div>
-
-    <div class="card">
-      <h3>📧 EmailJS — Envío de emails</h3>
-      <p style="font-size:.8rem;color:var(--muted);margin-bottom:16px">
-        En <a href="https://dashboard.emailjs.com" target="_blank" style="color:var(--gold)">emailjs.com</a> crea un template con las variables:
-        <code style="color:var(--gold);font-size:.75rem">{{to_name}}</code>
-        <code style="color:var(--gold);font-size:.75rem">{{to_email}}</code>
-        <code style="color:var(--gold);font-size:.75rem">{{link}}</code>
-      </p>
-      <div class="field-row">
-        <div class="field">
-          <label>Service ID</label>
-          <input type="text" id="cfg-ej-service" placeholder="service_xxxxxxx">
-        </div>
-        <div class="field">
-          <label>Template ID</label>
-          <input type="text" id="cfg-ej-template" placeholder="template_xxxxxxx">
-        </div>
-      </div>
-      <div class="field">
-        <label>Public Key</label>
-        <input type="text" id="cfg-ej-public" placeholder="abc123XYZ...">
-      </div>
-      <div class="inline-status" id="emailjs-status"></div>
-      <div class="btn-row">
-        <button class="btn btn-secondary" onclick="testEmailJS()">📬 Email de prueba</button>
-        <button class="btn btn-primary" onclick="saveConfig()">💾 Guardar</button>
-      </div>
-    </div>
-
-    <div class="card">
-      <h3>⚽ Football Data API</h3>
-      <div class="field">
-        <label>API Key (football-data.org)</label>
-        <input type="text" id="cfg-fd-key" placeholder="648877ba...">
-        <div class="hint">Ya está configurada. Cámbiala solo si obtienes una nueva.</div>
-      </div>
-      <div class="inline-status" id="fdapi-status"></div>
-      <div class="btn-row">
-        <button class="btn btn-secondary" onclick="testFDAPI()">🔌 Probar API</button>
-        <button class="btn btn-primary" onclick="saveConfig()">💾 Guardar</button>
-      </div>
-    </div>
-
-    <div class="card change-pw">
-      <h3>🔑 Cambiar contraseña de administrador</h3>
-      <div class="field-row">
-        <div class="field">
-          <label>Nueva contraseña</label>
-          <input type="password" id="new-pw" placeholder="••••••••">
-        </div>
-        <div class="field">
-          <label>Confirmar</label>
-          <input type="password" id="new-pw2" placeholder="••••••••">
-        </div>
-      </div>
-      <div class="inline-status" id="pw-status"></div>
-      <div class="btn-row">
-        <button class="btn btn-secondary" onclick="changePassword()">Cambiar contraseña</button>
-      </div>
-    </div>
-
-  </div><!-- /tab-config -->
-
-  <!-- TAB: PARTICIPANTES -->
-  <div id="tab-participantes" class="tab-panel">
-    <div class="stat-chips" id="p-stats"></div>
-    <div class="card">
-      <h3>👥 Participantes registrados</h3>
-      <div id="participants-table-wrap">
-        <p style="color:var(--muted);font-size:.875rem">Cargando…</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- TAB: COMPETENCIA -->
-  <div id="tab-competencia" class="tab-panel">
-
-    <div class="card">
-      <h3>⚙️ Estado de la competencia</h3>
-      <div class="toggle-row">
-        <div class="toggle-label">
-          <strong>Registro abierto</strong>
-          <span>Nuevos participantes pueden registrarse</span>
-        </div>
-        <label class="toggle">
-          <input type="checkbox" id="tog-reg" onchange="saveSettings()">
-          <span class="toggle-slider"></span>
-        </label>
-      </div>
-      <div class="toggle-row">
-        <div class="toggle-label">
-          <strong>Predicciones abiertas</strong>
-          <span>Participantes pueden editar sus predicciones</span>
-        </div>
-        <label class="toggle">
-          <input type="checkbox" id="tog-pred" onchange="saveSettings()">
-          <span class="toggle-slider"></span>
-        </label>
-      </div>
-      <div class="inline-status" id="settings-status" style="margin-top:10px"></div>
-    </div>
-
-    <div class="card">
-      <h3>🏆 Podio real del Mundial</h3>
-      <p style="font-size:.8rem;color:var(--muted);margin-bottom:16px">
-        Completa esto cuando termine el torneo. Activa los puntos del podio para todos los participantes.
-      </p>
-      <div class="podium-selector" id="podium-selector">
-        <div class="pod-item">
-          <label>🥇 Campeón</label>
-          <select id="pod-first"><option value="">— Selecciona —</option></select>
-        </div>
-        <div class="pod-item">
-          <label>🥈 Subcampeón</label>
-          <select id="pod-second"><option value="">— Selecciona —</option></select>
-        </div>
-        <div class="pod-item">
-          <label>🥉 Tercer lugar</label>
-          <select id="pod-third"><option value="">— Selecciona —</option></select>
-        </div>
-      </div>
-      <div class="inline-status" id="podium-status" style="margin-top:12px"></div>
-      <div class="btn-row">
-        <button class="btn btn-primary" onclick="savePodium()">💾 Guardar podio real</button>
-        <button class="btn btn-danger btn-sm" onclick="clearPodium()">Limpiar</button>
-      </div>
-    </div>
-
-  </div><!-- /tab-competencia -->
-
-  <!-- TAB: RESULTADOS -->
-  <div id="tab-resultados" class="tab-panel">
-    <div class="card">
-      <h3>⚽ Resultados manuales</h3>
-      <p style="font-size:.875rem;color:var(--muted);margin-bottom:16px">
-        Ingresa los marcadores de los partidos jugados. Se guardan en la nube y se muestran en el dashboard aunque falle la API automática. Los partidos futuros aparecen atenuados.
-      </p>
-      <div id="results-form"><p style="color:var(--muted);font-size:.85rem">Cargando partidos…</p></div>
-      <div class="btn-row" style="margin-top:20px">
-        <button class="btn btn-primary" onclick="saveAllResults()">💾 Guardar todos los resultados</button>
-        <span id="results-save-status" style="font-size:.85rem;display:flex;align-items:center"></span>
-      </div>
-    </div>
-  </div>
-
-  <!-- TAB: HERRAMIENTAS -->
-  <div id="tab-herramientas" class="tab-panel">
-
-    <div class="card">
-      <h3>🔄 Resultados en tiempo real</h3>
-      <p style="font-size:.875rem;color:var(--muted);margin-bottom:16px">
-        Los resultados se actualizan automáticamente cada 15 min en el dashboard.
-        Fuerza una actualización manual aquí.
-      </p>
-      <div id="results-preview" style="font-size:.85rem;color:var(--muted);margin-bottom:12px">—</div>
-      <div class="btn-row">
-        <button class="btn btn-secondary" onclick="forceRefreshResults()">⚡ Obtener resultados ahora</button>
-      </div>
-    </div>
-
-    <div class="card">
-      <h3>📤 Exportar datos</h3>
-      <p style="font-size:.875rem;color:var(--muted);margin-bottom:16px">Descarga una copia de todos los datos del bin.</p>
-      <div class="btn-row">
-        <button class="btn btn-secondary" onclick="exportData()">⬇️ Descargar JSON</button>
-      </div>
-    </div>
-
-    <div class="card">
-      <h3>📥 Registrar participante e importar predicciones</h3>
-      <p style="font-size:.875rem;color:var(--muted);margin-bottom:16px">
-        Si el participante ya existe, actualiza sus predicciones. Si no existe, lo registra y las importa.
-      </p>
-      <div class="field-row">
-        <div class="field">
-          <label>Nombre</label>
-          <input type="text" id="imp-name" placeholder="Theo">
-        </div>
-        <div class="field">
-          <label>Email</label>
-          <input type="email" id="imp-email" placeholder="theo@email.com">
-        </div>
-      </div>
-      <div class="field">
-        <label>JSON de predicciones — pega el objeto "predictions" del archivo</label>
-        <textarea id="imp-json" rows="5" style="width:100%;background:var(--navy3);border:1px solid var(--border);border-radius:8px;padding:10px;color:var(--text);font-family:monospace;font-size:.75rem;resize:vertical" placeholder='{"A1":{"home":2,"away":0},"A2":{"home":2,"away":0},...}'></textarea>
-      </div>
-      <div class="field">
-        <label>Podio predicho (opcional)</label>
-        <input type="text" id="imp-podium" placeholder='{"first":"ARG","second":"ENG","third":"POR"}'>
-      </div>
-      <div class="inline-status" id="imp-status"></div>
-      <div class="btn-row">
-        <button class="btn btn-secondary" onclick="findParticipantLink()">🔍 Ver enlace</button>
-        <button class="btn btn-primary" onclick="importPredictions()">📥 Guardar predicciones</button>
-      </div>
-      <div id="imp-link-box" style="display:none;margin-top:12px;background:var(--navy3);border:1px solid var(--border);border-radius:8px;padding:10px 14px;word-break:break-all;font-family:monospace;font-size:.8rem;color:var(--gold)"></div>
-    </div>
-
-    <div class="card">
-      <h3>🔗 Enlace del dashboard</h3>
-      <p style="font-size:.875rem;color:var(--muted);margin-bottom:12px">Comparte este enlace con todos los participantes.</p>
-      <div id="dash-link-box" style="background:var(--navy3);border:1px solid var(--border);border-radius:8px;padding:10px 14px;word-break:break-all;font-family:monospace;font-size:.8rem;color:var(--gold);margin-bottom:12px"></div>
-      <div class="btn-row">
-        <button class="btn btn-secondary btn-sm" onclick="copyDashLink()">📋 Copiar</button>
-      </div>
-    </div>
-
-  </div><!-- /tab-herramientas -->
-
-</div><!-- /wrap -->
-</div><!-- /admin-panel -->
+<div class="toast" id="toast"></div>
 
 <script src="js/data.js"></script>
-<script src="js/config.js"></script>
-<script src="js/store.js"></script>
 <script src="js/scoring.js"></script>
-<script src="js/matches.js"></script>
+<script src="js/store.js"></script>
 <script>
-let _storeData = null;
-let _adminPw = 'mundial2026'; // loaded from JSONBin on startup
+// ─── AUTH ───────────────────────────────────────────────────────────────────
+const DEFAULT_PW = 'admin2026';
+const SESSION_KEY = 'wc2026_admin_session';
+let _adminPw = DEFAULT_PW; // loaded from cloud on init
 
-// ── Auth ─────────────────────────────────────────────────────────────────────
+// ─── CLOUD (hardcoded — no localStorage dependency) ──────────────────────────
+const CLOUD_BIN_ID  = '6a2b8ed1f5f4af5e29e42bc2';
+const CLOUD_BIN_KEY = '$2a$10$dzKZtO2M/PRjlWVS4Dm/ruIgV1EMuAvKqWUCyQ3NyVBA21o7e5FXK';
 
-// Load password from cloud before login screen is shown
-async function loadAdminPw() {
-  const btn = document.querySelector('.pw-btn, .btn.btn-primary[onclick="login()"]') || document.querySelector('[onclick="login()"]');
-  if (btn) { btn.disabled = true; btn.textContent = 'Cargando…'; }
+async function adminCloudRead() {
   try {
-    const res = await fetch(`https://api.jsonbin.io/v3/b/${FWC.BIN_ID}/latest`, {
-      headers: { 'X-Access-Key': FWC.BIN_KEY, 'X-Bin-Meta': 'false' }
-    });
-    if (res.ok) {
-      const data = await res.json();
-      if (data._config?.admin_pw) _adminPw = data._config.admin_pw;
-    }
-  } catch(e) { /* use default */ }
-  if (btn) { btn.disabled = false; btn.textContent = 'Entrar'; }
+    const r = await fetch('https://api.jsonbin.io/v3/b/' + CLOUD_BIN_ID + '/latest', { headers: { 'X-Master-Key': CLOUD_BIN_KEY } });
+    if (!r.ok) return null;
+    return (await r.json()).record;
+  } catch { return null; }
 }
 
-function login() {
-  const pw = document.getElementById('auth-pw').value;
+async function adminCloudWrite(data) {
+  try {
+    await fetch('https://api.jsonbin.io/v3/b/' + CLOUD_BIN_ID, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'X-Master-Key': CLOUD_BIN_KEY },
+      body: JSON.stringify(data)
+    });
+  } catch {}
+}
+
+function doLogin() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('main-app').style.display = 'block';
+  initApp();
+}
+
+function tryLogin() {
+  const pw = document.getElementById('pw-input').value;
+  const errEl = document.getElementById('pw-error');
   if (pw === _adminPw) {
-    sessionStorage.setItem('fwc_admin_authed', '1');
-    document.getElementById('auth-screen').style.display = 'none';
-    document.getElementById('admin-panel').style.display = 'block';
-    initPanel();
+    localStorage.setItem(SESSION_KEY, JSON.stringify({ expires: Date.now() + 30 * 24 * 60 * 60 * 1000 }));
+    doLogin();
   } else {
-    const el = document.getElementById('auth-err');
-    el.innerHTML = '<span style="color:var(--red2);font-size:.85rem">⚠ Contraseña incorrecta</span>';
-    setTimeout(() => el.innerHTML = '', 2500);
+    errEl.textContent = 'Incorrect password';
   }
 }
 
+document.getElementById('pw-input').addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
+
+// Load password from cloud, then check session
+(async function earlyInit() {
+  const cloud = await adminCloudRead();
+  if (cloud && cloud.adminPw) _adminPw = cloud.adminPw;
+  try {
+    const s = JSON.parse(localStorage.getItem(SESSION_KEY));
+    if (s && s.expires > Date.now()) { doLogin(); }
+  } catch {}
+})();
+
 function logout() {
-  document.getElementById('admin-panel').style.display = 'none';
-  document.getElementById('auth-screen').style.display = 'block';
-  document.getElementById('auth-pw').value = '';
+  localStorage.removeItem(SESSION_KEY);
+  document.getElementById('main-app').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('pw-input').value = '';
 }
 
 async function changePassword() {
-  const a = document.getElementById('new-pw').value;
-  const b = document.getElementById('new-pw2').value;
-  const el = document.getElementById('pw-status');
-  if (!a) { el.innerHTML = '<span style="color:var(--red2)">Escribe una contraseña</span>'; return; }
-  if (a !== b) { el.innerHTML = '<span style="color:var(--red2)">Las contraseñas no coinciden</span>'; return; }
-  el.innerHTML = '<span style="color:var(--gold)">Guardando…</span>';
-  try {
-    await FWCStore.update(data => ({
-      ...data,
-      _config: { ...(data._config || {}), admin_pw: a }
-    }));
-    _adminPw = a;
-    el.innerHTML = '<span style="color:var(--green2)">✓ Contraseña guardada en la nube</span>';
-    document.getElementById('new-pw').value = '';
-    document.getElementById('new-pw2').value = '';
-    setTimeout(() => el.innerHTML = '', 3000);
-  } catch(e) {
-    el.innerHTML = `<span style="color:var(--red2)">⚠ Error al guardar: ${e.message}</span>`;
-  }
+  const np = document.getElementById('new-pw').value.trim();
+  if (!np) return toast('Enter a new password', true);
+  const cloud = await adminCloudRead() || { wall: [], chat: [] };
+  cloud.adminPw = np;
+  await adminCloudWrite(cloud);
+  _adminPw = np;
+  document.getElementById('new-pw').value = '';
+  toast('Password saved to cloud ✓ — works on all devices immediately');
 }
 
-// ── Init ─────────────────────────────────────────────────────────────────────
-async function initPanel() {
-  loadConfigFields();
-  updateConfigBadge();
-  populateTeamSelects();
-  document.getElementById('dash-link-box').textContent =
-    FWC.BASE_URL + '/dashboard.html';
-  if (FWC.isConfigured()) {
-    await loadStoreData();
-  }
-}
+// ─── THEO PASSWORD ──────────────────────────────────────────────────────────
+const THEO_PW_KEY = 'wc2026_theo_pw';
+const THEO_DEFAULT_PW = 'liverpool';
+let theoPwVisible = false;
 
-function loadConfigFields() {
-  document.getElementById('cfg-bin-id').value   = FWC.BIN_ID;
-  document.getElementById('cfg-bin-key').value  = FWC.BIN_KEY;
-  document.getElementById('cfg-fd-key').value   = FWC.FD_KEY;
-  document.getElementById('cfg-ej-service').value  = FWC.EJ_SERVICE;
-  document.getElementById('cfg-ej-template').value = FWC.EJ_TEMPLATE;
-  document.getElementById('cfg-ej-public').value   = FWC.EJ_PUBLIC;
-}
+function getTheoPw() { return localStorage.getItem(THEO_PW_KEY) || THEO_DEFAULT_PW; }
 
-function updateConfigBadge() {
-  const el = document.getElementById('config-status-badge');
-  if (FWC.isConfigured()) {
-    el.className = 'status-tag ok'; el.textContent = '✓ JSONBin configurado';
-  } else {
-    el.className = 'status-tag warn'; el.textContent = '⚠ JSONBin no configurado';
-  }
-}
+// ─── THEO PROFILE ────────────────────────────────────────────────────────
+const TP_AVATARS = ['⚽','🦁','⚡','🔥','💪','👑','🦅','🌟','🐯','🦊','🎯','🏆'];
+let tpAvatar = '⚽';
 
-async function loadStoreData() {
-  try {
-    _storeData = await FWCStore.read();
-    // Sync EmailJS config from cloud → localStorage (works on any device with just BIN_ID+KEY)
-    const c = _storeData._config;
-    if (c) {
-      if (!FWC.EJ_SERVICE  && c.ej_service)  FWC.set('ej_service',  c.ej_service);
-      if (!FWC.EJ_TEMPLATE && c.ej_template) FWC.set('ej_template', c.ej_template);
-      if (!FWC.EJ_PUBLIC   && c.ej_public)   FWC.set('ej_public',   c.ej_public);
-      loadConfigFields();
-    }
-    renderParticipants();
-    renderSettings();
-    renderPodiumSelects();
-    renderResultsTab();
-  } catch (e) {
-    console.error('loadStoreData:', e);
-  }
-}
-
-// ── Tabs ─────────────────────────────────────────────────────────────────────
-function showTab(key) {
-  document.querySelectorAll('.tab-btn').forEach((b, i) => {
-    b.classList.toggle('active', b.textContent.toLowerCase().includes(key) ||
-      ['config','participantes','competencia','herramientas'][i] === key);
+function renderProfileAdmin() {
+  const p = state.profile || {};
+  const g = id => document.getElementById(id);
+  if (!g('tp-name')) return;
+  g('tp-name').value = p.name || '';
+  g('tp-nick').value = p.nick || '';
+  g('tp-pos').value = p.pos || 'FWD';
+  g('tp-num').value = p.num || 9;
+  g('tp-dob').value = p.dob || '';
+  g('tp-nat').value = p.nat || '';
+  g('tp-foot').value = p.foot || 'Right';
+  g('tp-club').value = p.club || 'Liverpool FC';
+  g('tp-bio').value = p.bio || '';
+  ['pac','sho','pas','dri','def','phy'].forEach(s => {
+    const el = g('tp-' + s);
+    el.value = p[s] || 80;
+    el.addEventListener('input', updateOverall);
   });
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  document.getElementById('tab-' + key).classList.add('active');
-  if (key === 'participantes' && FWC.isConfigured() && !_storeData) loadStoreData();
-  if (key === 'competencia'   && FWC.isConfigured() && !_storeData) loadStoreData();
-  if (key === 'resultados') { if (FWC.isConfigured() && !_storeData) loadStoreData().then(renderResultsTab); else renderResultsTab(); }
+  tpAvatar = p.avatar || '⚽';
+  renderAvatarPicker();
+  updateOverall();
 }
 
-// ── Config ────────────────────────────────────────────────────────────────────
-async function saveConfig() {
-  FWC.set('bin_id',      document.getElementById('cfg-bin-id').value.trim());
-  FWC.set('bin_key',     document.getElementById('cfg-bin-key').value.trim());
-  FWC.set('fd_key',      document.getElementById('cfg-fd-key').value.trim());
-  FWC.set('ej_service',  document.getElementById('cfg-ej-service').value.trim());
-  FWC.set('ej_template', document.getElementById('cfg-ej-template').value.trim());
-  FWC.set('ej_public',   document.getElementById('cfg-ej-public').value.trim());
-  updateConfigBadge();
-  if (FWC.isConfigured()) {
-    try {
-      // Write config to JSONBin so any device can load it with just BIN_ID + BIN_KEY
-      await FWCStore.update(data => ({
-        ...data,
-        _config: {
-          ...(data._config || {}),   // preserve admin_pw and other fields
-          ej_service:  FWC.EJ_SERVICE,
-          ej_template: FWC.EJ_TEMPLATE,
-          ej_public:   FWC.EJ_PUBLIC,
-        }
-      }));
-      showToast('✓ Configuración guardada y sincronizada en la nube ☁️');
-    } catch(e) {
-      showToast('✓ Guardado localmente (error al sincronizar: ' + e.message + ')');
-    }
-    loadStoreData();
-  } else {
-    showToast('✓ Configuración guardada — ingresa BIN_ID y Key para sincronizar');
-  }
+function updateOverall() {
+  const vals = ['pac','sho','pas','dri','def','phy'].map(s => Math.min(99, Math.max(1, +document.getElementById('tp-'+s).value || 80)));
+  const avg = Math.round(vals.reduce((a,b) => a+b, 0) / vals.length);
+  const el = document.getElementById('tp-overall');
+  if (el) el.textContent = avg;
 }
 
-async function testJsonBin() {
-  const el = document.getElementById('jsonbin-status');
-  const id  = document.getElementById('cfg-bin-id').value.trim();
-  const key = document.getElementById('cfg-bin-key').value.trim();
-  if (!id || !key) { el.innerHTML = '<span style="color:var(--red2)">Rellena ID y Key primero</span>'; return; }
-  el.innerHTML = '<span style="color:var(--gold)">Probando…</span>';
+function renderAvatarPicker() {
+  const row = document.getElementById('tp-avatar-row');
+  if (!row) return;
+  row.innerHTML = TP_AVATARS.map(a => `<button class="av-btn${a===tpAvatar?' active':''}" onclick="pickAvatarAdmin('${a}',this)">${a}</button>`).join('');
+}
+
+function pickAvatarAdmin(a, el) {
+  tpAvatar = a;
+  document.querySelectorAll('.av-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function saveProfileAdmin() {
+  const g = id => document.getElementById(id);
+  const clamp = v => Math.min(99, Math.max(1, +v || 80));
+  state.profile = {
+    name: g('tp-name').value.trim() || 'Theo',
+    nick: g('tp-nick').value.trim(),
+    pos: g('tp-pos').value,
+    num: +g('tp-num').value || 9,
+    dob: g('tp-dob').value,
+    nat: g('tp-nat').value.trim(),
+    foot: g('tp-foot').value,
+    club: g('tp-club').value.trim() || 'Liverpool FC',
+    bio: g('tp-bio').value.trim(),
+    avatar: tpAvatar,
+    pac: clamp(g('tp-pac').value), sho: clamp(g('tp-sho').value),
+    pas: clamp(g('tp-pas').value), dri: clamp(g('tp-dri').value),
+    def: clamp(g('tp-def').value), phy: clamp(g('tp-phy').value),
+  };
+  Store.save(state);
+  toast("Theo's card saved ✓ — export JSON + push to sync");
+}
+
+// ─── CLOUD SYNC (JSONBin) ─────────────────────────────────────────────────────
+const BIN_ID_KEY = 'wc2026_bin_id';
+const BIN_KEY_KEY = 'wc2026_bin_key';
+
+function renderBinConfig() {
+  const id = localStorage.getItem(BIN_ID_KEY) || '';
+  const key = localStorage.getItem(BIN_KEY_KEY) || '';
+  const bi = document.getElementById('bin-id');
+  const bk = document.getElementById('bin-key');
+  if (bi) bi.value = id;
+  if (bk) bk.value = key;
+  const s = document.getElementById('bin-status');
+  if (s) s.textContent = id ? '✓ Cloud sync active — bin: ' + id : '⚠ Not configured — Theo\'s notes are device-only until you set this up';
+}
+
+function saveBinConfig() {
+  const id = document.getElementById('bin-id').value.trim();
+  const key = document.getElementById('bin-key').value.trim();
+  localStorage.setItem(BIN_ID_KEY, id);
+  localStorage.setItem(BIN_KEY_KEY, key);
+  if (state) { state.binId = id; state.binKey = key; Store.save(state); }
+  renderBinConfig();
+  toast(id ? 'Cloud sync saved — export state.json + push so Theo\'s device gets it' : 'Cloud sync disabled');
+}
+
+async function createNewBin() {
+  const key = document.getElementById('bin-key').value.trim();
+  if (!key) return toast('Paste your Master Key first', true);
   try {
-    const res = await fetch(`https://api.jsonbin.io/v3/b/${id}/latest`, {
-      headers: { 'X-Master-Key': key, 'X-Bin-Meta': 'false' }
+    const r = await fetch('https://api.jsonbin.io/v3/b', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Master-Key': key, 'X-Bin-Name': 'theo-wc2026' },
+      body: JSON.stringify({ wall: [], chat: [] })
     });
-    if (res.ok) {
-      el.innerHTML = '<span style="color:var(--green2)">✓ Conexión exitosa — bin accesible</span>';
+    if (!r.ok) { const e = await r.text(); return toast('Failed — check master key: ' + r.status, true); }
+    const data = await r.json();
+    const binId = data.metadata && data.metadata.id;
+    if (binId) {
+      document.getElementById('bin-id').value = binId;
+      saveBinConfig();
+      toast('Bin created — ID auto-filled ✓');
     } else {
-      el.innerHTML = `<span style="color:var(--red2)">⚠ Error ${res.status} — verifica ID y Key</span>`;
+      toast('Created but no ID returned — check jsonbin.io', true);
     }
-  } catch (e) {
-    el.innerHTML = `<span style="color:var(--red2)">⚠ Error de red: ${e.message}</span>`;
+  } catch { toast('Network error creating bin', true); }
+}
+
+async function viewTheoContent() {
+  const id = localStorage.getItem(BIN_ID_KEY);
+  const key = localStorage.getItem(BIN_KEY_KEY);
+  if (!id || !key) return toast('Set up cloud sync first', true);
+  const panel = document.getElementById('theo-content-panel');
+  panel.style.display = 'block';
+  panel.innerHTML = '<p style="color:var(--muted);font-size:0.85rem">Loading...</p>';
+  try {
+    const r = await fetch('https://api.jsonbin.io/v3/b/' + id + '/latest', { headers: { 'X-Master-Key': key } });
+    if (!r.ok) throw new Error('bad response');
+    const rec = (await r.json()).record;
+    const chat = rec.chat || [];
+    const wall = rec.wall || [];
+    const chatHtml = chat.length
+      ? chat.slice(-30).reverse().map(m => `<div style="background:var(--card2);border-radius:8px;padding:7px 12px;margin-bottom:6px;font-size:0.85rem"><span style="color:var(--gold);font-size:0.72rem">${m.time || ''}${m.ts ? ' · ' + new Date(m.ts).toLocaleDateString() : ''}</span><br>${m.text}</div>`).join('')
+      : '<p style="color:var(--muted);font-size:0.85rem">No messages yet</p>';
+    const wallHtml = wall.length
+      ? wall.slice().reverse().map(w => {
+          const date = w.ts ? new Date(w.ts).toLocaleDateString('en-GB',{day:'numeric',month:'short'}) : '';
+          if (w.type === 'note') return `<div style="background:var(--card2);border-radius:8px;padding:9px 12px;margin-bottom:8px;font-size:0.85rem">${w.title?`<strong style="color:${w.color}">${w.title}</strong><br>`:''}<span style="color:${w.color||'inherit'}">${w.text}</span><div style="font-size:0.7rem;color:var(--muted);margin-top:4px">${date}</div></div>`;
+          if (w.type === 'sticker') return `<div style="background:var(--card2);border-radius:8px;padding:9px 12px;margin-bottom:8px;font-size:0.85rem">${w.emoji}${w.text?' — '+w.text:''}<div style="font-size:0.7rem;color:var(--muted);margin-top:4px">${date}</div></div>`;
+          return '';
+        }).filter(Boolean).join('')
+      : '<p style="color:var(--muted);font-size:0.85rem">No wall posts yet</p>';
+    panel.innerHTML = `
+      <div style="border-top:1px solid var(--border);padding-top:14px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <h4 style="font-size:0.9rem;color:var(--gold)">💬 Chat Messages (last 30)</h4>
+          <span style="font-size:0.75rem;color:var(--muted)">${chat.length} total</span>
+        </div>
+        <div style="max-height:240px;overflow-y:auto">${chatHtml}</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin:14px 0 10px">
+          <h4 style="font-size:0.9rem;color:var(--gold)">📋 Wall Posts (text & stickers)</h4>
+          <span style="font-size:0.75rem;color:var(--muted)">${wall.length} total</span>
+        </div>
+        <div style="max-height:280px;overflow-y:auto">${wallHtml}</div>
+        <p style="font-size:0.72rem;color:var(--muted);margin-top:10px">ℹ Drawings and photos are device-local only. Notes and stickers sync here.</p>
+      </div>`;
+  } catch { panel.innerHTML = '<p style="color:var(--red);font-size:0.85rem">Failed to load — check config</p>'; }
+}
+
+function renderNtfyTopic() {
+  const t = localStorage.getItem('wc2026_ntfy_topic') || '';
+  const inp = document.getElementById('ntfy-topic');
+  if (inp) inp.value = t;
+  const s = document.getElementById('ntfy-status');
+  if (s) s.textContent = t ? '✓ Notifications active — topic: ' + t : '⚠ Not set — you won\'t receive chat notifications from Theo';
+}
+
+function saveNtfyTopic() {
+  const t = document.getElementById('ntfy-topic').value.trim();
+  localStorage.setItem('wc2026_ntfy_topic', t);
+  if (state) { state.ntfyTopic = t; Store.save(state); }
+  renderNtfyTopic();
+  toast(t ? 'Notifications enabled ✓ — export state.json + push so Theo\'s device gets it' : 'Notifications disabled');
+}
+
+async function testNtfy() {
+  const t = document.getElementById('ntfy-topic').value.trim();
+  if (!t) return toast('Enter a topic name first', true);
+  try {
+    const r = await fetch('https://ntfy.sh/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ topic: t, title: 'Test from Admin Panel ✓', message: 'Notifications are working! Theo\'s messages will now reach you. 🎉⚽', tags: ['white_check_mark'] })
+    });
+    if (r.ok) toast('Test notification sent ✓');
+    else toast('ntfy returned error ' + r.status, true);
+  } catch (e) { toast('Failed — network error: ' + e.message, true); }
+}
+
+function renderTheoPw() {
+  const display = document.getElementById('theo-pw-display');
+  if (display) display.textContent = theoPwVisible ? getTheoPw() : '••••••••';
+}
+
+function toggleTheoPwVisibility() {
+  theoPwVisible = !theoPwVisible;
+  document.getElementById('theo-pw-toggle').textContent = theoPwVisible ? '🙈 Hide' : '👁 Show';
+  renderTheoPw();
+}
+
+function changeTheoPw() {
+  const np = document.getElementById('theo-new-pw').value.trim();
+  if (!np) return toast('Enter a password for Theo', true);
+  localStorage.setItem(THEO_PW_KEY, np);
+  document.getElementById('theo-new-pw').value = '';
+  renderTheoPw();
+  toast("Theo's password updated ✓");
+}
+
+// ─── STATE ──────────────────────────────────────────────────────────────────
+let state;
+
+function initApp() {
+  state = Store.load();
+  renderAll();
+  renderTheoPw();
+  renderNtfyTopic();
+  renderProfileAdmin();
+  renderBinConfig();
+}
+
+function renderAll() {
+  renderOverview();
+  renderGroups('pred-groups', 'prediction');
+  renderGroups('result-groups', 'result');
+  renderPodiumEditor();
+}
+
+// ─── TABS ────────────────────────────────────────────────────────────────────
+function showTab(name) {
+  document.querySelectorAll('.tab').forEach((t, i) => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  const tabs = ['overview','predictions','results','podium','theo','sync','chat'];
+  const idx = tabs.indexOf(name);
+  document.querySelectorAll('.tab')[idx].classList.add('active');
+  document.getElementById('panel-' + name).classList.add('active');
+  if (name === 'chat') initAdminChat();
+}
+
+// ─── OVERVIEW ───────────────────────────────────────────────────────────────
+function renderOverview() {
+  const bd = Scoring.breakdown(state);
+  const played = bd.filter(b => b.result);
+  const withPred = played.filter(b => b.prediction);
+  const correct = withPred.filter(b => b.points > 0);
+  const exact = withPred.filter(b => {
+    const p = b.prediction, r = b.result;
+    return p && r && p.home === r.home && p.away === r.away;
+  });
+  const total = Scoring.totalPoints(state);
+
+  document.getElementById('stats-row').innerHTML = [
+    { sv: total, sl: 'Total points', cls: 'gold' },
+    { sv: played.length, sl: 'Matches played', cls: '' },
+    { sv: Object.values(state.predictions).filter(Boolean).length, sl: 'Predicted', cls: '' },
+    { sv: correct.length, sl: 'Correct outcome', cls: 'green' },
+    { sv: exact.length, sl: 'Exact score', cls: 'green' },
+    { sv: withPred.length - correct.length, sl: 'Wrong result', cls: 'red' },
+  ].map(s => `<div class="stat-box"><div class="sv ${s.cls}">${s.sv}</div><div class="sl">${s.sl}</div></div>`).join('');
+
+  // Per-group mini tables
+  const grid = document.getElementById('overview-grid');
+  grid.innerHTML = Object.entries(WC2026.groups).map(([key, group]) => {
+    const rows = group.matches.map(m => {
+      const pred = state.predictions[m.id];
+      const res  = state.results[m.id];
+      const pts  = Scoring.matchPoints(pred, res);
+      const ht = WC2026.team(m.home), at = WC2026.team(m.away);
+      return `<div class="overview-match">
+        <span class="ov-teams">${WC2026.fi(m.home,14)} ${ht.name.split(' ')[0]} vs ${at.name.split(' ')[0]} ${WC2026.fi(m.away,14)}</span>
+        <span class="ov-pred">${pred ? pred.home + '–' + pred.away : '—'}</span>
+        <span class="ov-result">${res ? res.home + '–' + res.away : '—'}</span>
+        <span class="ov-pts ${pts > 0 ? 'positive' : ''}">${pts != null ? '+' + pts : ''}</span>
+      </div>`;
+    }).join('');
+    return `<div class="overview-card"><h4>Group ${key}</h4>${rows}</div>`;
+  }).join('');
+}
+
+// ─── MATCH GROUPS ────────────────────────────────────────────────────────────
+function renderGroups(containerId, mode) {
+  const container = document.getElementById(containerId);
+  const isPred = mode === 'prediction';
+
+  container.innerHTML = Object.entries(WC2026.groups).map(([key, group]) => {
+    const rows = group.matches.map(m => {
+      const val  = isPred ? state.predictions[m.id] : state.results[m.id];
+      const pred = state.predictions[m.id];
+      const res  = state.results[m.id];
+      const pts  = Scoring.matchPoints(pred, res);
+      const ht = WC2026.team(m.home), at = WC2026.team(m.away);
+      const homeVal = val ? val.home : '';
+      const awayVal = val ? val.away : '';
+      const dataId = `${mode}-${m.id}`;
+
+      const ptsHtml = pts != null
+        ? `<span class="pts-badge earned">+${pts}</span>`
+        : (res && pred ? `<span class="pts-badge zero">0</span>` : `<span class="pts-badge pending">—</span>`);
+
+      return `<tr id="row-${dataId}">
+        <td><span class="status-dot ${res ? 'played' : 'upcoming'}"></span></td>
+        <td class="match-date-cell">${m.date.slice(5)} ${m.time}</td>
+        <td><div class="team-cell">${WC2026.fi(m.home,18)} ${ht.name}</div></td>
+        <td>
+          <div class="score-inputs">
+            <input type="number" min="0" max="30" class="score-input" id="${dataId}-h" value="${homeVal}" placeholder="—" onchange="onInputChange('${m.id}','${mode}')">
+            <span class="score-sep">–</span>
+            <input type="number" min="0" max="30" class="score-input" id="${dataId}-a" value="${awayVal}" placeholder="—" onchange="onInputChange('${m.id}','${mode}')">
+          </div>
+        </td>
+        <td><div class="team-cell">${WC2026.fi(m.away,18)} ${at.name}</div></td>
+        ${isPred ? `<td id="pts-${m.id}">${ptsHtml}</td>` : `<td id="pts-${m.id}">${ptsHtml}</td>`}
+        <td>
+          <button class="save-row-btn" onclick="saveRow('${m.id}','${mode}')">Save</button>
+          <button class="clear-btn" onclick="clearRow('${m.id}','${mode}')">✕</button>
+        </td>
+      </tr>`;
+    }).join('');
+
+    return `<div class="group-section">
+      <h3>Group ${key} <span style="display:inline-flex;gap:4px;vertical-align:middle">${group.teams.map(t => WC2026.fi(t,16)).join('')}</span></h3>
+      <table class="match-table">
+        <thead><tr>
+          <th></th><th>Date / Time</th><th>Home</th>
+          <th>${isPred ? 'Our prediction' : 'Real result'}</th>
+          <th>Away</th><th>Pts</th><th></th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
+  }).join('');
+}
+
+function onInputChange(matchId, mode) {
+  // Live pts preview for prediction inputs when result exists
+  if (mode === 'prediction') {
+    const hEl = document.getElementById(`prediction-${matchId}-h`);
+    const aEl = document.getElementById(`prediction-${matchId}-a`);
+    const h = parseInt(hEl.value), a = parseInt(aEl.value);
+    if (!isNaN(h) && !isNaN(a)) {
+      const pred = { home: h, away: a };
+      const res = state.results[matchId];
+      const pts = Scoring.matchPoints(pred, res);
+      const el = document.getElementById(`pts-${matchId}`);
+      if (el && pts != null) el.innerHTML = `<span class="pts-badge earned">+${pts}</span>`;
+    }
   }
 }
 
-async function testFDAPI() {
-  const el  = document.getElementById('fdapi-status');
-  const key = document.getElementById('cfg-fd-key').value.trim() || FWC.FD_KEY;
-  el.innerHTML = '<span style="color:var(--gold)">Probando…</span>';
-  try {
-    const res = await fetch('https://api.football-data.org/v4/competitions/WC', {
-      headers: { 'X-Auth-Token': key }
-    });
-    if (res.ok) {
-      const d = await res.json();
-      el.innerHTML = `<span style="color:var(--green2)">✓ API OK — competencia: ${d.name || 'WC 2026'}</span>`;
+function saveRow(matchId, mode) {
+  const hEl = document.getElementById(`${mode}-${matchId}-h`);
+  const aEl = document.getElementById(`${mode}-${matchId}-a`);
+  const h = parseInt(hEl.value), a = parseInt(aEl.value);
+
+  if (isNaN(h) || isNaN(a)) {
+    if (mode === 'result') {
+      delete state.results[matchId];
     } else {
-      el.innerHTML = `<span style="color:var(--red2)">⚠ Error ${res.status} — verifica la key</span>`;
+      delete state.predictions[matchId];
     }
-  } catch (e) {
-    el.innerHTML = `<span style="color:var(--red2)">⚠ Error de red</span>`;
-  }
-}
-
-async function testEmailJS() {
-  const el = document.getElementById('emailjs-status');
-  const pub = document.getElementById('cfg-ej-public').value.trim();
-  if (!pub) { el.innerHTML = '<span style="color:var(--red2)">Guarda el Public Key primero</span>'; return; }
-  el.innerHTML = '<span style="color:var(--gold)">Enviando email de prueba…</span>';
-  try {
-    emailjs.init(pub);
-    const svc = document.getElementById('cfg-ej-service').value.trim();
-    const tpl = document.getElementById('cfg-ej-template').value.trim();
-    await emailjs.send(svc, tpl, {
-      to_name:  'Admin Test',
-      to_email: 'soyconscienciaelevada@gmail.com',
-      link:     FWC.BASE_URL + '/predicciones.html?t=TEST',
-    });
-    el.innerHTML = '<span style="color:var(--green2)">✓ Email de prueba enviado a soyconscienciaelevada@gmail.com</span>';
-  } catch (e) {
-    el.innerHTML = `<span style="color:var(--red2)">⚠ ${e?.text || e.message || 'Error desconocido'}</span>`;
-  }
-}
-
-// ── Participants ──────────────────────────────────────────────────────────────
-function renderParticipants() {
-  if (!_storeData) return;
-  const ps = _storeData.participants || [];
-
-  const stats = document.getElementById('p-stats');
-  const predCounts = ps.map(p => Object.keys((_storeData.predictions?.[p.token] || {}).matches || {}).length);
-  stats.innerHTML = [
-    { v: ps.length, l: 'registrados' },
-    { v: ps.filter(p => (_storeData.predictions?.[p.token]?.matches) && Object.keys(_storeData.predictions[p.token].matches).length > 0).length, l: 'con predicciones' },
-    { v: (_storeData.reglas || []).filter(Boolean).length, l: 'reglas sugeridas' },
-  ].map(s => `<div class="stat-chip"><div class="sc-val">${s.v}</div><div class="sc-lbl">${s.l}</div></div>`).join('');
-
-  const wrap = document.getElementById('participants-table-wrap');
-  if (!ps.length) {
-    wrap.innerHTML = '<p style="color:var(--muted);font-size:.875rem">Ningún participante registrado aún.</p>';
+    Store.save(state);
+    renderOverview();
+    toast('Cleared ✓');
     return;
   }
 
-  wrap.innerHTML = `<div style="overflow-x:auto">
-    <table class="participants-table">
-      <thead><tr>
-        <th>Nombre</th><th>Email</th><th>Predicciones</th><th>Puntos</th><th>Regla sugerida</th><th></th>
-      </tr></thead>
-      <tbody>
-        ${ps.map(p => {
-          const preds = Object.keys((_storeData.predictions?.[p.token] || {}).matches || {}).length;
-          const pts   = FWCScoring.totalForToken(p.token, _storeData.predictions || {}, {}, null);
-          const date  = new Date(p.registeredAt).toLocaleDateString('es-ES', { day:'numeric', month:'short' });
-          return `<tr>
-            <td><strong>${escHtml(p.nombre)}</strong><br><span class="p-token">${p.token.slice(0,8)}…</span></td>
-            <td>${escHtml(p.email)}<br><span class="p-link" onclick="copyLink('${p.token}')" title="Copiar enlace">🔗 ${FWC.PRED_URL.replace(/^https?:\/\//,'')}?t=${p.token.slice(0,8)}…</span></td>
-            <td style="text-align:center">${preds}</td>
-            <td style="text-align:center;color:var(--gold);font-family:'Oswald',sans-serif;font-size:1rem">${pts}</td>
-            <td style="font-size:.78rem;color:var(--muted)">${p.regla ? escHtml(p.regla) : '—'}</td>
-            <td>
-              <button class="btn btn-secondary btn-sm" onclick="resendEmail('${p.token}')">📧</button>
-              <button class="btn btn-danger btn-sm" style="margin-left:4px" onclick="removeParticipant('${p.token}')">🗑</button>
-            </td>
-          </tr>`;
-        }).join('')}
-      </tbody>
-    </table>
-  </div>`;
-}
-
-async function resendEmail(token) {
-  if (!_storeData) return;
-  const p = FWCStore.findByToken(_storeData, token);
-  if (!p) return;
-  const link = FWC.PRED_URL + '?t=' + token;
-  try {
-    emailjs.init(FWC.EJ_PUBLIC);
-    await emailjs.send(FWC.EJ_SERVICE, FWC.EJ_TEMPLATE, { to_name: p.nombre, to_email: p.email, link });
-    showToast(`✓ Email reenviado a ${p.email}`);
-  } catch (e) {
-    showToast(`⚠ Error al enviar: ${e?.text || e.message}`, 'error');
-  }
-}
-
-async function removeParticipant(token) {
-  if (!_storeData) return;
-  const p = FWCStore.findByToken(_storeData, token);
-  if (!p || !confirm(`¿Eliminar a ${p.nombre}? Esto borrará también sus predicciones.`)) return;
-  _storeData.participants = _storeData.participants.filter(x => x.token !== token);
-  delete _storeData.predictions[token];
-  try {
-    await FWCStore.write(_storeData);
-    renderParticipants();
-    showToast(`✓ ${p.nombre} eliminado`);
-  } catch (e) {
-    showToast('⚠ Error al guardar: ' + e.message, 'error');
-  }
-}
-
-// ── Settings ─────────────────────────────────────────────────────────────────
-function renderSettings() {
-  if (!_storeData) return;
-  const s = _storeData.settings || {};
-  document.getElementById('tog-reg').checked  = !!s.registrationOpen;
-  document.getElementById('tog-pred').checked = !!s.predictionsOpen;
-}
-
-async function saveSettings() {
-  if (!_storeData) return;
-  _storeData.settings = _storeData.settings || {};
-  _storeData.settings.registrationOpen = document.getElementById('tog-reg').checked;
-  _storeData.settings.predictionsOpen  = document.getElementById('tog-pred').checked;
-  try {
-    await FWCStore.write(_storeData);
-    const el = document.getElementById('settings-status');
-    el.innerHTML = '<span style="color:var(--green2)">✓ Guardado</span>';
-    setTimeout(() => el.innerHTML = '', 2000);
-  } catch (e) {
-    const el = document.getElementById('settings-status');
-    el.innerHTML = `<span style="color:var(--red2)">⚠ ${e.message}</span>`;
-  }
-}
-
-// ── Podium ────────────────────────────────────────────────────────────────────
-const ALL_TEAMS = Object.entries(WC2026.teams).sort((a,b) => a[1].name.localeCompare(b[1].name));
-
-function populateTeamSelects() {
-  const opts = `<option value="">— Selecciona —</option>` +
-    ALL_TEAMS.map(([c,t]) => `<option value="${c}">${t.flag} ${t.name}</option>`).join('');
-  ['pod-first','pod-second','pod-third'].forEach(id => {
-    document.getElementById(id).innerHTML = opts;
-  });
-}
-
-function renderPodiumSelects() {
-  if (!_storeData) return;
-  const p = _storeData.settings?.actualPodium || {};
-  document.getElementById('pod-first').value  = p.first  || '';
-  document.getElementById('pod-second').value = p.second || '';
-  document.getElementById('pod-third').value  = p.third  || '';
-}
-
-async function savePodium() {
-  if (!_storeData) { showToast('⚠ Configura JSONBin primero', 'error'); return; }
-  const first  = document.getElementById('pod-first').value;
-  const second = document.getElementById('pod-second').value;
-  const third  = document.getElementById('pod-third').value;
-  if (!first || !second || !third) { showToast('⚠ Selecciona los 3 lugares', 'error'); return; }
-  _storeData.settings = _storeData.settings || {};
-  _storeData.settings.actualPodium = { first, second, third };
-  try {
-    await FWCStore.write(_storeData);
-    const el = document.getElementById('podium-status');
-    el.innerHTML = '<span style="color:var(--green2)">✓ Podio guardado — puntos actualizados en dashboard</span>';
-    showToast('✓ Podio real guardado');
-  } catch (e) {
-    showToast('⚠ Error al guardar: ' + e.message, 'error');
-  }
-}
-
-async function clearPodium() {
-  if (!_storeData || !confirm('¿Limpiar el podio real?')) return;
-  _storeData.settings.actualPodium = null;
-  await FWCStore.write(_storeData);
-  renderPodiumSelects();
-  showToast('Podio limpiado');
-}
-
-// ── Results tab ───────────────────────────────────────────────────────────────
-function renderResultsTab() {
-  const form  = document.getElementById('results-form');
-  if (!form) return;
-  const saved = _storeData?.results || {};
-  const today = new Date().toISOString().slice(0, 10);
-
-  const byDate = {};
-  WC2026.allMatches.forEach(m => {
-    if (!byDate[m.date]) byDate[m.date] = [];
-    byDate[m.date].push(m);
-  });
-
-  const months = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
-  function fmtDate(d) {
-    const [,mm,dd] = d.split('-');
-    return `${parseInt(dd)} ${months[parseInt(mm)-1]}`;
-  }
-
-  form.innerHTML = Object.entries(byDate)
-    .sort(([a],[b]) => a.localeCompare(b))
-    .map(([date, matches]) => {
-      const isPast = date <= today;
-      const rows = matches.map(m => {
-        const ht  = WC2026.team(m.home);
-        const at  = WC2026.team(m.away);
-        const res = saved[m.id];
-        return `<div class="result-row ${isPast ? '' : 'future-match'}">
-          <span class="rr-team">${WC2026.fi(m.home, 16)} ${ht.name}</span>
-          <input type="number" min="0" max="20" class="score-input" id="r_${m.id}_h" value="${res != null ? res.home : ''}" placeholder="—">
-          <span class="rr-vs">:</span>
-          <input type="number" min="0" max="20" class="score-input" id="r_${m.id}_a" value="${res != null ? res.away : ''}" placeholder="—">
-          <span class="rr-team right">${at.name} ${WC2026.fi(m.away, 16)}</span>
-          <span class="rr-time">${m.time} hs</span>
-        </div>`;
-      }).join('');
-      return `<div class="date-group">
-        <div class="date-header">${isPast ? '✓' : '⏳'} ${fmtDate(date)} — ${matches.length} partido${matches.length>1?'s':''}</div>
-        ${rows}
-      </div>`;
-    }).join('');
-}
-
-async function saveAllResults() {
-  const el = document.getElementById('results-save-status');
-  el.innerHTML = '<span style="color:var(--gold)">Guardando…</span>';
-  const results = {};
-  WC2026.allMatches.forEach(m => {
-    const hEl = document.getElementById(`r_${m.id}_h`);
-    const aEl = document.getElementById(`r_${m.id}_a`);
-    if (!hEl || !aEl) return;
-    const h = hEl.value, a = aEl.value;
-    if (h !== '' && a !== '') {
-      results[m.id] = { home: parseInt(h, 10), away: parseInt(a, 10) };
-    }
-  });
-  try {
-    _storeData = await FWCStore.update(data => ({ ...data, results }));
-    el.innerHTML = '<span style="color:var(--green2)">✓ Guardado</span>';
-    setTimeout(() => el.innerHTML = '', 3000);
-  } catch(e) {
-    el.innerHTML = `<span style="color:var(--red2)">⚠ ${e.message}</span>`;
-  }
-}
-
-// ── Import predictions ────────────────────────────────────────────────────────
-function _findParticipant() {
-  const email = document.getElementById('imp-email').value.trim().toLowerCase();
-  const el = document.getElementById('imp-status');
-  if (!email) { el.innerHTML = '<span style="color:var(--red2)">Escribe un email</span>'; return null; }
-  if (!_storeData) { el.innerHTML = '<span style="color:var(--red2)">Datos no cargados — espera un momento</span>'; return null; }
-  const p = (_storeData.participants || []).find(x => x.email.toLowerCase() === email);
-  if (!p) { el.innerHTML = `<span style="color:var(--red2)">No se encontró participante con email: ${escHtml(email)}</span>`; return null; }
-  return p;
-}
-
-function findParticipantLink() {
-  const p = _findParticipant();
-  if (!p) return;
-  const link = FWC.BASE_URL + '/predicciones.html?t=' + p.token;
-  const box = document.getElementById('imp-link-box');
-  box.style.display = 'block';
-  box.innerHTML = `<strong style="color:var(--text)">${escHtml(p.nombre)}</strong><br>${link}<br><button class="btn btn-secondary btn-sm" style="margin-top:8px" onclick="navigator.clipboard.writeText('${link}').then(()=>showToast('✓ Enlace copiado'))">📋 Copiar</button>`;
-  document.getElementById('imp-status').innerHTML = '';
-}
-
-async function importPredictions() {
-  const p = _findParticipant();
-  if (!p) return;
-  const el = document.getElementById('imp-status');
-  const jsonRaw = document.getElementById('imp-json').value.trim();
-  const podiumRaw = document.getElementById('imp-podium').value.trim();
-  let matches = {}, podium = null;
-  if (jsonRaw) {
-    try {
-      const parsed = JSON.parse(jsonRaw);
-      // Accept full state file or just the predictions object
-      matches = parsed.predictions || parsed;
-      if (parsed.podium && !podiumRaw) podium = parsed.podium;
-    } catch { el.innerHTML = '<span style="color:var(--red2)">JSON de predicciones inválido</span>'; return; }
-  }
-  if (podiumRaw) {
-    try { podium = JSON.parse(podiumRaw); } catch { el.innerHTML = '<span style="color:var(--red2)">JSON del podio inválido</span>'; return; }
-  }
-  el.innerHTML = '<span style="color:var(--gold)">Guardando…</span>';
-  try {
-    _storeData = await FWCStore.update(data => {
-      const existing = data.predictions[p.token] || {};
-      data.predictions[p.token] = {
-        matches: { ...(existing.matches || {}), ...matches },
-        podium: podium || existing.podium || null,
-      };
-      return data;
-    });
-    el.innerHTML = `<span style="color:var(--green2)">✓ Predicciones importadas para ${escHtml(p.nombre)} — ${Object.keys(matches).length} partidos</span>`;
-  } catch(e) {
-    el.innerHTML = `<span style="color:var(--red2)">⚠ Error: ${e.message}</span>`;
-  }
-}
-
-// ── Tools ─────────────────────────────────────────────────────────────────────
-async function forceRefreshResults() {
-  const el = document.getElementById('results-preview');
-  el.textContent = 'Consultando API…';
-  const data = await FWCMatches.fetchResults();
-  if (data) {
-    const count = Object.keys(data.results).length;
-    const live  = data.live.length;
-    el.innerHTML = `<span style="color:var(--green2)">✓ ${count} resultados cargados${live ? ` · ${live} partidos en vivo` : ''}</span>`;
+  const val = { home: h, away: a };
+  if (mode === 'prediction') {
+    state.predictions[matchId] = val;
   } else {
-    el.innerHTML = '<span style="color:var(--red2)">⚠ No se pudo conectar a la API</span>';
+    state.results[matchId] = val;
   }
+
+  Store.save(state);
+  renderOverview();
+
+  // Update pts badge
+  const pred = state.predictions[matchId];
+  const res  = state.results[matchId];
+  const pts  = Scoring.matchPoints(pred, res);
+  const ptEl = document.getElementById(`pts-${matchId}`);
+  if (ptEl) ptEl.innerHTML = pts != null ? `<span class="pts-badge earned">+${pts}</span>` : '<span class="pts-badge pending">—</span>';
+
+  // Flash row
+  const row = document.getElementById(`row-${mode}-${matchId}`);
+  if (row) { row.classList.remove('row-saved'); void row.offsetWidth; row.classList.add('row-saved'); }
+
+  toast(`Saved: ${matchId} ✓`);
 }
 
-async function exportData() {
-  if (!_storeData) { showToast('⚠ Configura JSONBin primero', 'error'); return; }
-  const blob = new Blob([JSON.stringify(_storeData, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'mundial-familiar-data.json';
-  a.click();
+function clearRow(matchId, mode) {
+  document.getElementById(`${mode}-${matchId}-h`).value = '';
+  document.getElementById(`${mode}-${matchId}-a`).value = '';
+  if (mode === 'prediction') delete state.predictions[matchId];
+  else delete state.results[matchId];
+  Store.save(state);
+  renderOverview();
+  toast('Cleared ✓');
 }
 
-function copyLink(token) {
-  const link = FWC.PRED_URL + '?t=' + token;
-  navigator.clipboard.writeText(link).then(() => showToast('✓ Enlace copiado'));
-}
-
-function copyDashLink() {
-  navigator.clipboard.writeText(FWC.BASE_URL + '/dashboard.html').then(() => {
-    showToast('✓ Enlace copiado');
+// ─── SAVE ALL ────────────────────────────────────────────────────────────────
+function saveAll() {
+  // Sweep all visible inputs
+  ['prediction','result'].forEach(mode => {
+    WC2026.allMatches.forEach(m => {
+      const hEl = document.getElementById(`${mode}-${m.id}-h`);
+      const aEl = document.getElementById(`${mode}-${m.id}-a`);
+      if (!hEl || !aEl) return;
+      const h = parseInt(hEl.value), a = parseInt(aEl.value);
+      if (!isNaN(h) && !isNaN(a)) {
+        if (mode === 'prediction') state.predictions[m.id] = { home: h, away: a };
+        else state.results[m.id] = { home: h, away: a };
+      }
+    });
   });
+  Store.save(state);
+  renderAll();
+  toast('✅ All saved');
 }
 
-// ── Toast ─────────────────────────────────────────────────────────────────────
-function showToast(msg, type = 'ok') {
-  let t = document.getElementById('toast');
-  if (!t) {
-    t = document.createElement('div');
-    t.id = 'toast';
-    t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:12px 20px;font-size:.875rem;z-index:999;transition:opacity .3s';
-    document.body.appendChild(t);
+// ─── PODIUM EDITOR ───────────────────────────────────────────────────────────
+function renderPodiumEditor() {
+  const teamOptions = `<option value="">— select —</option>` +
+    Object.entries(WC2026.teams).map(([code, t]) =>
+      `<option value="${code}">${t.flag} ${t.name}</option>`).join('');
+
+  ['pod-first','pod-second','pod-third','actual-first','actual-second','actual-third'].forEach(id => {
+    document.getElementById(id).innerHTML = teamOptions;
+  });
+
+  const p = state.podium || {};
+  if (p.first)  document.getElementById('pod-first').value = p.first;
+  if (p.second) document.getElementById('pod-second').value = p.second;
+  if (p.third)  document.getElementById('pod-third').value = p.third;
+
+  const ap = state.actualPodium || {};
+  if (ap.first)  document.getElementById('actual-first').value = ap.first;
+  if (ap.second) document.getElementById('actual-second').value = ap.second;
+  if (ap.third)  document.getElementById('actual-third').value = ap.third;
+}
+
+function savePodium() {
+  state.podium = {
+    first:  document.getElementById('pod-first').value  || null,
+    second: document.getElementById('pod-second').value || null,
+    third:  document.getElementById('pod-third').value  || null,
+  };
+  Store.save(state);
+  renderOverview();
+  toast('Podium saved ✓');
+}
+
+function saveActualPodium() {
+  const f = document.getElementById('actual-first').value;
+  const s = document.getElementById('actual-second').value;
+  const t = document.getElementById('actual-third').value;
+  state.actualPodium = (f || s || t) ? { first: f||null, second: s||null, third: t||null } : null;
+  Store.save(state);
+  renderOverview();
+  toast('Actual podium saved ✓');
+}
+
+// ─── SYNC / EXPORT ───────────────────────────────────────────────────────────
+function downloadData() {
+  Store.downloadJSON(state);
+  toast('JSON downloaded ✓');
+}
+
+function copyJSON() {
+  navigator.clipboard.writeText(Store.export(state))
+    .then(() => toast('Copied to clipboard ✓'))
+    .catch(() => {
+      document.getElementById('import-area').value = Store.export(state);
+      showTab('sync');
+      toast('JSON in text area ✓');
+    });
+}
+
+function importData() {
+  const raw = document.getElementById('import-area').value.trim();
+  if (!raw) return toast('Empty area', true);
+  try {
+    state = Store.import(raw);
+    renderAll();
+    toast('✅ Data imported successfully');
+  } catch (e) {
+    toast('Invalid JSON: ' + e.message, true);
   }
-  t.textContent = msg;
-  t.style.color = type === 'error' ? 'var(--red2)' : 'var(--green2)';
-  t.style.opacity = '1';
-  clearTimeout(t._timer);
-  t._timer = setTimeout(() => t.style.opacity = '0', 3000);
 }
 
-function escHtml(str) {
-  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+// ─── TOAST ───────────────────────────────────────────────────────────────────
+let toastTimer;
+function toast(msg, isError = false) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show' + (isError ? ' error' : '');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
 }
 
-// Auto-login if already authenticated this session
-if (sessionStorage.getItem('fwc_admin_authed') === '1') {
-  document.getElementById('auth-screen').style.display = 'none';
-  document.getElementById('admin-panel').style.display = 'block';
-  initPanel();
-} else {
-  // Load cloud password before user attempts login
-  loadAdminPw();
+// ─── ADMIN CHAT ──────────────────────────────────────────────────────────────
+async function initAdminChat() {
+  const box = document.getElementById('admin-chat-messages');
+  box.innerHTML = '<p style="color:var(--muted);font-size:0.85rem">Loading from cloud...</p>';
+  const cloud = await adminCloudRead();
+  if (!cloud) { box.innerHTML = '<p style="color:var(--red);font-size:0.85rem">Could not reach cloud. Check connection.</p>'; return; }
+  const msgs = cloud.chat || [];
+  if (!msgs.length) { box.innerHTML = '<p style="color:var(--muted);font-size:0.85rem">No messages yet.</p>'; return; }
+  box.innerHTML = msgs.map(m => {
+    const isTheo = m.from === 'theo';
+    const align = isTheo ? 'left' : 'right';
+    const bg = isTheo ? 'rgba(200,16,46,0.15)' : 'rgba(255,255,255,0.07)';
+    const name = isTheo ? 'Theo' : 'You';
+    return `<div style="text-align:${align};margin-bottom:10px">
+      <span style="font-size:0.72rem;color:var(--muted)">${name} · ${m.time || ''}</span><br>
+      <span style="display:inline-block;background:${bg};border-radius:8px;padding:6px 12px;font-size:0.875rem;max-width:80%">${m.text}</span>
+    </div>`;
+  }).join('');
+  box.scrollTop = box.scrollHeight;
 }
 
-document.getElementById('auth-pw').addEventListener('keydown', e => {
-  if (e.key === 'Enter') login();
-});
+async function adminSendMsg() {
+  const input = document.getElementById('admin-chat-input');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  const msg = { from: 'joan', text, time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }), ts: Date.now() };
+  const cloud = await adminCloudRead() || { wall: [], chat: [] };
+  cloud.chat = (cloud.chat || []).concat([msg]).slice(-100);
+  await adminCloudWrite(cloud);
+  toast('Sent ✓');
+  initAdminChat();
+}
+
+async function adminWipeChat() {
+  if (!confirm('Wipe all chat messages? This cannot be undone.')) return;
+  const cloud = await adminCloudRead() || { wall: [], chat: [] };
+  cloud.chat = [];
+  await adminCloudWrite(cloud);
+  toast('Chat wiped ✓');
+  initAdminChat();
+}
+
+// ─── LIVE SCORES (ESPN public API — no key needed) ───────────────────────────
+const TEAM_NAME_MAP = {
+  // Full names
+  'Mexico':'MEX','South Korea':'KOR','Korea Republic':'KOR','Czech Republic':'CZE','Czechia':'CZE',
+  'South Africa':'RSA','Canada':'CAN','Bosnia and Herzegovina':'BOS','Bosnia & Herzegovina':'BOS',
+  'Qatar':'QAT','Switzerland':'SUI','Brazil':'BRA','Morocco':'MAR','Haiti':'HAI',
+  'Scotland':'SCO','United States':'USA','Paraguay':'PAR','Australia':'AUS',
+  'Turkey':'TUR','Türkiye':'TUR','Germany':'GER','Curaçao':'CUW','Curacao':'CUW',
+  "Côte d'Ivoire":'CIV','Ivory Coast':'CIV',
+  'Ecuador':'ECU','Netherlands':'NED','Japan':'JAP','Sweden':'SWE',
+  'Tunisia':'TUN','Belgium':'BEL','Egypt':'EGY','Iran':'IRN','IR Iran':'IRN',
+  'New Zealand':'NZL','Spain':'ESP','Cape Verde':'CPV','Saudi Arabia':'KSA',
+  'Uruguay':'URU','France':'FRA','Senegal':'SEN','Iraq':'IRA','Norway':'NOR',
+  'Argentina':'ARG','Algeria':'ALG','Austria':'AUT','Jordan':'JOR',
+  'Portugal':'POR','DR Congo':'COD','Congo DR':'COD','Democratic Republic of the Congo':'COD',
+  'Uzbekistan':'UZB','Colombia':'COL','England':'ENG','Croatia':'CRO','Ghana':'GHA','Panama':'PAN',
+  // ESPN abbreviations
+  'MEX':'MEX','KOR':'KOR','CZE':'CZE','RSA':'RSA','ZAF':'RSA',
+  'CAN':'CAN','BIH':'BOS','QAT':'QAT','SUI':'SUI','BRA':'BRA',
+  'MAR':'MAR','HAI':'HAI','SCO':'SCO','USA':'USA','PAR':'PAR',
+  'AUS':'AUS','TUR':'TUR','GER':'GER','CUW':'CUW','CIV':'CIV',
+  'ECU':'ECU','NED':'NED','JPN':'JAP','SWE':'SWE','TUN':'TUN',
+  'BEL':'BEL','EGY':'EGY','IRN':'IRN','NZL':'NZL','ESP':'ESP',
+  'CPV':'CPV','KSA':'KSA','URU':'URU','FRA':'FRA','SEN':'SEN',
+  'IRQ':'IRA','NOR':'NOR','ARG':'ARG','ALG':'ALG','AUT':'AUT',
+  'JOR':'JOR','POR':'POR','COD':'COD','UZB':'UZB','COL':'COL',
+  'ENG':'ENG','CRO':'CRO','GHA':'GHA','PAN':'PAN',
+};
+
+async function syncLiveScores() {
+  const statusEl   = document.getElementById('live-sync-status');
+  const syncSt     = document.getElementById('espn-api-status');
+  const setStatus  = t => { if (statusEl) statusEl.textContent = t; if (syncSt) syncSt.textContent = t; };
+
+  setStatus('⏳ Fetching from ESPN...');
+
+  const today = new Date().toISOString().slice(0, 10);
+  const dates = [...new Set(
+    WC2026.allMatches.filter(m => m.date <= today).map(m => m.date)
+  )];
+
+  if (!dates.length) {
+    setStatus('No matches scheduled yet — tournament starts 2026-06-14');
+    toast('No matches yet');
+    return;
+  }
+
+  try {
+    const allEvents = await Promise.all(dates.map(async d => {
+      const url  = `https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard?dates=${d.replace(/-/g, '')}`;
+      const ctrl = new AbortController();
+      const t    = setTimeout(() => ctrl.abort(), 15000);
+      const r    = await fetch(url, { signal: ctrl.signal });
+      clearTimeout(t);
+      if (!r.ok) return [];
+      return (await r.json()).events || [];
+    }));
+
+    const espnResults = {};
+    let total = 0;
+
+    allEvents.forEach(events => {
+      total += events.length;
+      events.forEach(ev => {
+        const comp  = ev.competitions?.[0];
+        if (!comp) return;
+        const homeC = comp.competitors?.find(c => c.homeAway === 'home');
+        const awayC = comp.competitors?.find(c => c.homeAway === 'away');
+        if (!homeC || !awayC) return;
+        const home = TEAM_NAME_MAP[homeC.team?.displayName] || TEAM_NAME_MAP[homeC.team?.abbreviation];
+        const away = TEAM_NAME_MAP[awayC.team?.displayName] || TEAM_NAME_MAP[awayC.team?.abbreviation];
+        if (!home || !away) return;
+        const our = WC2026.allMatches.find(x => x.home === home && x.away === away);
+        if (!our) return;
+        const status  = ev.status?.type?.name || '';
+        const isLive  = status === 'STATUS_IN_PROGRESS' || status === 'STATUS_HALFTIME';
+        const isDone  = status === 'STATUS_FINAL' || ev.status?.type?.completed === true;
+        if ((isDone || isLive) && homeC.score != null && awayC.score != null) {
+          espnResults[our.id] = { home: parseInt(homeC.score, 10), away: parseInt(awayC.score, 10) };
+        }
+      });
+    });
+
+    const updated = Object.keys(espnResults).length;
+
+    // Merge into local state + save
+    Object.assign(state.results, espnResults);
+    Store.save(state);
+    renderAll();
+
+    // Push results to cloud so Theo sees them without a git push
+    const cloud = await adminCloudRead() || {};
+    cloud.results = { ...(cloud.results || {}), ...espnResults };
+    await adminCloudWrite(cloud);
+
+    const ts  = new Date().toLocaleTimeString();
+    const msg = updated
+      ? `✓ ${updated} result(s) synced — ${ts}`
+      : `✓ ESPN OK — ${total} event(s) checked, no finished matches yet — ${ts}`;
+    setStatus(msg);
+    toast(updated ? `${updated} result(s) synced ✓` : 'ESPN OK — no finished matches yet');
+
+  } catch (e) {
+    setStatus('✗ Error: ' + e.message);
+    toast('Sync failed — check connection', true);
+  }
+}
 </script>
 </body>
 </html>
