@@ -547,9 +547,9 @@ async function initApp() {
   renderScores();
   renderLiverpool();
   initTrivia();
-  initChat();
+  await initChat();
   initProfile();
-  initWall();
+  await initWall();
 }
 
 // ─── SCORES ──────────────────────────────────────────────────────────────────
@@ -719,11 +719,46 @@ function nextQuestion() {
   showQuestion();
 }
 
+// ─── CLOUD SYNC (JSONBin) ─────────────────────────────────────────────────────
+function genId() { return Math.random().toString(36).slice(2,9) + Date.now().toString(36); }
+
+async function cloudRead() {
+  const id = localStorage.getItem('wc2026_bin_id');
+  const key = localStorage.getItem('wc2026_bin_key');
+  if (!id || !key) return null;
+  try {
+    const r = await fetch('https://api.jsonbin.io/v3/b/' + id + '/latest', { headers: { 'X-Master-Key': key } });
+    if (!r.ok) return null;
+    return (await r.json()).record;
+  } catch { return null; }
+}
+
+async function cloudWrite(data) {
+  const id = localStorage.getItem('wc2026_bin_id');
+  const key = localStorage.getItem('wc2026_bin_key');
+  if (!id || !key) return;
+  try {
+    await fetch('https://api.jsonbin.io/v3/b/' + id, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'X-Master-Key': key },
+      body: JSON.stringify(data)
+    });
+  } catch {}
+}
+
 // ─── CHAT ─────────────────────────────────────────────────────────────────────
 const CHAT_KEY = 'wc2026_chat';
 const REACTIONS_LIST = ['⚽', '🔴', '🏆', '😱', '🎉', '👏', '❤️', '🥇'];
 
-function initChat() {
+async function initChat() {
+  const cloud = await cloudRead();
+  if (cloud && cloud.chat && cloud.chat.length) {
+    const local = getMessages();
+    const tsSet = new Set(cloud.chat.map(m => m.ts).filter(Boolean));
+    const localOnly = local.filter(m => !m.ts || !tsSet.has(m.ts));
+    const merged = [...cloud.chat, ...localOnly].sort((a,b) => (a.ts||0) - (b.ts||0)).slice(-100);
+    saveMessages(merged);
+  }
   document.getElementById('reactions').innerHTML = REACTIONS_LIST.map(r =>
     `<button class="react-btn" onclick="sendReaction('${r}')">${r}</button>`
   ).join('');
@@ -748,23 +783,31 @@ async function notifyJoan(msg) {
   } catch {}
 }
 
-function sendMsg() {
+async function sendMsg() {
   const input = document.getElementById('chat-input');
   const text = input.value.trim();
   if (!text) return;
+  const msg = { from:'theo', text, time: new Date().toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'}), ts: Date.now() };
   const msgs = getMessages();
-  msgs.push({ from:'theo', text, time: new Date().toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'}) });
+  msgs.push(msg);
   saveMessages(msgs);
   notifyJoan(text);
   input.value = '';
   renderChat();
+  const cloud = await cloudRead() || { wall: [], chat: [] };
+  cloud.chat = (cloud.chat || []).concat([msg]).slice(-100);
+  cloudWrite(cloud);
 }
 
-function sendReaction(emoji) {
+async function sendReaction(emoji) {
+  const msg = { from:'theo', text: emoji, time: new Date().toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'}), ts: Date.now() };
   const msgs = getMessages();
-  msgs.push({ from:'theo', text: emoji, time: new Date().toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'}) });
+  msgs.push(msg);
   saveMessages(msgs);
   renderChat();
+  const cloud = await cloudRead() || { wall: [], chat: [] };
+  cloud.chat = (cloud.chat || []).concat([msg]).slice(-100);
+  cloudWrite(cloud);
 }
 
 function renderChat() {
@@ -839,7 +882,18 @@ let pendingPhotoSrc = null;
 
 function getWall() { try { return JSON.parse(localStorage.getItem(WALL_KEY)) || []; } catch { return []; } }
 function saveWallData(items) { localStorage.setItem(WALL_KEY, JSON.stringify(items)); }
-function initWall() { renderWall(); }
+async function initWall() {
+  const cloud = await cloudRead();
+  if (cloud && cloud.wall && cloud.wall.length) {
+    const local = getWall();
+    const cloudIds = new Set(cloud.wall.map(i => i.id).filter(Boolean));
+    const localMedia = local.filter(i => i.type === 'draw' || i.type === 'photo');
+    const localOther = local.filter(i => i.id && !cloudIds.has(i.id));
+    const merged = [...cloud.wall, ...localOther, ...localMedia].sort((a,b) => (a.ts||0) - (b.ts||0));
+    saveWallData(merged);
+  }
+  renderWall();
+}
 
 function renderWall() {
   const items = getWall();
@@ -858,7 +912,20 @@ function renderWall() {
   }).join('');
 }
 
-function wallDelete(idx) { const items = getWall(); items.splice(idx,1); saveWallData(items); renderWall(); }
+async function wallDelete(idx) {
+  const items = getWall();
+  const item = items[idx];
+  items.splice(idx, 1);
+  saveWallData(items);
+  renderWall();
+  if (item && (item.type === 'note' || item.type === 'sticker') && item.id) {
+    const cloud = await cloudRead();
+    if (cloud && cloud.wall) {
+      cloud.wall = cloud.wall.filter(i => i.id !== item.id);
+      cloudWrite(cloud);
+    }
+  }
+}
 
 function wallMode(type) {
   const creator = document.getElementById('wall-creator');
@@ -883,7 +950,19 @@ function closeCreator() {
   document.querySelectorAll('.wall-add-btn').forEach(b => b.classList.remove('active'));
 }
 
-function pushWallItem(item) { const items = getWall(); items.push(item); saveWallData(items); closeCreator(); renderWall(); }
+async function pushWallItem(item) {
+  item.id = item.id || genId();
+  const items = getWall();
+  items.push(item);
+  saveWallData(items);
+  closeCreator();
+  renderWall();
+  if (item.type === 'note' || item.type === 'sticker') {
+    const cloud = await cloudRead() || { wall: [], chat: [] };
+    cloud.wall = (cloud.wall || []).concat([item]);
+    cloudWrite(cloud);
+  }
+}
 
 /* NOTE */
 function renderNoteCreator() {

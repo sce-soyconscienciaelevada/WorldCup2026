@@ -392,6 +392,26 @@ nav {
       </div>
     </div>
     <div class="export-panel">
+      <h3>☁️ Theo's Cloud Sync (JSONBin)</h3>
+      <p>Store Theo's wall notes and chat messages in the cloud — syncs across all devices automatically.</p>
+      <ol style="color:var(--muted);font-size:0.82rem;margin:10px 0 16px;padding-left:18px;line-height:2">
+        <li>Create free account at <strong>jsonbin.io</strong></li>
+        <li>Go to <strong>API Keys</strong> → copy your <strong>Master Key</strong></li>
+        <li>Paste it below, then click <strong>+ Create New Bin</strong> — done</li>
+      </ol>
+      <div class="pf-row">
+        <div class="pf-group"><label>Bin ID</label><input class="score-input" id="bin-id" placeholder="Auto-filled after Create"></div>
+        <div class="pf-group"><label>Master Key</label><input class="score-input" id="bin-key" type="password" placeholder="$2a$10$..."></div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
+        <button class="btn btn-green" onclick="saveBinConfig()">💾 Save</button>
+        <button class="btn btn-outline" onclick="createNewBin()">+ Create New Bin</button>
+        <button class="btn btn-outline" onclick="viewTheoContent()">👁 View Theo's Content</button>
+      </div>
+      <div id="bin-status" style="font-size:0.8rem;color:var(--muted);margin-top:10px"></div>
+      <div id="theo-content-panel" style="display:none;margin-top:16px"></div>
+    </div>
+    <div class="export-panel">
       <h3>🔑 Change admin password</h3>
       <p>Password is stored locally on this device.</p>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
@@ -562,6 +582,93 @@ function saveProfileAdmin() {
   toast("Theo's card saved ✓ — export JSON + push to sync");
 }
 
+// ─── CLOUD SYNC (JSONBin) ─────────────────────────────────────────────────────
+const BIN_ID_KEY = 'wc2026_bin_id';
+const BIN_KEY_KEY = 'wc2026_bin_key';
+
+function renderBinConfig() {
+  const id = localStorage.getItem(BIN_ID_KEY) || '';
+  const key = localStorage.getItem(BIN_KEY_KEY) || '';
+  const bi = document.getElementById('bin-id');
+  const bk = document.getElementById('bin-key');
+  if (bi) bi.value = id;
+  if (bk) bk.value = key;
+  const s = document.getElementById('bin-status');
+  if (s) s.textContent = id ? '✓ Cloud sync active — bin: ' + id : '⚠ Not configured — Theo\'s notes are device-only until you set this up';
+}
+
+function saveBinConfig() {
+  const id = document.getElementById('bin-id').value.trim();
+  const key = document.getElementById('bin-key').value.trim();
+  localStorage.setItem(BIN_ID_KEY, id);
+  localStorage.setItem(BIN_KEY_KEY, key);
+  renderBinConfig();
+  toast(id ? 'Cloud sync configured ✓' : 'Cloud sync disabled');
+}
+
+async function createNewBin() {
+  const key = document.getElementById('bin-key').value.trim();
+  if (!key) return toast('Paste your Master Key first', true);
+  try {
+    const r = await fetch('https://api.jsonbin.io/v3/b', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Master-Key': key, 'X-Bin-Name': 'theo-wc2026' },
+      body: JSON.stringify({ wall: [], chat: [] })
+    });
+    if (!r.ok) { const e = await r.text(); return toast('Failed — check master key: ' + r.status, true); }
+    const data = await r.json();
+    const binId = data.metadata && data.metadata.id;
+    if (binId) {
+      document.getElementById('bin-id').value = binId;
+      saveBinConfig();
+      toast('Bin created — ID auto-filled ✓');
+    } else {
+      toast('Created but no ID returned — check jsonbin.io', true);
+    }
+  } catch { toast('Network error creating bin', true); }
+}
+
+async function viewTheoContent() {
+  const id = localStorage.getItem(BIN_ID_KEY);
+  const key = localStorage.getItem(BIN_KEY_KEY);
+  if (!id || !key) return toast('Set up cloud sync first', true);
+  const panel = document.getElementById('theo-content-panel');
+  panel.style.display = 'block';
+  panel.innerHTML = '<p style="color:var(--muted);font-size:0.85rem">Loading...</p>';
+  try {
+    const r = await fetch('https://api.jsonbin.io/v3/b/' + id + '/latest', { headers: { 'X-Master-Key': key } });
+    if (!r.ok) throw new Error('bad response');
+    const rec = (await r.json()).record;
+    const chat = rec.chat || [];
+    const wall = rec.wall || [];
+    const chatHtml = chat.length
+      ? chat.slice(-30).reverse().map(m => `<div style="background:var(--card2);border-radius:8px;padding:7px 12px;margin-bottom:6px;font-size:0.85rem"><span style="color:var(--gold);font-size:0.72rem">${m.time || ''}${m.ts ? ' · ' + new Date(m.ts).toLocaleDateString() : ''}</span><br>${m.text}</div>`).join('')
+      : '<p style="color:var(--muted);font-size:0.85rem">No messages yet</p>';
+    const wallHtml = wall.length
+      ? wall.slice().reverse().map(w => {
+          const date = w.ts ? new Date(w.ts).toLocaleDateString('en-GB',{day:'numeric',month:'short'}) : '';
+          if (w.type === 'note') return `<div style="background:var(--card2);border-radius:8px;padding:9px 12px;margin-bottom:8px;font-size:0.85rem">${w.title?`<strong style="color:${w.color}">${w.title}</strong><br>`:''}<span style="color:${w.color||'inherit'}">${w.text}</span><div style="font-size:0.7rem;color:var(--muted);margin-top:4px">${date}</div></div>`;
+          if (w.type === 'sticker') return `<div style="background:var(--card2);border-radius:8px;padding:9px 12px;margin-bottom:8px;font-size:0.85rem">${w.emoji}${w.text?' — '+w.text:''}<div style="font-size:0.7rem;color:var(--muted);margin-top:4px">${date}</div></div>`;
+          return '';
+        }).filter(Boolean).join('')
+      : '<p style="color:var(--muted);font-size:0.85rem">No wall posts yet</p>';
+    panel.innerHTML = `
+      <div style="border-top:1px solid var(--border);padding-top:14px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <h4 style="font-size:0.9rem;color:var(--gold)">💬 Chat Messages (last 30)</h4>
+          <span style="font-size:0.75rem;color:var(--muted)">${chat.length} total</span>
+        </div>
+        <div style="max-height:240px;overflow-y:auto">${chatHtml}</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin:14px 0 10px">
+          <h4 style="font-size:0.9rem;color:var(--gold)">📋 Wall Posts (text & stickers)</h4>
+          <span style="font-size:0.75rem;color:var(--muted)">${wall.length} total</span>
+        </div>
+        <div style="max-height:280px;overflow-y:auto">${wallHtml}</div>
+        <p style="font-size:0.72rem;color:var(--muted);margin-top:10px">ℹ Drawings and photos are device-local only. Notes and stickers sync here.</p>
+      </div>`;
+  } catch { panel.innerHTML = '<p style="color:var(--red);font-size:0.85rem">Failed to load — check config</p>'; }
+}
+
 function renderNtfyTopic() {
   const t = localStorage.getItem('wc2026_ntfy_topic') || '';
   const inp = document.getElementById('ntfy-topic');
@@ -619,6 +726,7 @@ function initApp() {
   renderTheoPw();
   renderNtfyTopic();
   renderProfileAdmin();
+  renderBinConfig();
 }
 
 function renderAll() {
