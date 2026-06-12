@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- updated: 2026-06-12 01:04 -->
+<!-- updated: 2026-06-12 01:07 -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Theo's Portal 🔴</title>
@@ -413,6 +413,31 @@ nav {
 .sef-stat input { width: 54px; text-align: center; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 6px; color: #fff; padding: 4px; font-family: 'Oswald',sans-serif; font-size: 1.1rem; outline: none; }
 .sef-stat input:focus { border-color: var(--gold); }
 @media (max-width: 380px) { .sef-grid { grid-template-columns: 1fr; } .sc-sg { grid-template-columns: 1fr; } }
+
+/* ─── WALL QUOTES ───────────────────────────────────────────────────────── */
+.quote-picker { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+.quote-opt {
+  background: rgba(255,255,255,0.03); border: 1.5px solid rgba(255,255,255,0.09);
+  border-radius: 12px; padding: 14px 16px 14px 20px; cursor: pointer;
+  font-size: 0.875rem; line-height: 1.55; color: rgba(255,255,255,0.75);
+  font-style: italic; text-align: left; transition: all 0.18s; position: relative;
+  font-family: 'Inter', sans-serif;
+}
+.quote-opt::before {
+  content: '"'; position: absolute; top: 6px; left: 10px;
+  font-size: 1.8rem; color: var(--gold); opacity: 0.4; font-style: normal; line-height: 1;
+  font-family: Georgia, serif;
+}
+.quote-opt:hover,.quote-opt.selected { border-color: var(--gold); background: rgba(246,235,97,0.06); color: #fff; }
+.quote-opt.selected::before { opacity: 0.9; }
+.wc-quote-card {
+  background: linear-gradient(135deg, #0d1a10, #0a1208);
+  border: 1.5px solid rgba(246,235,97,0.22) !important;
+  border-left: 3px solid var(--gold) !important;
+  padding-left: 18px !important;
+}
+.wc-quote-mark { font-size: 2.2rem; color: var(--gold); opacity: 0.5; line-height: 0.8; margin-bottom: 6px; font-family: Georgia, serif; }
+.wc-quote-text { font-size: 0.82rem; line-height: 1.6; color: rgba(255,255,255,0.82); font-style: italic; }
 </style>
 </head>
 <body>
@@ -570,6 +595,7 @@ nav {
       <button class="wall-add-btn" onclick="wallMode('draw')">🎨 Draw</button>
       <button class="wall-add-btn" onclick="wallMode('photo')">📷 Photo</button>
       <button class="wall-add-btn" onclick="wallMode('sticker')">⭐ Sticker</button>
+      <button class="wall-add-btn" onclick="wallMode('quote')">✨ Quote</button>
     </div>
     <div class="wall-creator" id="wall-creator" style="display:none"></div>
     <div class="wall-grid" id="wall-grid"></div>
@@ -1113,8 +1139,39 @@ function renderWall() {
     if (item.type === 'note') return `<div class="wall-card" style="background:#1a0810;border:1.5px solid rgba(255,255,255,0.08)"><button class="wc-del" onclick="wallDelete(${idx})">✕</button>${item.title?`<div style="font-family:'Oswald',sans-serif;font-size:1rem;font-weight:700;margin-bottom:6px;color:${item.color}">${item.title}</div>`:''}<div style="font-size:0.875rem;line-height:1.5;color:${item.color}">${item.text}</div><div class="wc-meta">${date}</div></div>`;
     if (item.type === 'draw' || item.type === 'photo') return `<div class="wall-card" style="background:#0a0509;padding:8px;border:1.5px solid rgba(255,255,255,0.08)"><button class="wc-del" onclick="wallDelete(${idx})">✕</button><img class="wc-img" src="${item.src}"><div class="wc-meta">${item.type==='draw'?'🎨':'📷'} ${date}</div></div>`;
     if (item.type === 'sticker') return `<div class="wall-card" style="background:#1a0810;border:1.5px solid rgba(255,255,255,0.08);text-align:center"><button class="wc-del" onclick="wallDelete(${idx})">✕</button><div class="wc-sticker-text">${item.emoji}</div>${item.text?`<div style="font-size:0.85rem;color:rgba(255,255,255,0.7)">${item.text}</div>`:''}<div class="wc-meta">${date}</div></div>`;
+    if (item.type === 'quote') return `<div class="wall-card wc-quote-card"><button class="wc-del" onclick="wallDelete(${idx})">✕</button><div class="wc-quote-mark">"</div><div class="wc-quote-text">${item.text}</div><div class="wc-meta">✨ ${date}</div></div>`;
     return '';
   }).join('');
+}
+
+const WALL_QUOTES = [
+  'You are made in the image of a Creator. Every time you create, you reflect the face of God.',
+  'The same breath that formed the universe lives inside you. When you create, you breathe it back.',
+  'God did not make us spectators. He made us creators — with His spirit as the fire.',
+  'Creativity is the echo of the divine within. To build, to imagine, to make — this is to be whole.',
+  'You carry the spark of the One who spoke light into darkness. Your hands were made for this.',
+];
+let selectedQuoteIdx = -1;
+
+function renderQuoteCreator() {
+  selectedQuoteIdx = -1;
+  document.getElementById('wall-creator').innerHTML = `
+    <h4>✨ Choose a Quote</h4>
+    <div class="quote-picker">
+      ${WALL_QUOTES.map((q, i) => `<button class="quote-opt" onclick="selectQuote(${i},this)">${q}</button>`).join('')}
+    </div>
+    <button class="btn btn-red" onclick="saveQuote()">Post to Wall ➜</button>`;
+}
+
+function selectQuote(i, el) {
+  selectedQuoteIdx = i;
+  document.querySelectorAll('.quote-opt').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+async function saveQuote() {
+  if (selectedQuoteIdx < 0) return;
+  await pushWallItem({ type:'quote', text: WALL_QUOTES[selectedQuoteIdx], ts: Date.now() });
 }
 
 async function wallDelete(idx) {
@@ -1123,7 +1180,7 @@ async function wallDelete(idx) {
   items.splice(idx, 1);
   saveWallData(items);
   renderWall();
-  if (item && (item.type === 'note' || item.type === 'sticker') && item.id) {
+  if (item && (item.type === 'note' || item.type === 'sticker' || item.type === 'quote') && item.id) {
     const cloud = await cloudRead();
     if (cloud && cloud.wall) {
       cloud.wall = cloud.wall.filter(i => i.id !== item.id);
@@ -1135,7 +1192,7 @@ async function wallDelete(idx) {
 function wallMode(type) {
   const creator = document.getElementById('wall-creator');
   const btns = document.querySelectorAll('.wall-add-btn');
-  const map = ['note','draw','photo','sticker'];
+  const map = ['note','draw','photo','sticker','quote'];
   if (wallActiveMode === type) {
     creator.style.display = 'none'; wallActiveMode = null;
     btns.forEach(b => b.classList.remove('active')); return;
@@ -1146,6 +1203,7 @@ function wallMode(type) {
   if (type === 'note') renderNoteCreator();
   else if (type === 'draw') renderDrawCreator();
   else if (type === 'photo') renderPhotoCreator();
+  else if (type === 'quote') renderQuoteCreator();
   else renderStickerCreator();
 }
 
@@ -1162,7 +1220,7 @@ async function pushWallItem(item) {
   saveWallData(items);
   closeCreator();
   renderWall();
-  if (item.type === 'note' || item.type === 'sticker') {
+  if (item.type === 'note' || item.type === 'sticker' || item.type === 'quote') {
     const cloud = await cloudRead() || { wall: [], chat: [] };
     cloud.wall = (cloud.wall || []).concat([item]);
     cloudWrite(cloud);
