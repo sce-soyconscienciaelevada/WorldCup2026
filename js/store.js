@@ -5,7 +5,7 @@ const Store = {
   defaults() {
     return {
       predictions: {
-        A1: { home:2, away:0 }, A2: { home:2, away:0 },
+        A1: { home:2, away:1 }, A2: { home:2, away:0 },
         B1: { home:1, away:1 }, B2: { home:0, away:2 },
         C1: { home:4, away:2 }, C2: { home:0, away:3 },
         D1: { home:2, away:1 }, D2: { home:0, away:4 },
