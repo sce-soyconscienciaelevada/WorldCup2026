@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- updated: 2026-06-12 01:29 -->
+<!-- updated: 2026-06-13 20:59 -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>World Cup 2026 🏆</title>
@@ -167,16 +167,39 @@ footer .portal-link:hover { background: #a00d24; }
 
 /* RESPONSIVE */
 @media (max-width: 600px) {
-  nav { padding: 0 12px; }
+  nav { padding: 0 10px; gap: 4px; }
   .nav-links { display: none; }
-  .hero { padding: 48px 16px 40px; }
-  .hero-stats { gap: 20px; }
-  .section { padding: 32px 16px; }
-  .score-card { flex-direction: column; text-align: center; }
+  .nav-btn { padding: 5px 9px; font-size: .72rem; }
+  .hero { padding: 40px 16px 32px; }
+  .hero-stats { gap: 16px; }
+  .hero-stat .num { font-size: 1.8rem; }
+  .section { padding: 28px 12px; }
+  .score-card { flex-direction: column; text-align: center; gap: 16px; padding: 20px 16px; }
   .score-breakdown { grid-template-columns: repeat(3, 1fr); }
+  .score-main .pts { font-size: 3rem; }
   .podium-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
-  .match-card { flex-wrap: wrap; }
+  .podium-item { padding: 12px 6px; }
+  .podium-team { font-size: 1rem; }
+  .match-card { flex-wrap: wrap; gap: 6px; padding: 12px 14px; }
+  .match-teams { flex: 0 0 100%; justify-content: center; }
+  .match-team { font-size: .82rem; }
+  .match-pred { margin-left: auto; font-size: .72rem; }
   .groups-grid { grid-template-columns: 1fr; }
+  /* Standings: keep Team(1) PJ(2) W(3) Pts(9), hide D(4) L(5) GF(6) GC(7) +/-(8) */
+  .standings th:nth-child(4),.standings td:nth-child(4),
+  .standings th:nth-child(5),.standings td:nth-child(5),
+  .standings th:nth-child(6),.standings td:nth-child(6),
+  .standings th:nth-child(7),.standings td:nth-child(7),
+  .standings th:nth-child(8),.standings td:nth-child(8) { display: none; }
+  .standings th { font-size: .6rem; padding: 6px 6px; }
+  .standings td { font-size: .76rem; padding: 6px 6px; }
+  .team-code { font-size: .72rem; }
+  .schedule-match { flex-wrap: wrap; gap: 5px; padding: 8px 10px; }
+  .schedule-match .s-pred { flex-basis: 100%; text-align: right; }
+  .bracket-info { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .bracket-round { padding: 10px 6px; }
+  .bracket-round .rnd-name { font-size: .78rem; }
+  .bracket-round .rnd-teams { font-size: .68rem; }
 }
 </style>
 </head>

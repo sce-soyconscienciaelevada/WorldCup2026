@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- updated: 2026-06-12 13:26 -->
+<!-- updated: 2026-06-13 20:32 -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Theo's Portal 🔴</title>
@@ -477,6 +477,73 @@ nav {
   text-shadow: 0 1px 8px rgba(0,0,0,0.6);
 }
 @media (max-width: 500px) { .pinned-quotes { grid-template-columns: 1fr; } .pinned-quote-text { font-size: 1.45rem; } }
+
+@media (max-width: 600px) {
+  /* Nav: hide "Main site" link, shrink everything to fit in 375px */
+  nav { padding: 0 12px; gap: 6px; }
+  .nav-logo { font-size: 1rem; gap: 5px; }
+  .nav-back { display: none; }
+  .nav-welcome { font-size: 0.75rem; }
+  .logout-btn { padding: 4px 9px; font-size: 0.72rem; }
+
+  /* Hero */
+  .hero { padding: 30px 16px 24px; }
+  .hero-signature { font-size: 1.8rem; }
+  .hero-ynwa { font-size: 0.88rem; }
+
+  /* Tabs: smaller so 3+ are visible before scroll */
+  .tab { min-width: 96px; padding: 12px 10px; font-size: 0.8rem; }
+
+  /* Panels */
+  .panel { padding: 16px 12px; }
+
+  /* Match rows: stack teams full-width, then pred/result/pts on second row */
+  .match-row { flex-wrap: wrap; padding: 10px 12px; gap: 6px; }
+  .match-teams { flex: 0 0 100%; }
+  .mr-pred { font-size: 0.75rem; min-width: auto; }
+  .mr-result { font-size: 0.75rem; min-width: auto; }
+  .mr-pts { margin-left: auto; }
+
+  /* Score hero */
+  .score-hero { padding: 24px 16px; }
+  .score-main-num { font-size: 4rem; }
+  .score-mini .sm-num { font-size: 1.5rem; }
+
+  /* Podium */
+  .podium-card { padding: 16px; }
+  .podium-team-name { font-size: 1rem; }
+
+  /* Scout card info col */
+  .sc-info-col { padding: 12px 10px 10px; }
+  .sc-player-name { font-size: 1.3rem; }
+  .sc-nick-line { font-size: 0.72rem; }
+
+  /* Liverpool banner */
+  .lfc-banner { padding: 20px 16px; }
+  .lfc-banner .lfc-badge { font-size: 3.5rem; }
+  .lfc-banner h2 { font-size: 1.6rem; }
+
+  /* Fun facts */
+  .fun-fact { padding: 12px; gap: 8px; }
+  .fun-fact .ff-icon { font-size: 1.3rem; min-width: 28px; }
+  .fun-fact .ff-text { font-size: 0.82rem; }
+
+  /* Trivia */
+  .trivia-card { padding: 18px 14px; }
+  .trivia-opts { gap: 8px; }
+  .trivia-opt { padding: 10px 8px; font-size: 0.82rem; }
+
+  /* Chat */
+  .chat-section { height: 55vh; }
+  .chat-msg { max-width: 85%; font-size: 0.82rem; }
+
+  /* Wall */
+  .wall-hdr p { font-size: 0.8rem; }
+  .wall-add-btn { padding: 7px 12px; font-size: 0.82rem; }
+
+  /* Login box */
+  .login-box-inner { padding: 24px 18px; }
+}
 </style>
 </head>
 <body>

@@ -1,5 +1,30 @@
 # World Cup 2026 — Session Log
 
+## 2026-06-12 | ESPN live scores + prediction corrections
+
+**Live scores (ESPN API)**
+- football-data.org abandoned (silent 403, free tier excludes WC) → replaced with ESPN public API
+- No API key needed. URL: `https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard?dates=YYYYMMDD`
+- Admin "⚡ Sync Now": fetches all past match dates in parallel (Promise.all), maps ESPN team names → 3-letter codes
+- Results written to JSONBin cloud (`cloud.results`) after each sync
+- `theo.html` initApp now merges `cloud.results` on load → Theo sees live scores without git push
+- API key input/storage removed from Sync tab — no setup required
+
+**Prediction corrections**
+- A1 MEX-RSA: Theo's prediction corrected to 2-1 (was 2-0)
+- A2 KOR-CZE: Theo's prediction corrected to 2-0 (was 2-1)
+- Bumped `lastUpdated` in state.json to force localStorage override on next Theo refresh
+
+**Cloud architecture (final)**
+- JSONBin bin `6a2b8ed1f5f4af5e29e42bc2` — Master Key hardcoded in both portals
+- Stores: `wall`, `chat`, `adminPw`, `results` (ESPN-synced)
+- Admin password: loaded from cloud before login form shown → survives any cache clear
+- Theo session: 90-day token in localStorage → stays logged in across refreshes
+
+**Files changed:** `admin.html`, `theo.html`, `data/state.json`, `js/store.js`
+
+---
+
 ## 2026-06-12 | My Card redesign + profile save fix + ntfy fix
 
 **Issues fixed:**
@@ -67,4 +92,4 @@
 - `js/scoring.js` — points calculation
 - `data/state.json` — committed state (predictions, results, profile)
 - Deployed on Vercel via `vercel.json`
-<!-- updated: 2026-06-12 00:53 -->
+<!-- updated: 2026-06-12 16:59 -->

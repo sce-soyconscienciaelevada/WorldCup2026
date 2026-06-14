@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<!-- updated: 2026-06-13 20:58 -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Mundial Familiar WC 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<style>
+:root {
+  --navy:#0a0e1a; --navy2:#111827; --navy3:#1e2a3a;
+  --gold:#f5c518; --gold2:#d4a812;
+  --green:#16a34a; --green2:#22c55e;
+  --red:#dc2626; --red2:#ef4444;
+  --text:#f1f5f9; --muted:#94a3b8; --border:#1e293b;
+  --card:#111827; --card2:#1e2a3a;
+}
+* { box-sizing:border-box; margin:0; padding:0; }
+body { background:var(--navy); color:var(--text); font-family:'Inter',sans-serif; min-height:100vh; }
+h1,h2,h3 { font-family:'Oswald',sans-serif; letter-spacing:.5px; }
+
+/* NAV */
+nav {
+  background:rgba(10,14,26,.97); backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  display:flex; align-items:center; padding:0 24px; height:56px; gap:10px;
+}
+.nav-logo { font-family:'Oswald',sans-serif; font-size:1.1rem; font-weight:700; color:var(--gold); text-decoration:none; margin-right:auto; }
+.nav-link { color:var(--muted); text-decoration:none; font-size:.85rem; padding:6px 10px; border-radius:6px; transition:all .2s; }
+.nav-link:hover { color:var(--text); background:var(--navy3); }
+
+/* AUTH SCREEN */
+.auth-screen {
+  max-width:420px; margin:80px auto; padding:0 20px; text-align:center;
+}
+.auth-screen h2 { font-size:1.8rem; margin-bottom:8px; }
+.auth-screen p { color:var(--muted); font-size:.875rem; margin-bottom:28px; }
+.auth-card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:32px; }
+
+/* LAYOUT */
+.wrap { max-width:900px; margin:0 auto; padding:32px 20px 80px; }
+
+/* TABS */
+.tabs-bar { display:flex; gap:4px; margin-bottom:28px; flex-wrap:wrap; }
+.tab-btn {
+  padding:9px 18px; background:var(--navy3); border:1px solid var(--border);
+  border-radius:8px; color:var(--muted); font-family:'Inter',sans-serif; font-size:.875rem;
+  cursor:pointer; transition:all .2s;
+}
+.tab-btn:hover { color:var(--text); }
+.tab-btn.active { background:var(--gold); border-color:var(--gold); color:var(--navy); font-weight:600; }
+.tab-panel { display:none; }
+.tab-panel.active { display:block; }
+
+/* CARDS */
+.card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:24px; margin-bottom:20px; }
+.card h3 { font-size:1.1rem; margin-bottom:16px; color:var(--gold); border-bottom:1px solid var(--border); padding-bottom:10px; }
+
+/* FIELDS */
+.field { margin-bottom:16px; }
+.field label { display:block; font-size:.8rem; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px; }
+.field input, .field select, .field textarea {
+  width:100%; background:var(--navy3); border:1px solid var(--border);
+  border-radius:8px; padding:10px 12px; color:var(--text); font-family:'Inter',sans-serif;
+  font-size:.875rem; outline:none; transition:border .2s;
+}
+.field input:focus, .field select:focus, .field textarea:focus { border-color:var(--gold); }
+.field input[type="password"] { letter-spacing:2px; }
+.field .hint { font-size:.75rem; color:var(--muted); margin-top:5px; }
+.field-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+
+/* BUTTONS */
+.btn { padding:10px 20px; border-radius:8px; border:none; font-family:'Inter',sans-serif; font-size:.875rem; font-weight:600; cursor:pointer; transition:all .2s; }
+.btn-primary { background:var(--gold); color:var(--navy); }
+.btn-primary:hover { background:var(--gold2); }
+.btn-primary:disabled { opacity:.5; cursor:not-allowed; }
+.btn-secondary { background:var(--navy3); border:1px solid var(--border); color:var(--text); }
+.btn-secondary:hover { border-color:var(--gold); color:var(--gold); }
+.btn-danger { background:rgba(220,38,38,.15); border:1px solid rgba(220,38,38,.3); color:var(--red2); }
+.btn-danger:hover { background:rgba(220,38,38,.25); }
+.btn-green { background:var(--green); color:#fff; }
+.btn-green:hover { background:var(--green2); }
+.btn-sm { padding:6px 12px; font-size:.78rem; }
+.btn-row { display:flex; gap:10px; flex-wrap:wrap; margin-top:18px; }
+
+/* STATUS TAGS */
+.status-tag { display:inline-flex; align-items:center; gap:6px; font-size:.78rem; padding:4px 10px; border-radius:6px; font-weight:600; }
+.status-tag.ok      { background:rgba(34,197,94,.12); color:var(--green2); border:1px solid rgba(34,197,94,.2); }
+.status-tag.err     { background:rgba(220,38,38,.1);  color:var(--red2);   border:1px solid rgba(220,38,38,.2); }
+.status-tag.warn    { background:rgba(245,197,24,.1); color:var(--gold);   border:1px solid rgba(245,197,24,.2); }
+.status-tag.neutral { background:var(--navy3);        color:var(--muted);  border:1px solid var(--border); }
+
+/* INLINE STATUS */
+.inline-status { font-size:.8rem; margin-top:8px; min-height:20px; }
+
+/* TOGGLE */
+.toggle-row { display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid rgba(255,255,255,.04); }
+.toggle-row:last-child { border-bottom:none; }
+.toggle-label strong { display:block; font-size:.9rem; }
+.toggle-label span { font-size:.78rem; color:var(--muted); }
+.toggle { position:relative; width:44px; height:24px; cursor:pointer; }
+.toggle input { opacity:0; width:0; height:0; }
+.toggle-slider {
+  position:absolute; inset:0; background:var(--navy3); border-radius:12px;
+  border:1px solid var(--border); transition:.2s;
+}
+.toggle-slider::before {
+  content:''; position:absolute; top:3px; left:3px;
+  width:16px; height:16px; background:var(--muted);
+  border-radius:50%; transition:.2s;
+}
+.toggle input:checked + .toggle-slider { background:var(--green); border-color:var(--green); }
+.toggle input:checked + .toggle-slider::before { transform:translateX(20px); background:#fff; }
+
+/* PARTICIPANTS TABLE */
+.participants-table { width:100%; border-collapse:collapse; font-size:.85rem; }
+.participants-table th { font-size:.7rem; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; padding:8px 10px; border-bottom:1px solid var(--border); text-align:left; }
+.participants-table td { padding:10px 10px; border-bottom:1px solid rgba(255,255,255,.04); vertical-align:middle; }
+.participants-table tr:last-child td { border-bottom:none; }
+.participants-table tr:hover td { background:rgba(255,255,255,.02); }
+.p-token { font-family:monospace; font-size:.7rem; color:var(--muted); background:var(--navy3); padding:2px 6px; border-radius:4px; }
+.p-link { font-family:monospace; font-size:.68rem; color:var(--gold); cursor:pointer; opacity:.7; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:220px; display:inline-block; vertical-align:bottom; }
+.p-link:hover { opacity:1; text-decoration:underline; }
+
+/* PODIUM SELECTOR */
+.podium-selector { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+.pod-item label { display:block; font-size:.8rem; color:var(--muted); margin-bottom:6px; }
+.pod-item select { background:var(--navy3); border:1px solid var(--border); border-radius:8px; padding:9px 10px; color:var(--text); font-size:.875rem; width:100%; outline:none; cursor:pointer; }
+.pod-item select:focus { border-color:var(--gold); }
+
+/* STAT CHIPS */
+.stat-chips { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px; }
+.stat-chip { background:var(--navy3); border:1px solid var(--border); border-radius:10px; padding:12px 16px; text-align:center; }
+.stat-chip .sc-val { font-family:'Oswald',sans-serif; font-size:1.6rem; font-weight:700; color:var(--gold); }
+.stat-chip .sc-lbl { font-size:.7rem; color:var(--muted); margin-top:2px; }
+
+/* CHANGE PW */
+.change-pw { margin-top:20px; padding-top:20px; border-top:1px solid var(--border); }
+
+/* RESULTS TAB */
+.date-group { margin-bottom:20px; }
+.date-header { font-family:'Oswald',sans-serif; font-size:.95rem; color:var(--gold); padding:8px 0 6px; border-bottom:1px solid var(--border); margin-bottom:8px; }
+.result-row { display:flex; align-items:center; gap:8px; padding:7px 0; border-bottom:1px solid rgba(255,255,255,.03); flex-wrap:wrap; }
+.result-row:last-child { border-bottom:none; }
+.rr-team { flex:1; min-width:120px; font-size:.82rem; display:flex; align-items:center; gap:6px; }
+.rr-team.right { justify-content:flex-end; text-align:right; }
+.rr-vs { font-weight:700; color:var(--muted); font-size:1rem; }
+.score-input { width:46px; background:var(--navy3); border:1px solid var(--border); border-radius:6px; padding:6px 8px; color:var(--text); font-family:'Oswald',sans-serif; font-size:1rem; font-weight:700; text-align:center; outline:none; -moz-appearance:textfield; }
+.score-input::-webkit-outer-spin-button, .score-input::-webkit-inner-spin-button { -webkit-appearance:none; }
+.score-input:focus { border-color:var(--gold); }
+.rr-time { font-size:.72rem; color:var(--muted); min-width:48px; text-align:right; }
+.future-match .rr-team, .future-match .rr-vs { opacity:.45; }
+.future-match .score-input { opacity:.45; }
+
+@media (max-width:560px) {
+  nav { padding:0 12px; }
+  .nav-link { display:none; }
+  .field-row { grid-template-columns:1fr; }
+  .podium-selector { grid-template-columns:1fr; }
+  .tab-btn { padding:7px 12px; font-size:.8rem; }
+  .participants-table th:nth-child(3),
+  .participants-table td:nth-child(3) { display:none; }
+  .p-link { max-width:140px; }
+  .score-input { width:40px; font-size:.9rem; }
+  .result-row { gap:5px; }
+  .rr-team { min-width:80px; font-size:.78rem; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="#">⚙️ Admin · Mundial Familiar</a>
+  <a href="dashboard.html" class="nav-link">🏆 Dashboard</a>
+  <a href="registro.html" class="nav-link">📝 Registro</a>
+</nav>
+
+<!-- AUTH -->
+<div id="auth-screen" class="auth-screen">
+  <div style="font-size:3rem;margin-bottom:16px">🔐</div>
+  <h2>Panel de Administración</h2>
+  <p>Acceso restringido al organizador</p>
+  <div class="auth-card">
+    <div class="field">
+      <label>Contraseña</label>
+      <input type="password" id="auth-pw" placeholder="••••••••" onkeydown="if(event.key==='Enter')login()">
+    </div>
+    <div class="inline-status" id="auth-err"></div>
+    <div class="btn-row" style="margin-top:16px">
+      <button class="btn btn-primary" style="flex:1" onclick="login()">Entrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN PANEL -->
+<div id="admin-panel" style="display:none">
+<div class="wrap">
+
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px">
+    <h2 style="font-size:1.6rem">Panel de Administración</h2>
+    <span class="status-tag" id="config-status-badge">cargando…</span>
+    <button class="btn btn-secondary btn-sm" style="margin-left:auto" onclick="logout()">Salir</button>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs-bar">
+    <button class="tab-btn active" onclick="showTab('config')">⚙️ Configuración</button>
+    <button class="tab-btn" onclick="showTab('participantes')">👥 Participantes</button>
+    <button class="tab-btn" onclick="showTab('resultados')">⚽ Resultados</button>
+    <button class="tab-btn" onclick="showTab('competencia')">🏆 Competencia</button>
+    <button class="tab-btn" onclick="showTab('herramientas')">🔧 Herramientas</button>
+  </div>
+
+  <!-- TAB: CONFIG -->
+  <div id="tab-config" class="tab-panel active">
+
+    <div class="card">
+      <h3>🗄️ JSONBin — Base de datos</h3>
+      <p style="font-size:.8rem;color:var(--muted);margin-bottom:16px">
+        Crea un bin en <a href="https://jsonbin.io" target="_blank" style="color:var(--gold)">jsonbin.io</a> →
+        My Bins → Create New Bin → pega <code style="color:var(--gold);font-size:.75rem">{"participants":[],"predictions":{},"reglas":[],"settings":{"registrationOpen":true,"predictionsOpen":true,"actualPodium":null}}</code>
+        como contenido inicial.
+      </p>
+      <div class="field-row">
+        <div class="field">
+          <label>Bin ID</label>
+          <input type="text" id="cfg-bin-id" placeholder="ej: 6848abc123def...">
+        </div>
+        <div class="field">
+          <label>Master Key (API Key)</label>
+          <input type="password" id="cfg-bin-key" placeholder="$2a$10$...">
+        </div>
+      </div>
+      <div class="inline-status" id="jsonbin-status"></div>
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick="testJsonBin()">🔌 Probar conexión</button>
+        <button class="btn btn-primary" onclick="saveConfig()">💾 Guardar</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>📧 EmailJS — Envío de emails</h3>
+      <p style="font-size:.8rem;color:var(--muted);margin-bottom:16px">
+        En <a href="https://dashboard.emailjs.com" target="_blank" style="color:var(--gold)">emailjs.com</a> crea un template con las variables:
+        <code style="color:var(--gold);font-size:.75rem">{{to_name}}</code>
+        <code style="color:var(--gold);font-size:.75rem">{{to_email}}</code>
+        <code style="color:var(--gold);font-size:.75rem">{{link}}</code>
+      </p>
+      <div class="field-row">
+        <div class="field">
+          <label>Service ID</label>
+          <input type="text" id="cfg-ej-service" placeholder="service_xxxxxxx">
+        </div>
+        <div class="field">
+          <label>Template ID</label>
+          <input type="text" id="cfg-ej-template" placeholder="template_xxxxxxx">
+        </div>
+      </div>
+      <div class="field">
+        <label>Public Key</label>
+        <input type="text" id="cfg-ej-public" placeholder="abc123XYZ...">
+      </div>
+      <div class="inline-status" id="emailjs-status"></div>
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick="testEmailJS()">📬 Email de prueba</button>
+        <button class="btn btn-primary" onclick="saveConfig()">💾 Guardar</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>⚽ Football Data API</h3>
+      <div class="field">
+        <label>API Key (football-data.org)</label>
+        <input type="text" id="cfg-fd-key" placeholder="648877ba...">
+        <div class="hint">Ya está configurada. Cámbiala solo si obtienes una nueva.</div>
+      </div>
+      <div class="inline-status" id="fdapi-status"></div>
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick="testFDAPI()">🔌 Probar API</button>
+        <button class="btn btn-primary" onclick="saveConfig()">💾 Guardar</button>
+      </div>
+    </div>
+
+    <div class="card change-pw">
+      <h3>🔑 Cambiar contraseña de administrador</h3>
+      <div class="field-row">
+        <div class="field">
+          <label>Nueva contraseña</label>
+          <input type="password" id="new-pw" placeholder="••••••••">
+        </div>
+        <div class="field">
+          <label>Confirmar</label>
+          <input type="password" id="new-pw2" placeholder="••••••••">
+        </div>
+      </div>
+      <div class="inline-status" id="pw-status"></div>
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick="changePassword()">Cambiar contraseña</button>
+      </div>
+    </div>
+
+  </div><!-- /tab-config -->
+
+  <!-- TAB: PARTICIPANTES -->
+  <div id="tab-participantes" class="tab-panel">
+    <div class="stat-chips" id="p-stats"></div>
+    <div class="card">
+      <h3>👥 Participantes registrados</h3>
+      <div id="participants-table-wrap">
+        <p style="color:var(--muted);font-size:.875rem">Cargando…</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: COMPETENCIA -->
+  <div id="tab-competencia" class="tab-panel">
+
+    <div class="card">
+      <h3>⚙️ Estado de la competencia</h3>
+      <div class="toggle-row">
+        <div class="toggle-label">
+          <strong>Registro abierto</strong>
+          <span>Nuevos participantes pueden registrarse</span>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="tog-reg" onchange="saveSettings()">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-label">
+          <strong>Predicciones abiertas</strong>
+          <span>Participantes pueden editar sus predicciones</span>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="tog-pred" onchange="saveSettings()">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      <div class="inline-status" id="settings-status" style="margin-top:10px"></div>
+    </div>
+
+    <div class="card">
+      <h3>🏆 Podio real del Mundial</h3>
+      <p style="font-size:.8rem;color:var(--muted);margin-bottom:16px">
+        Completa esto cuando termine el torneo. Activa los puntos del podio para todos los participantes.
+      </p>
+      <div class="podium-selector" id="podium-selector">
+        <div class="pod-item">
+          <label>🥇 Campeón</label>
+          <select id="pod-first"><option value="">— Selecciona —</option></select>
+        </div>
+        <div class="pod-item">
+          <label>🥈 Subcampeón</label>
+          <select id="pod-second"><option value="">— Selecciona —</option></select>
+        </div>
+        <div class="pod-item">
+          <label>🥉 Tercer lugar</label>
+          <select id="pod-third"><option value="">— Selecciona —</option></select>
+        </div>
+      </div>
+      <div class="inline-status" id="podium-status" style="margin-top:12px"></div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="savePodium()">💾 Guardar podio real</button>
+        <button class="btn btn-danger btn-sm" onclick="clearPodium()">Limpiar</button>
+      </div>
+    </div>
+
+  </div><!-- /tab-competencia -->
+
+  <!-- TAB: RESULTADOS -->
+  <div id="tab-resultados" class="tab-panel">
+    <div class="card">
+      <h3>⚽ Resultados manuales</h3>
+      <p style="font-size:.875rem;color:var(--muted);margin-bottom:16px">
+        Ingresa los marcadores de los partidos jugados. Se guardan en la nube y se muestran en el dashboard aunque falle la API automática. Los partidos futuros aparecen atenuados.
+      </p>
+      <div id="results-form"><p style="color:var(--muted);font-size:.85rem">Cargando partidos…</p></div>
+      <div class="btn-row" style="margin-top:20px">
+        <button class="btn btn-primary" onclick="saveAllResults()">💾 Guardar todos los resultados</button>
+        <span id="results-save-status" style="font-size:.85rem;display:flex;align-items:center"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: HERRAMIENTAS -->
+  <div id="tab-herramientas" class="tab-panel">
+
+    <div class="card">
+      <h3>🔄 Resultados en tiempo real</h3>
+      <p style="font-size:.875rem;color:var(--muted);margin-bottom:16px">
+        Los resultados se actualizan automáticamente cada 15 min en el dashboard.
+        Fuerza una actualización manual aquí.
+      </p>
+      <div id="results-preview" style="font-size:.85rem;color:var(--muted);margin-bottom:12px">—</div>
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick="forceRefreshResults()">⚡ Obtener resultados ahora</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>📤 Exportar datos</h3>
+      <p style="font-size:.875rem;color:var(--muted);margin-bottom:16px">Descarga una copia de todos los datos del bin.</p>
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick="exportData()">⬇️ Descargar JSON</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>📥 Registrar participante e importar predicciones</h3>
+      <p style="font-size:.875rem;color:var(--muted);margin-bottom:16px">
+        Si el participante ya existe, actualiza sus predicciones. Si no existe, lo registra y las importa.
+      </p>
+      <div class="field-row">
+        <div class="field">
+          <label>Nombre</label>
+          <input type="text" id="imp-name" placeholder="Theo">
+        </div>
+        <div class="field">
+          <label>Email</label>
+          <input type="email" id="imp-email" placeholder="theo@email.com">
+        </div>
+      </div>
+      <div class="field">
+        <label>JSON de predicciones — pega el objeto "predictions" del archivo</label>
+        <textarea id="imp-json" rows="5" style="width:100%;background:var(--navy3);border:1px solid var(--border);border-radius:8px;padding:10px;color:var(--text);font-family:monospace;font-size:.75rem;resize:vertical" placeholder='{"A1":{"home":2,"away":0},"A2":{"home":2,"away":0},...}'></textarea>
+      </div>
+      <div class="field">
+        <label>Podio predicho (opcional)</label>
+        <input type="text" id="imp-podium" placeholder='{"first":"ARG","second":"ENG","third":"POR"}'>
+      </div>
+      <div class="inline-status" id="imp-status"></div>
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick="findParticipantLink()">🔍 Ver enlace</button>
+        <button class="btn btn-primary" onclick="importPredictions()">📥 Guardar predicciones</button>
+      </div>
+      <div id="imp-link-box" style="display:none;margin-top:12px;background:var(--navy3);border:1px solid var(--border);border-radius:8px;padding:10px 14px;word-break:break-all;font-family:monospace;font-size:.8rem;color:var(--gold)"></div>
+    </div>
+
+    <div class="card">
+      <h3>🔗 Enlace del dashboard</h3>
+      <p style="font-size:.875rem;color:var(--muted);margin-bottom:12px">Comparte este enlace con todos los participantes.</p>
+      <div id="dash-link-box" style="background:var(--navy3);border:1px solid var(--border);border-radius:8px;padding:10px 14px;word-break:break-all;font-family:monospace;font-size:.8rem;color:var(--gold);margin-bottom:12px"></div>
+      <div class="btn-row">
+        <button class="btn btn-secondary btn-sm" onclick="copyDashLink()">📋 Copiar</button>
+      </div>
+    </div>
+
+  </div><!-- /tab-herramientas -->
+
+</div><!-- /wrap -->
+</div><!-- /admin-panel -->
+
+<script src="js/data.js"></script>
+<script src="js/config.js"></script>
+<script src="js/store.js"></script>
+<script src="js/scoring.js"></script>
+<script src="js/matches.js"></script>
+<script>
+let _storeData = null;
+let _adminPw = 'mundial2026'; // loaded from JSONBin on startup
+
+// ── Auth ─────────────────────────────────────────────────────────────────────
+
+// Load password from cloud before login screen is shown
+async function loadAdminPw() {
+  const btn = document.querySelector('.pw-btn, .btn.btn-primary[onclick="login()"]') || document.querySelector('[onclick="login()"]');
+  if (btn) { btn.disabled = true; btn.textContent = 'Cargando…'; }
+  try {
+    const res = await fetch(`https://api.jsonbin.io/v3/b/${FWC.BIN_ID}/latest`, {
+      headers: { 'X-Access-Key': FWC.BIN_KEY, 'X-Bin-Meta': 'false' }
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data._config?.admin_pw) _adminPw = data._config.admin_pw;
+    }
+  } catch(e) { /* use default */ }
+  if (btn) { btn.disabled = false; btn.textContent = 'Entrar'; }
+}
+
+function login() {
+  const pw = document.getElementById('auth-pw').value;
+  if (pw === _adminPw) {
+    sessionStorage.setItem('fwc_admin_authed', '1');
+    document.getElementById('auth-screen').style.display = 'none';
+    document.getElementById('admin-panel').style.display = 'block';
+    initPanel();
+  } else {
+    const el = document.getElementById('auth-err');
+    el.innerHTML = '<span style="color:var(--red2);font-size:.85rem">⚠ Contraseña incorrecta</span>';
+    setTimeout(() => el.innerHTML = '', 2500);
+  }
+}
+
+function logout() {
+  document.getElementById('admin-panel').style.display = 'none';
+  document.getElementById('auth-screen').style.display = 'block';
+  document.getElementById('auth-pw').value = '';
+}
+
+async function changePassword() {
+  const a = document.getElementById('new-pw').value;
+  const b = document.getElementById('new-pw2').value;
+  const el = document.getElementById('pw-status');
+  if (!a) { el.innerHTML = '<span style="color:var(--red2)">Escribe una contraseña</span>'; return; }
+  if (a !== b) { el.innerHTML = '<span style="color:var(--red2)">Las contraseñas no coinciden</span>'; return; }
+  el.innerHTML = '<span style="color:var(--gold)">Guardando…</span>';
+  try {
+    await FWCStore.update(data => ({
+      ...data,
+      _config: { ...(data._config || {}), admin_pw: a }
+    }));
+    _adminPw = a;
+    el.innerHTML = '<span style="color:var(--green2)">✓ Contraseña guardada en la nube</span>';
+    document.getElementById('new-pw').value = '';
+    document.getElementById('new-pw2').value = '';
+    setTimeout(() => el.innerHTML = '', 3000);
+  } catch(e) {
+    el.innerHTML = `<span style="color:var(--red2)">⚠ Error al guardar: ${e.message}</span>`;
+  }
+}
+
+// ── Init ─────────────────────────────────────────────────────────────────────
+async function initPanel() {
+  loadConfigFields();
+  updateConfigBadge();
+  populateTeamSelects();
+  document.getElementById('dash-link-box').textContent =
+    FWC.BASE_URL + '/dashboard.html';
+  if (FWC.isConfigured()) {
+    await loadStoreData();
+  }
+}
+
+function loadConfigFields() {
+  document.getElementById('cfg-bin-id').value   = FWC.BIN_ID;
+  document.getElementById('cfg-bin-key').value  = FWC.BIN_KEY;
+  document.getElementById('cfg-fd-key').value   = FWC.FD_KEY;
+  document.getElementById('cfg-ej-service').value  = FWC.EJ_SERVICE;
+  document.getElementById('cfg-ej-template').value = FWC.EJ_TEMPLATE;
+  document.getElementById('cfg-ej-public').value   = FWC.EJ_PUBLIC;
+}
+
+function updateConfigBadge() {
+  const el = document.getElementById('config-status-badge');
+  if (FWC.isConfigured()) {
+    el.className = 'status-tag ok'; el.textContent = '✓ JSONBin configurado';
+  } else {
+    el.className = 'status-tag warn'; el.textContent = '⚠ JSONBin no configurado';
+  }
+}
+
+async function loadStoreData() {
+  try {
+    _storeData = await FWCStore.read();
+    // Sync EmailJS config from cloud → localStorage (works on any device with just BIN_ID+KEY)
+    const c = _storeData._config;
+    if (c) {
+      if (!FWC.EJ_SERVICE  && c.ej_service)  FWC.set('ej_service',  c.ej_service);
+      if (!FWC.EJ_TEMPLATE && c.ej_template) FWC.set('ej_template', c.ej_template);
+      if (!FWC.EJ_PUBLIC   && c.ej_public)   FWC.set('ej_public',   c.ej_public);
+      loadConfigFields();
+    }
+    renderParticipants();
+    renderSettings();
+    renderPodiumSelects();
+    renderResultsTab();
+  } catch (e) {
+    console.error('loadStoreData:', e);
+  }
+}
+
+// ── Tabs ─────────────────────────────────────────────────────────────────────
+function showTab(key) {
+  document.querySelectorAll('.tab-btn').forEach((b, i) => {
+    b.classList.toggle('active', b.textContent.toLowerCase().includes(key) ||
+      ['config','participantes','competencia','herramientas'][i] === key);
+  });
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + key).classList.add('active');
+  if (key === 'participantes' && FWC.isConfigured() && !_storeData) loadStoreData();
+  if (key === 'competencia'   && FWC.isConfigured() && !_storeData) loadStoreData();
+  if (key === 'resultados') { if (FWC.isConfigured() && !_storeData) loadStoreData().then(renderResultsTab); else renderResultsTab(); }
+}
+
+// ── Config ────────────────────────────────────────────────────────────────────
+async function saveConfig() {
+  FWC.set('bin_id',      document.getElementById('cfg-bin-id').value.trim());
+  FWC.set('bin_key',     document.getElementById('cfg-bin-key').value.trim());
+  FWC.set('fd_key',      document.getElementById('cfg-fd-key').value.trim());
+  FWC.set('ej_service',  document.getElementById('cfg-ej-service').value.trim());
+  FWC.set('ej_template', document.getElementById('cfg-ej-template').value.trim());
+  FWC.set('ej_public',   document.getElementById('cfg-ej-public').value.trim());
+  updateConfigBadge();
+  if (FWC.isConfigured()) {
+    try {
+      // Write config to JSONBin so any device can load it with just BIN_ID + BIN_KEY
+      await FWCStore.update(data => ({
+        ...data,
+        _config: {
+          ...(data._config || {}),   // preserve admin_pw and other fields
+          ej_service:  FWC.EJ_SERVICE,
+          ej_template: FWC.EJ_TEMPLATE,
+          ej_public:   FWC.EJ_PUBLIC,
+        }
+      }));
+      showToast('✓ Configuración guardada y sincronizada en la nube ☁️');
+    } catch(e) {
+      showToast('✓ Guardado localmente (error al sincronizar: ' + e.message + ')');
+    }
+    loadStoreData();
+  } else {
+    showToast('✓ Configuración guardada — ingresa BIN_ID y Key para sincronizar');
+  }
+}
+
+async function testJsonBin() {
+  const el = document.getElementById('jsonbin-status');
+  const id  = document.getElementById('cfg-bin-id').value.trim();
+  const key = document.getElementById('cfg-bin-key').value.trim();
+  if (!id || !key) { el.innerHTML = '<span style="color:var(--red2)">Rellena ID y Key primero</span>'; return; }
+  el.innerHTML = '<span style="color:var(--gold)">Probando…</span>';
+  try {
+    const res = await fetch(`https://api.jsonbin.io/v3/b/${id}/latest`, {
+      headers: { 'X-Master-Key': key, 'X-Bin-Meta': 'false' }
+    });
+    if (res.ok) {
+      el.innerHTML = '<span style="color:var(--green2)">✓ Conexión exitosa — bin accesible</span>';
+    } else {
+      el.innerHTML = `<span style="color:var(--red2)">⚠ Error ${res.status} — verifica ID y Key</span>`;
+    }
+  } catch (e) {
+    el.innerHTML = `<span style="color:var(--red2)">⚠ Error de red: ${e.message}</span>`;
+  }
+}
+
+async function testFDAPI() {
+  const el  = document.getElementById('fdapi-status');
+  const key = document.getElementById('cfg-fd-key').value.trim() || FWC.FD_KEY;
+  el.innerHTML = '<span style="color:var(--gold)">Probando…</span>';
+  try {
+    const res = await fetch('https://api.football-data.org/v4/competitions/WC', {
+      headers: { 'X-Auth-Token': key }
+    });
+    if (res.ok) {
+      const d = await res.json();
+      el.innerHTML = `<span style="color:var(--green2)">✓ API OK — competencia: ${d.name || 'WC 2026'}</span>`;
+    } else {
+      el.innerHTML = `<span style="color:var(--red2)">⚠ Error ${res.status} — verifica la key</span>`;
+    }
+  } catch (e) {
+    el.innerHTML = `<span style="color:var(--red2)">⚠ Error de red</span>`;
+  }
+}
+
+async function testEmailJS() {
+  const el = document.getElementById('emailjs-status');
+  const pub = document.getElementById('cfg-ej-public').value.trim();
+  if (!pub) { el.innerHTML = '<span style="color:var(--red2)">Guarda el Public Key primero</span>'; return; }
+  el.innerHTML = '<span style="color:var(--gold)">Enviando email de prueba…</span>';
+  try {
+    emailjs.init(pub);
+    const svc = document.getElementById('cfg-ej-service').value.trim();
+    const tpl = document.getElementById('cfg-ej-template').value.trim();
+    await emailjs.send(svc, tpl, {
+      to_name:  'Admin Test',
+      to_email: 'soyconscienciaelevada@gmail.com',
+      link:     FWC.BASE_URL + '/predicciones.html?t=TEST',
+    });
+    el.innerHTML = '<span style="color:var(--green2)">✓ Email de prueba enviado a soyconscienciaelevada@gmail.com</span>';
+  } catch (e) {
+    el.innerHTML = `<span style="color:var(--red2)">⚠ ${e?.text || e.message || 'Error desconocido'}</span>`;
+  }
+}
+
+// ── Participants ──────────────────────────────────────────────────────────────
+function renderParticipants() {
+  if (!_storeData) return;
+  const ps = _storeData.participants || [];
+
+  const stats = document.getElementById('p-stats');
+  const predCounts = ps.map(p => Object.keys((_storeData.predictions?.[p.token] || {}).matches || {}).length);
+  stats.innerHTML = [
+    { v: ps.length, l: 'registrados' },
+    { v: ps.filter(p => (_storeData.predictions?.[p.token]?.matches) && Object.keys(_storeData.predictions[p.token].matches).length > 0).length, l: 'con predicciones' },
+    { v: (_storeData.reglas || []).filter(Boolean).length, l: 'reglas sugeridas' },
+  ].map(s => `<div class="stat-chip"><div class="sc-val">${s.v}</div><div class="sc-lbl">${s.l}</div></div>`).join('');
+
+  const wrap = document.getElementById('participants-table-wrap');
+  if (!ps.length) {
+    wrap.innerHTML = '<p style="color:var(--muted);font-size:.875rem">Ningún participante registrado aún.</p>';
+    return;
+  }
+
+  wrap.innerHTML = `<div style="overflow-x:auto">
+    <table class="participants-table">
+      <thead><tr>
+        <th>Nombre</th><th>Email</th><th>Predicciones</th><th>Puntos</th><th>Regla sugerida</th><th></th>
+      </tr></thead>
+      <tbody>
+        ${ps.map(p => {
+          const preds = Object.keys((_storeData.predictions?.[p.token] || {}).matches || {}).length;
+          const pts   = FWCScoring.totalForToken(p.token, _storeData.predictions || {}, {}, null);
+          const date  = new Date(p.registeredAt).toLocaleDateString('es-ES', { day:'numeric', month:'short' });
+          return `<tr>
+            <td><strong>${escHtml(p.nombre)}</strong><br><span class="p-token">${p.token.slice(0,8)}…</span></td>
+            <td>${escHtml(p.email)}<br><span class="p-link" onclick="copyLink('${p.token}')" title="Copiar enlace">🔗 ${FWC.PRED_URL.replace(/^https?:\/\//,'')}?t=${p.token.slice(0,8)}…</span></td>
+            <td style="text-align:center">${preds}</td>
+            <td style="text-align:center;color:var(--gold);font-family:'Oswald',sans-serif;font-size:1rem">${pts}</td>
+            <td style="font-size:.78rem;color:var(--muted)">${p.regla ? escHtml(p.regla) : '—'}</td>
+            <td>
+              <button class="btn btn-secondary btn-sm" onclick="resendEmail('${p.token}')">📧</button>
+              <button class="btn btn-danger btn-sm" style="margin-left:4px" onclick="removeParticipant('${p.token}')">🗑</button>
+            </td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>
+  </div>`;
+}
+
+async function resendEmail(token) {
+  if (!_storeData) return;
+  const p = FWCStore.findByToken(_storeData, token);
+  if (!p) return;
+  const link = FWC.PRED_URL + '?t=' + token;
+  try {
+    emailjs.init(FWC.EJ_PUBLIC);
+    await emailjs.send(FWC.EJ_SERVICE, FWC.EJ_TEMPLATE, { to_name: p.nombre, to_email: p.email, link });
+    showToast(`✓ Email reenviado a ${p.email}`);
+  } catch (e) {
+    showToast(`⚠ Error al enviar: ${e?.text || e.message}`, 'error');
+  }
+}
+
+async function removeParticipant(token) {
+  if (!_storeData) return;
+  const p = FWCStore.findByToken(_storeData, token);
+  if (!p || !confirm(`¿Eliminar a ${p.nombre}? Esto borrará también sus predicciones.`)) return;
+  _storeData.participants = _storeData.participants.filter(x => x.token !== token);
+  delete _storeData.predictions[token];
+  try {
+    await FWCStore.write(_storeData);
+    renderParticipants();
+    showToast(`✓ ${p.nombre} eliminado`);
+  } catch (e) {
+    showToast('⚠ Error al guardar: ' + e.message, 'error');
+  }
+}
+
+// ── Settings ─────────────────────────────────────────────────────────────────
+function renderSettings() {
+  if (!_storeData) return;
+  const s = _storeData.settings || {};
+  document.getElementById('tog-reg').checked  = !!s.registrationOpen;
+  document.getElementById('tog-pred').checked = !!s.predictionsOpen;
+}
+
+async function saveSettings() {
+  if (!_storeData) return;
+  _storeData.settings = _storeData.settings || {};
+  _storeData.settings.registrationOpen = document.getElementById('tog-reg').checked;
+  _storeData.settings.predictionsOpen  = document.getElementById('tog-pred').checked;
+  try {
+    await FWCStore.write(_storeData);
+    const el = document.getElementById('settings-status');
+    el.innerHTML = '<span style="color:var(--green2)">✓ Guardado</span>';
+    setTimeout(() => el.innerHTML = '', 2000);
+  } catch (e) {
+    const el = document.getElementById('settings-status');
+    el.innerHTML = `<span style="color:var(--red2)">⚠ ${e.message}</span>`;
+  }
+}
+
+// ── Podium ────────────────────────────────────────────────────────────────────
+const ALL_TEAMS = Object.entries(WC2026.teams).sort((a,b) => a[1].name.localeCompare(b[1].name));
+
+function populateTeamSelects() {
+  const opts = `<option value="">— Selecciona —</option>` +
+    ALL_TEAMS.map(([c,t]) => `<option value="${c}">${t.flag} ${t.name}</option>`).join('');
+  ['pod-first','pod-second','pod-third'].forEach(id => {
+    document.getElementById(id).innerHTML = opts;
+  });
+}
+
+function renderPodiumSelects() {
+  if (!_storeData) return;
+  const p = _storeData.settings?.actualPodium || {};
+  document.getElementById('pod-first').value  = p.first  || '';
+  document.getElementById('pod-second').value = p.second || '';
+  document.getElementById('pod-third').value  = p.third  || '';
+}
+
+async function savePodium() {
+  if (!_storeData) { showToast('⚠ Configura JSONBin primero', 'error'); return; }
+  const first  = document.getElementById('pod-first').value;
+  const second = document.getElementById('pod-second').value;
+  const third  = document.getElementById('pod-third').value;
+  if (!first || !second || !third) { showToast('⚠ Selecciona los 3 lugares', 'error'); return; }
+  _storeData.settings = _storeData.settings || {};
+  _storeData.settings.actualPodium = { first, second, third };
+  try {
+    await FWCStore.write(_storeData);
+    const el = document.getElementById('podium-status');
+    el.innerHTML = '<span style="color:var(--green2)">✓ Podio guardado — puntos actualizados en dashboard</span>';
+    showToast('✓ Podio real guardado');
+  } catch (e) {
+    showToast('⚠ Error al guardar: ' + e.message, 'error');
+  }
+}
+
+async function clearPodium() {
+  if (!_storeData || !confirm('¿Limpiar el podio real?')) return;
+  _storeData.settings.actualPodium = null;
+  await FWCStore.write(_storeData);
+  renderPodiumSelects();
+  showToast('Podio limpiado');
+}
+
+// ── Results tab ───────────────────────────────────────────────────────────────
+function renderResultsTab() {
+  const form  = document.getElementById('results-form');
+  if (!form) return;
+  const saved = _storeData?.results || {};
+  const today = new Date().toISOString().slice(0, 10);
+
+  const byDate = {};
+  WC2026.allMatches.forEach(m => {
+    if (!byDate[m.date]) byDate[m.date] = [];
+    byDate[m.date].push(m);
+  });
+
+  const months = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  function fmtDate(d) {
+    const [,mm,dd] = d.split('-');
+    return `${parseInt(dd)} ${months[parseInt(mm)-1]}`;
+  }
+
+  form.innerHTML = Object.entries(byDate)
+    .sort(([a],[b]) => a.localeCompare(b))
+    .map(([date, matches]) => {
+      const isPast = date <= today;
+      const rows = matches.map(m => {
+        const ht  = WC2026.team(m.home);
+        const at  = WC2026.team(m.away);
+        const res = saved[m.id];
+        return `<div class="result-row ${isPast ? '' : 'future-match'}">
+          <span class="rr-team">${WC2026.fi(m.home, 16)} ${ht.name}</span>
+          <input type="number" min="0" max="20" class="score-input" id="r_${m.id}_h" value="${res != null ? res.home : ''}" placeholder="—">
+          <span class="rr-vs">:</span>
+          <input type="number" min="0" max="20" class="score-input" id="r_${m.id}_a" value="${res != null ? res.away : ''}" placeholder="—">
+          <span class="rr-team right">${at.name} ${WC2026.fi(m.away, 16)}</span>
+          <span class="rr-time">${m.time} hs</span>
+        </div>`;
+      }).join('');
+      return `<div class="date-group">
+        <div class="date-header">${isPast ? '✓' : '⏳'} ${fmtDate(date)} — ${matches.length} partido${matches.length>1?'s':''}</div>
+        ${rows}
+      </div>`;
+    }).join('');
+}
+
+async function saveAllResults() {
+  const el = document.getElementById('results-save-status');
+  el.innerHTML = '<span style="color:var(--gold)">Guardando…</span>';
+  const results = {};
+  WC2026.allMatches.forEach(m => {
+    const hEl = document.getElementById(`r_${m.id}_h`);
+    const aEl = document.getElementById(`r_${m.id}_a`);
+    if (!hEl || !aEl) return;
+    const h = hEl.value, a = aEl.value;
+    if (h !== '' && a !== '') {
+      results[m.id] = { home: parseInt(h, 10), away: parseInt(a, 10) };
+    }
+  });
+  try {
+    _storeData = await FWCStore.update(data => ({ ...data, results }));
+    el.innerHTML = '<span style="color:var(--green2)">✓ Guardado</span>';
+    setTimeout(() => el.innerHTML = '', 3000);
+  } catch(e) {
+    el.innerHTML = `<span style="color:var(--red2)">⚠ ${e.message}</span>`;
+  }
+}
+
+// ── Import predictions ────────────────────────────────────────────────────────
+function _findParticipant() {
+  const email = document.getElementById('imp-email').value.trim().toLowerCase();
+  const el = document.getElementById('imp-status');
+  if (!email) { el.innerHTML = '<span style="color:var(--red2)">Escribe un email</span>'; return null; }
+  if (!_storeData) { el.innerHTML = '<span style="color:var(--red2)">Datos no cargados — espera un momento</span>'; return null; }
+  const p = (_storeData.participants || []).find(x => x.email.toLowerCase() === email);
+  if (!p) { el.innerHTML = `<span style="color:var(--red2)">No se encontró participante con email: ${escHtml(email)}</span>`; return null; }
+  return p;
+}
+
+function findParticipantLink() {
+  const p = _findParticipant();
+  if (!p) return;
+  const link = FWC.BASE_URL + '/predicciones.html?t=' + p.token;
+  const box = document.getElementById('imp-link-box');
+  box.style.display = 'block';
+  box.innerHTML = `<strong style="color:var(--text)">${escHtml(p.nombre)}</strong><br>${link}<br><button class="btn btn-secondary btn-sm" style="margin-top:8px" onclick="navigator.clipboard.writeText('${link}').then(()=>showToast('✓ Enlace copiado'))">📋 Copiar</button>`;
+  document.getElementById('imp-status').innerHTML = '';
+}
+
+async function importPredictions() {
+  const p = _findParticipant();
+  if (!p) return;
+  const el = document.getElementById('imp-status');
+  const jsonRaw = document.getElementById('imp-json').value.trim();
+  const podiumRaw = document.getElementById('imp-podium').value.trim();
+  let matches = {}, podium = null;
+  if (jsonRaw) {
+    try {
+      const parsed = JSON.parse(jsonRaw);
+      // Accept full state file or just the predictions object
+      matches = parsed.predictions || parsed;
+      if (parsed.podium && !podiumRaw) podium = parsed.podium;
+    } catch { el.innerHTML = '<span style="color:var(--red2)">JSON de predicciones inválido</span>'; return; }
+  }
+  if (podiumRaw) {
+    try { podium = JSON.parse(podiumRaw); } catch { el.innerHTML = '<span style="color:var(--red2)">JSON del podio inválido</span>'; return; }
+  }
+  el.innerHTML = '<span style="color:var(--gold)">Guardando…</span>';
+  try {
+    _storeData = await FWCStore.update(data => {
+      const existing = data.predictions[p.token] || {};
+      data.predictions[p.token] = {
+        matches: { ...(existing.matches || {}), ...matches },
+        podium: podium || existing.podium || null,
+      };
+      return data;
+    });
+    el.innerHTML = `<span style="color:var(--green2)">✓ Predicciones importadas para ${escHtml(p.nombre)} — ${Object.keys(matches).length} partidos</span>`;
+  } catch(e) {
+    el.innerHTML = `<span style="color:var(--red2)">⚠ Error: ${e.message}</span>`;
+  }
+}
+
+// ── Tools ─────────────────────────────────────────────────────────────────────
+async function forceRefreshResults() {
+  const el = document.getElementById('results-preview');
+  el.textContent = 'Consultando API…';
+  const data = await FWCMatches.fetchResults();
+  if (data) {
+    const count = Object.keys(data.results).length;
+    const live  = data.live.length;
+    el.innerHTML = `<span style="color:var(--green2)">✓ ${count} resultados cargados${live ? ` · ${live} partidos en vivo` : ''}</span>`;
+  } else {
+    el.innerHTML = '<span style="color:var(--red2)">⚠ No se pudo conectar a la API</span>';
+  }
+}
+
+async function exportData() {
+  if (!_storeData) { showToast('⚠ Configura JSONBin primero', 'error'); return; }
+  const blob = new Blob([JSON.stringify(_storeData, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'mundial-familiar-data.json';
+  a.click();
+}
+
+function copyLink(token) {
+  const link = FWC.PRED_URL + '?t=' + token;
+  navigator.clipboard.writeText(link).then(() => showToast('✓ Enlace copiado'));
+}
+
+function copyDashLink() {
+  navigator.clipboard.writeText(FWC.BASE_URL + '/dashboard.html').then(() => {
+    showToast('✓ Enlace copiado');
+  });
+}
+
+// ── Toast ─────────────────────────────────────────────────────────────────────
+function showToast(msg, type = 'ok') {
+  let t = document.getElementById('toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'toast';
+    t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:12px 20px;font-size:.875rem;z-index:999;transition:opacity .3s';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.color = type === 'error' ? 'var(--red2)' : 'var(--green2)';
+  t.style.opacity = '1';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.style.opacity = '0', 3000);
+}
+
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// Auto-login if already authenticated this session
+if (sessionStorage.getItem('fwc_admin_authed') === '1') {
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('admin-panel').style.display = 'block';
+  initPanel();
+} else {
+  // Load cloud password before user attempts login
+  loadAdminPw();
+}
+
+document.getElementById('auth-pw').addEventListener('keydown', e => {
+  if (e.key === 'Enter') login();
+});
+</script>
+</body>
+</html>
